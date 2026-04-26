@@ -81,7 +81,7 @@ export async function render(container) {
         const itemsList = isEmpty
           ? ''
           : `<div class="items">${items.map(e =>
-              `${e.products.name} (${Math.round(e.amount_grams)}g)`
+              `${escapeHtml(e.products.name)} (${Math.round(e.amount_grams)}g)`
             ).join(' · ')}</div>`;
         return `
           <li class="meal-row ${isEmpty ? 'empty' : ''}" data-meal="${meal}">
@@ -103,4 +103,10 @@ export async function render(container) {
       navigate(`#/add?meal=${meal}`);
     });
   });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
 }
