@@ -11,51 +11,68 @@ defineRoute('#/add/portion',    () => import('./views/add-food-portion.js'));
 defineRoute('#/add/new',        () => import('./views/add-food-new.js'));
 defineRoute('#/settings',       () => import('./views/settings.js'));
 
-// Session-aware routing: redirect based on auth + profile state.
-async function routeForSession() {
+const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/add', '#/add/portion', '#/add/new', '#/settings'];
+
+// Determine where the user should be based on their session and profile state.
+// Returns the target hash, or null if the current route is fine.
+async function determineSessionRoute() {
   const { data: { session } } = await supabase.auth.getSession();
 
-  if (!session) {
-    if (location.hash !== '#/login') navigate('#/login');
-    return;
-  }
+  if (!session) return '#/login';
 
-  // Logged in — check if profile exists
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('id')
     .eq('id', session.user.id)
     .maybeSingle();
 
-  if (profileError) {
-    console.error('Profile lookup failed:', profileError);
-    return;
+  if (error) {
+    console.error('Profile lookup failed:', error);
+    return '#/login';
   }
 
-  if (!profile) {
-    if (location.hash !== '#/onboarding') navigate('#/onboarding');
-    return;
-  }
+  if (!profile) return '#/onboarding';
 
-  // Logged in + has profile — if currently on login/onboarding, redirect home
-  if (location.hash === '#/login' || location.hash === '#/onboarding') {
-    navigate('#/');
+  // Logged in + profile exists — if on auth views, send home; if on junk hash
+  // (e.g. magic-link tokens), also send home.
+  const currentPath = location.hash.split('?')[0];
+  if (currentPath === '#/login' || currentPath === '#/onboarding') return '#/';
+  if (!KNOWN_ROUTES.includes(currentPath)) return '#/';
+  return null;
+}
+
+async function applySessionRouting() {
+  const target = await determineSessionRoute();
+  if (target && location.hash !== target) {
+    navigate(target);
   }
 }
 
-// React to auth changes. Skip TOKEN_REFRESHED — would re-query profile every hour
-// for no behavioral change. INITIAL_SESSION fires shortly after init; we already
-// run routeForSession() at the bottom of this file, so skip it too.
-supabase.auth.onAuthStateChange((event) => {
-  if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') return;
-  routeForSession();
+// Magic-link redirects land on this page with a hash containing access tokens.
+// Supabase processes those tokens asynchronously; until that completes,
+// getSession() returns null and any view that needs auth will fail.
+// So: wait for the first INITIAL_SESSION event before letting the router render.
+const authReady = new Promise((resolve) => {
+  let settled = false;
+  const finish = () => { if (!settled) { settled = true; resolve(); } };
+
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') finish();
+    if (event === 'TOKEN_REFRESHED') return;
+    applySessionRouting();
+  });
+
+  // Safety: never block the UI longer than 2s even if Supabase never fires.
+  setTimeout(finish, 2000);
 });
 
-startRouter();
-routeForSession();
-
-window.addEventListener('hashchange', renderBottomNav);
-renderBottomNav();
+(async () => {
+  await authReady;
+  await applySessionRouting();
+  startRouter();
+  window.addEventListener('hashchange', renderBottomNav);
+  renderBottomNav();
+})();
 
 // PWA service worker — only register when served over HTTPS or localhost.
 if ('serviceWorker' in navigator) {
