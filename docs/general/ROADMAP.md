@@ -23,10 +23,11 @@ Minimaal bruikbare app voor één gebruiker:
 - Dashboard: dagoverzicht calorieën (ingenomen / nog beschikbaar)
 - Eigen producten beheren (CRUD)
 - Calorieën-invoer per dag (product + portie)
-- Instellen van streefdoel én absoluut maximum
+- Instellen van streefdoel én absoluut maximum (handmatig getal in MVP)
 - Visuele feedback bij overschrijden van streefdoel of maximum
 
 Macro's (eiwit, koolhydraten, vet) komen later — eerst alleen kcal.
+Doelen worden in MVP handmatig ingevoerd. Berekening op basis van geslacht/leeftijd/lengte/gewicht/activiteit (Mifflin-St Jeor) komt later — zie G.
 
 ### C. Historie & terugwerkende invoer
 **Status:** open
@@ -39,6 +40,7 @@ Macro's (eiwit, koolhydraten, vet) komen later — eerst alleen kcal.
 
 - Vrienden zoeken, verzoek sturen, accepteren/weigeren
 - Voortgang van vrienden bekijken (dashboard naast elkaar)
+- **Vergelijk-widget op eigen dashboard**: kies een vooraf gekozen vriend, zie zijn/haar voortgang van vandaag direct naast die van jou (zonder naar aparte vrienden-pagina te gaan)
 - Maaltijden / producten overnemen van vrienden (één-klik kopiëren)
 - Competitie-element: bijv. wie blijft deze week vaakst binnen z'n doel
 
@@ -59,6 +61,13 @@ Macro's (eiwit, koolhydraten, vet) komen later — eerst alleen kcal.
 ### G. Wensenlijst voor de toekomst
 **Status:** open / nog niet ingepland
 
+- Doel-berekening via Mifflin-St Jeor formule (geslacht, leeftijd, lengte, gewicht, activiteit, gewenst tempo van afvallen) — als optie naast handmatige invoer
+- Email + wachtwoord login als alternatieve auth-methode naast magic link
+- Light mode als toggle in instellingen (basis is dark sporty)
+- Privé producten — keuze per product om alleen voor jezelf zichtbaar te maken
+- Duplicaten-detectie / merge-flow voor gedeelde producten database
+- Quick-add bottom sheet op dashboard voor 1-klik invoer van favorieten / recent
+- Vandalisme-bescherming voor gedeelde producten (moderation, edit history) — pas relevant bij groei
 - Macro's toevoegen aan tracking (eiwit, koolhydraten, vet) en macro-doelen instellen
 - Sport / verbrande calorieën bijhouden (negatieve kcal)
 - Meerdere producten samenvoegen tot één gerecht

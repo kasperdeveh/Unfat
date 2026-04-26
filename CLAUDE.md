@@ -16,6 +16,13 @@ met motivatie via badges/competities en sociale features (vrienden).
 - Vraag uitleg als iets onduidelijk is, zodat de gebruiker ervan leert
 - Houd code simpel en leesbaar
 
+## Memory transparantie
+Wanneer je zelf voorstelt om iets op een later moment op te pakken (een feature uitstellen, een uitbreiding voor later plannen, een verbetering die nu niet past, etc.), leg het PROACTIEF vast en vermeld expliciet WAAR. De gebruiker hoeft niet te vragen of je het onthoudt — ga er niet vanuit dat hij dat zelf bijhoudt. Opslagplekken:
+- Toekomstige features / open werk → `docs/general/ROADMAP.md`
+- Design beslissingen per sub-project → `docs/superpowers/specs/*.md`
+- Werkwijze of context die niet in code/docs staat → memory (`/home/node/.claude/projects/-workspaces-Unfat/memory/`)
+- Project-brede regels of conventies → `CLAUDE.md`
+
 ## Plugins
 - Gebruik altijd de **superpowers** plugin voor brainstorming, planning, debugging en code review
 
