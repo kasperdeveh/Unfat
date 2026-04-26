@@ -74,8 +74,11 @@ const authReady = new Promise((resolve) => {
   renderBottomNav();
 })();
 
-// PWA service worker — only register when served over HTTPS or localhost.
-if ('serviceWorker' in navigator) {
+// PWA service worker — only register in production. The cache makes development
+// painful (code changes don't take effect until you bump CACHE_NAME or unregister
+// the SW manually), so skip it on localhost.
+const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+if ('serviceWorker' in navigator && !isLocalhost) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch((err) => {
       console.warn('SW registration failed:', err);
