@@ -1,0 +1,74 @@
+# Unfat - Roadmap
+
+Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlopen we de cyclus brainstorm → spec → plan → bouwen → afronden.
+
+## Sub-projecten
+
+### A. Foundation
+**Status:** in voorbereiding (brainstorm gaande)
+
+Basis-infrastructuur waarop alles draait:
+- Supabase project aanmaken (auth, basis RLS policies)
+- Mappen-structuur (`src/`, `supabase/`)
+- Deploy pipeline naar GitHub Pages
+- PWA basics: `manifest.json`, service worker, icon set
+- Configuratie van Supabase URL + anon key
+- Login en registratie flow
+- Basis layout / navigatie / styling
+
+### B. Solo tracking (MVP)
+**Status:** in voorbereiding (brainstorm gaande)
+
+Minimaal bruikbare app voor één gebruiker:
+- Dashboard: dagoverzicht calorieën (ingenomen / nog beschikbaar)
+- Eigen producten beheren (CRUD)
+- Calorieën-invoer per dag (product + portie)
+- Instellen van streefdoel én absoluut maximum
+- Visuele feedback bij overschrijden van streefdoel of maximum
+
+Macro's (eiwit, koolhydraten, vet) komen later — eerst alleen kcal.
+
+### C. Historie & terugwerkende invoer
+**Status:** open
+
+- Eerdere dagen / weken / maanden bekijken
+- Invoer wijzigen of toevoegen voor dagen in het verleden
+
+### D. Vrienden & sociale features
+**Status:** open
+
+- Vrienden zoeken, verzoek sturen, accepteren/weigeren
+- Voortgang van vrienden bekijken (dashboard naast elkaar)
+- Maaltijden / producten overnemen van vrienden (één-klik kopiëren)
+- Competitie-element: bijv. wie blijft deze week vaakst binnen z'n doel
+
+### E. Motivatie: badges, rewards en notificaties
+**Status:** open
+
+- Badge-systeem (eerste week binnen doel, X dagen op rij, etc.)
+- Push notificaties via PWA (herinneringen, motiverende teksten)
+- Motiverende teksten in de UI bij milestones
+
+### F. Open Food Facts integratie + barcode scanning
+**Status:** open
+
+- Producten zoeken via OFF API (eerst goed testen, vorige keer werkte deze API niet lekker)
+- Barcode scannen via camera (gebruikt OFF voor product-data)
+- Eigen producten cache uitbreiden met OFF data
+
+### G. Wensenlijst voor de toekomst
+**Status:** open / nog niet ingepland
+
+- Macro's toevoegen aan tracking (eiwit, koolhydraten, vet) en macro-doelen instellen
+- Sport / verbrande calorieën bijhouden (negatieve kcal)
+- Meerdere producten samenvoegen tot één gerecht
+- Favoriete gerechten en producten
+- Foto maken van een product → AI bepaalt welk product en kcal
+- Database met gerechten en suggesties op basis van wat de gebruiker nog mag eten
+- Splitsen van Supabase dev en prod environments (zodra de app echte gebruikers krijgt)
+
+## Afgerond ✅
+
+| Datum | Item |
+|-------|------|
+| - | Nog niets afgerond |
