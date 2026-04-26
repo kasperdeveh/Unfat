@@ -20,11 +20,16 @@ async function routeForSession() {
   }
 
   // Logged in — check if profile exists
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('id')
     .eq('id', session.user.id)
     .maybeSingle();
+
+  if (profileError) {
+    console.error('Profile lookup failed:', profileError);
+    return;
+  }
 
   if (!profile) {
     if (location.hash !== '#/onboarding') navigate('#/onboarding');
@@ -37,8 +42,11 @@ async function routeForSession() {
   }
 }
 
-// React to auth changes (sign in / sign out / token refresh).
-supabase.auth.onAuthStateChange(() => {
+// React to auth changes. Skip TOKEN_REFRESHED — would re-query profile every hour
+// for no behavioral change. INITIAL_SESSION fires shortly after init; we already
+// run routeForSession() at the bottom of this file, so skip it too.
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') return;
   routeForSession();
 });
 
