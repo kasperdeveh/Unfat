@@ -16,6 +16,12 @@ export async function render(container) {
     return;
   }
 
+  // Guard: address-bar bypass — user reaches #/settings before onboarding ran
+  if (!profile) {
+    navigate('#/onboarding');
+    return;
+  }
+
   const created = new Date(session.user.created_at).toLocaleDateString('nl-NL', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
