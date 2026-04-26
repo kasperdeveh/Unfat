@@ -1,5 +1,6 @@
 import { defineRoute, startRouter, navigate } from './router.js';
 import { supabase } from './supabase.js';
+import { renderBottomNav } from './ui.js';
 
 // Register routes — view modules are loaded lazily.
 defineRoute('#/login',          () => import('./views/login.js'));
@@ -52,3 +53,6 @@ supabase.auth.onAuthStateChange((event) => {
 
 startRouter();
 routeForSession();
+
+window.addEventListener('hashchange', renderBottomNav);
+renderBottomNav();
