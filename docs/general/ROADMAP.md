@@ -4,31 +4,6 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 
 ## Sub-projecten
 
-### A. Foundation
-**Status:** in voorbereiding (brainstorm gaande)
-
-Basis-infrastructuur waarop alles draait:
-- Supabase project aanmaken (auth, basis RLS policies)
-- Mappen-structuur (`src/`, `supabase/`)
-- Deploy pipeline naar GitHub Pages
-- PWA basics: `manifest.json`, service worker, icon set
-- Configuratie van Supabase URL + anon key
-- Login en registratie flow
-- Basis layout / navigatie / styling
-
-### B. Solo tracking (MVP)
-**Status:** in voorbereiding (brainstorm gaande)
-
-Minimaal bruikbare app voor één gebruiker:
-- Dashboard: dagoverzicht calorieën (ingenomen / nog beschikbaar)
-- Eigen producten beheren (CRUD)
-- Calorieën-invoer per dag (product + portie)
-- Instellen van streefdoel én absoluut maximum (handmatig getal in MVP)
-- Visuele feedback bij overschrijden van streefdoel of maximum
-
-Macro's (eiwit, koolhydraten, vet) komen later — eerst alleen kcal.
-Doelen worden in MVP handmatig ingevoerd. Berekening op basis van geslacht/leeftijd/lengte/gewicht/activiteit (Mifflin-St Jeor) komt later — zie G.
-
 ### C. Historie & terugwerkende invoer
 **Status:** open
 
@@ -80,4 +55,5 @@ Doelen worden in MVP handmatig ingevoerd. Berekening op basis van geslacht/leeft
 
 | Datum | Item |
 |-------|------|
-| - | Nog niets afgerond |
+| 2026-04-26 | A. Foundation (Supabase, Auth via magic link, PWA, GitHub Pages deploy) |
+| 2026-04-26 | B. Solo tracking MVP (dashboard, gedeelde producten, invoer, doelen) |
