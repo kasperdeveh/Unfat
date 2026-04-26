@@ -26,6 +26,12 @@ export async function render(container) {
     return;
   }
 
+  // Guard: address-bar bypass — user reaches #/ before onboarding ran
+  if (!profile) {
+    navigate('#/onboarding');
+    return;
+  }
+
   const totalKcal = entries.reduce((sum, e) => sum + e.kcal, 0);
   const remainingTarget = profile.daily_target_kcal - totalKcal;
   const overTarget = totalKcal - profile.daily_target_kcal;
@@ -81,7 +87,7 @@ export async function render(container) {
         const itemsList = isEmpty
           ? ''
           : `<div class="items">${items.map(e =>
-              `${escapeHtml(e.products.name)} (${Math.round(e.amount_grams)}g)`
+              `${escapeHtml(e.products?.name || 'Onbekend')} (${Math.round(e.amount_grams)}g)`
             ).join(' · ')}</div>`;
         return `
           <li class="meal-row ${isEmpty ? 'empty' : ''}" data-meal="${meal}">
