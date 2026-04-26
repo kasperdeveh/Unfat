@@ -56,3 +56,12 @@ routeForSession();
 
 window.addEventListener('hashchange', renderBottomNav);
 renderBottomNav();
+
+// PWA service worker — only register when served over HTTPS or localhost.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.warn('SW registration failed:', err);
+    });
+  });
+}
