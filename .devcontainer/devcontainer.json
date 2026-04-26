@@ -1,0 +1,14 @@
+ {                                                                                                                                   
+    "name": "Unfat",                                  
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:22",                                                                    
+    "forwardPorts": [5500, 3000],                                                                                                     
+    "postCreateCommand": "bash .devcontainer/postCreate.sh",                      
+    "customizations": {                                                                                                               
+      "vscode": {                                                    
+        "extensions": [                                                                                                               
+          "ritwickdey.LiveServer",                                                                                                    
+          "esbenp.prettier-vscode"                                                        
+        ]                                                                                                                             
+      }                                                              
+    }                                                                                     
+  } 

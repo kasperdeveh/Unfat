@@ -1,0 +1,169 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "2",
+        "type": "separator"
+      },
+      {
+        "id": "3",
+        "type": "thinking-effort",
+        "color": "yellow"
+      },
+      {
+        "id": "4",
+        "type": "separator"
+      },
+      {
+        "id": "5",
+        "type": "skills",
+        "color": "magenta"
+      },
+      {
+        "id": "74647774-69fb-47c1-a801-a2e347da67ca",
+        "type": "separator"
+      },
+      {
+        "id": "4fd4d9e7-bab0-4cf3-ada5-8331114b9a0c",
+        "type": "output-style",
+        "color": "brightGreen"
+      }
+    ],
+    [
+      {
+        "id": "c4df70be-204d-41fc-bc38-eb994af6c810",
+        "type": "context-percentage",
+        "color": "brightRed"
+      },
+      {
+        "id": "ea4baf1f-b483-4436-aabd-aa2d0446232c",
+        "type": "separator"
+      },
+      {
+        "id": "0a374eac-63c8-47ab-822b-59776a7f2f1f",
+        "type": "session-usage",
+        "color": "brightRed"
+      },
+      {
+        "id": "17a482cf-7b16-4e7e-ac7c-1fe4831e8b1c",
+        "type": "separator"
+      },
+      {
+        "id": "db514465-bb8e-453d-85b8-2615f471298e",
+        "type": "weekly-usage",
+        "color": "brightRed"
+      },
+      {
+        "id": "01fe2608-f010-4792-9f52-66430e6aed2a",
+        "type": "separator"
+      },
+      {
+        "id": "8fce79a2-6cd8-4f8e-a88b-6da6adef333d",
+        "type": "session-cost",
+        "color": "cyan"
+      },
+      {
+        "id": "92cf56d1-746d-4d9f-95cf-a2f822ef79a7",
+        "type": "separator"
+      },
+      {
+        "id": "0b23c02a-efc6-4acf-849a-4cef6dde4a81",
+        "type": "reset-timer",
+        "color": "brightBlack"
+      },
+      {
+        "id": "5f79d0cc-63c9-4c9e-9b8a-40c368279470",
+        "type": "separator"
+      },
+      {
+        "id": "b42f3e79-1e4b-4b4d-9096-b8c7ec48564e",
+        "type": "session-clock",
+        "color": "black"
+      }
+    ],
+    [
+      {
+        "id": "507d9dbe-f300-44b5-9706-10207a327960",
+        "type": "git-worktree",
+        "color": "black"
+      },
+      {
+        "id": "4308eb0d-7485-459a-acff-d29e10cd0d7e",
+        "type": "separator"
+      },
+      {
+        "id": "7c0d0178-54d1-40d7-b5a4-71645a52808b",
+        "type": "git-branch",
+        "color": "brightBlack"
+      },
+      {
+        "id": "f902cb4f-33be-4021-b7c1-69561512df39",
+        "type": "separator"
+      },
+      {
+        "id": "ffd6ced3-74d3-46f4-84e6-db2defd02869",
+        "type": "current-working-dir",
+        "color": "black"
+      }
+    ],
+    [
+      {
+        "id": "c531d80f-129f-46ea-90f2-c67fd3bb218b",
+        "type": "tokens-cached",
+        "color": "brightCyan"
+      },
+      {
+        "id": "0a0e9338-a10c-4469-817a-1d1b3b2a6e86",
+        "type": "separator"
+      },
+      {
+        "id": "3c3d9b75-66d0-4e99-a286-009b3745bca6",
+        "type": "tokens-input",
+        "color": "brightCyan"
+      },
+      {
+        "id": "3b113bc1-d870-4c86-9161-f74e300504eb",
+        "type": "separator"
+      },
+      {
+        "id": "b55bfe11-1202-4164-89fe-48a87dd61762",
+        "type": "tokens-output",
+        "color": "brightCyan"
+      },
+      {
+        "id": "17bd72b0-a7c0-428f-bd78-f064e0353ff2",
+        "type": "separator"
+      },
+      {
+        "id": "2143ea32-8970-4919-9bb9-5741cb4cb719",
+        "type": "tokens-total",
+        "color": "brightBlue"
+      }
+    ]
+  ],
+  "flexMode": "full",
+  "compactThreshold": 60,
+  "colorLevel": 1,
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  }
+}
