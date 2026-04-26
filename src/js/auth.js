@@ -1,13 +1,16 @@
 import { supabase } from './supabase.js';
 
-// Send a magic link to the given email. The link redirects back to the current origin.
-export async function sendMagicLink(email) {
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: window.location.origin + window.location.pathname,
-    },
-  });
+// Sign up a new user with email + password.
+// Requires "Confirm email" to be disabled in the Supabase project for the
+// user to be able to log in immediately without email verification.
+export async function signUp(email, password) {
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) throw error;
+}
+
+// Sign in an existing user with email + password.
+export async function signIn(email, password) {
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
 }
 

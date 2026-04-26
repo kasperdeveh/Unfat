@@ -37,7 +37,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 **Status:** open / nog niet ingepland
 
 - Doel-berekening via Mifflin-St Jeor formule (geslacht, leeftijd, lengte, gewicht, activiteit, gewenst tempo van afvallen) — als optie naast handmatige invoer
-- Email + wachtwoord login als alternatieve auth-methode naast magic link
+- Custom SMTP via Resend (3000 mails/maand gratis) — maakt het mogelijk om magic link login terug te brengen als alternatief naast email+wachtwoord, en transactional mails (welkom, badges, etc.) te sturen zonder Supabase free tier rate limit van 2 mails/uur
 - Light mode als toggle in instellingen (basis is dark sporty)
 - Privé producten — keuze per product om alleen voor jezelf zichtbaar te maken
 - Duplicaten-detectie / merge-flow voor gedeelde producten database

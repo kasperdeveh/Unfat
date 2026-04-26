@@ -33,8 +33,10 @@ Doel: een werkende app waarmee één gebruiker dagelijks calorieën kan tracken,
 - `UPDATE` / `DELETE`: alleen rijen waar `created_by = auth.uid()`
 
 ### Authentication
-- MVP: **magic link** via Supabase Auth (gebruiker typt email, krijgt login-link in mail)
-- Email + wachtwoord als alternatieve methode komt later — zie ROADMAP G
+- MVP: **email + wachtwoord** via Supabase Auth (signUp + signInWithPassword)
+- Email-bevestiging staat UIT in Supabase project (account direct bruikbaar na registratie)
+- Reden voor afwijking van originele magic-link plan: Supabase free tier heeft een rate limit van 2 mails per uur per project (totaal, ongeacht email-adres) waardoor magic link voor zelfs 1 enkele tester onbruikbaar is. Email + wachtwoord vereist geen mails en heeft geen rate limit.
+- Magic link kan later terugkomen als alternatieve methode zodra custom SMTP (Resend) is opgezet — zie ROADMAP G
 
 ### App-structuur
 - **Single-page application (SPA)**: één `index.html`, JS swap views via mini hash-router

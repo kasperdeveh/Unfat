@@ -1,4 +1,4 @@
-import { sendMagicLink } from '../auth.js';
+import { signIn, signUp } from '../auth.js';
 import { hideBottomNav } from '../ui.js';
 
 export async function render(container) {
@@ -13,39 +13,68 @@ export async function render(container) {
         <label class="field-label" for="email">E-mailadres</label>
         <input class="input" id="email" type="email" required autocomplete="email" inputmode="email" placeholder="jij@voorbeeld.nl">
       </div>
-      <button class="btn" type="submit" id="submit-btn">Stuur login-link</button>
+
+      <div class="field">
+        <label class="field-label" for="password">Wachtwoord</label>
+        <input class="input" id="password" type="password" required autocomplete="current-password" minlength="6" placeholder="Minstens 6 tekens">
+      </div>
+
+      <button class="btn" type="submit" id="signin-btn">Inloggen</button>
+      <button class="btn-secondary btn" type="button" id="signup-btn" style="margin-top:8px;">Account aanmaken</button>
       <p class="error" id="login-error" hidden></p>
     </form>
-
-    <div id="login-success" hidden>
-      <div class="card" style="text-align:center;">
-        <p>📬 Check je mail.</p>
-        <p class="text-muted" style="font-size:12px;">We hebben je een login-link gestuurd. Klik die en je bent ingelogd.</p>
-      </div>
-    </div>
   `;
 
   const form = document.getElementById('login-form');
   const error = document.getElementById('login-error');
-  const success = document.getElementById('login-success');
-  const submitBtn = document.getElementById('submit-btn');
+  const signinBtn = document.getElementById('signin-btn');
+  const signupBtn = document.getElementById('signup-btn');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  function readCredentials() {
+    return {
+      email: document.getElementById('email').value.trim(),
+      password: document.getElementById('password').value,
+    };
+  }
+
+  function setBusy(busy, mode) {
+    signinBtn.disabled = busy;
+    signupBtn.disabled = busy;
+    signinBtn.textContent = busy && mode === 'signin' ? 'Bezig...' : 'Inloggen';
+    signupBtn.textContent = busy && mode === 'signup' ? 'Bezig...' : 'Account aanmaken';
+  }
+
+  async function handle(action, mode) {
     error.hidden = true;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Bezig...';
-
-    const email = document.getElementById('email').value.trim();
-    try {
-      await sendMagicLink(email);
-      form.hidden = true;
-      success.hidden = false;
-    } catch (err) {
-      error.textContent = 'Kon login-link niet versturen: ' + err.message;
-      error.hidden = false;
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Stuur login-link';
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
     }
+    const { email, password } = readCredentials();
+    setBusy(true, mode);
+    try {
+      await action(email, password);
+      // app.js routes via onAuthStateChange after success
+    } catch (err) {
+      error.textContent = translateAuthError(err.message);
+      error.hidden = false;
+      setBusy(false);
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handle(signIn, 'signin');
   });
+
+  signupBtn.addEventListener('click', () => handle(signUp, 'signup'));
+}
+
+function translateAuthError(msg) {
+  if (!msg) return 'Onbekende fout.';
+  if (msg.includes('Invalid login credentials')) return 'Verkeerde combinatie van email en wachtwoord.';
+  if (msg.includes('User already registered')) return 'Dit account bestaat al — gebruik "Inloggen".';
+  if (msg.includes('Password should be at least')) return 'Wachtwoord moet minstens 6 tekens zijn.';
+  if (msg.includes('rate limit')) return 'Te veel pogingen. Wacht een minuut en probeer opnieuw.';
+  return msg;
 }
