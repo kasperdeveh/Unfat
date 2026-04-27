@@ -1,6 +1,7 @@
 import { getMyProfile } from '../db/profiles.js';
 import { listProfileHistory, getTargetForDate } from '../db/profile_history.js';
-import { listEntriesForDate } from '../db/entries.js';
+import { listEntriesForDate, deleteEntry, createEntry } from '../db/entries.js';
+import { openEditSheet } from './components/edit-entry-sheet.js';
 import { heroState, todayIso } from '../calc.js';
 import { isoDate, parseIso, formatDayLongNl, isSameDay, addDays } from '../utils/dates.js';
 import { navigate } from '../router.js';
@@ -168,12 +169,53 @@ export async function render(container, params) {
     });
   }
 
-  // Tap entry → opens edit-sheet (implemented in Task 13)
+  // Tap entry → opens edit-sheet
   container.querySelectorAll('.entry-row').forEach(row => {
     row.addEventListener('click', () => {
       const id = row.getAttribute('data-entry-id');
-      // TODO: openEditSheet(id) — added in Task 13
-      console.log('tap entry', id);
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return;
+      openEditSheet(id, entry, () => render(container, params));
+    });
+  });
+
+  // Swipe-to-delete with undo
+  container.querySelectorAll('.entry-row').forEach(row => {
+    let startX = null;
+    let dx = 0;
+
+    row.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      dx = 0;
+      row.style.transition = 'none';
+    }, { passive: true });
+
+    row.addEventListener('touchmove', (e) => {
+      if (startX == null) return;
+      dx = e.touches[0].clientX - startX;
+      if (dx < 0) {
+        row.style.transform = `translateX(${dx}px)`;
+      }
+    }, { passive: true });
+
+    row.addEventListener('touchend', async () => {
+      if (startX == null) return;
+      row.style.transition = 'transform 0.2s';
+      if (dx < -100) {
+        // Trigger delete
+        const id = row.getAttribute('data-entry-id');
+        const entry = entries.find(e => e.id === id);
+        if (entry) {
+          row.style.transform = 'translateX(-100%)';
+          await deleteEntry(id);
+          showUndoToast(entry, () => render(container, params));
+          await render(container, params);
+        }
+      } else {
+        row.style.transform = '';
+      }
+      startX = null;
+      dx = 0;
     });
   });
 }
@@ -192,4 +234,39 @@ function formatEntryMeta(entry) {
     return `${units} ${units === 1 ? 'stuk' : 'stuks'} · ${entry.kcal} kcal`;
   }
   return `${grams}g · ${entry.kcal} kcal`;
+}
+
+function showUndoToast(deletedEntry, onUndo) {
+  // Remove any existing undo-toast first
+  const existing = document.getElementById('undo-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'undo-toast';
+  toast.className = 'undo-toast';
+  toast.innerHTML = `<span>Verwijderd</span><button id="undo-btn">↶ Undo</button>`;
+  document.body.appendChild(toast);
+
+  let undone = false;
+  const timer = setTimeout(() => {
+    if (!undone) toast.remove();
+  }, 4000);
+
+  toast.querySelector('#undo-btn').addEventListener('click', async () => {
+    undone = true;
+    clearTimeout(timer);
+    toast.remove();
+    try {
+      await createEntry({
+        product_id: deletedEntry.products?.id || deletedEntry.product_id,
+        amount_grams: deletedEntry.amount_grams,
+        kcal: deletedEntry.kcal,
+        meal_type: deletedEntry.meal_type,
+        date: deletedEntry.date,
+      });
+      await onUndo();
+    } catch (err) {
+      console.warn('Undo failed:', err);
+    }
+  });
 }
