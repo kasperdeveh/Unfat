@@ -36,9 +36,10 @@ export async function upsertProfileHistory({ daily_target_kcal, daily_max_kcal, 
   return data;
 }
 
-// Pure helper: given a list of profile_history rows (ascending),
-// return the {target, max} that applied on `dateIso`.
-// Returns null if no row qualifies (date is before any history).
+// Pure helper: given a list of profile_history rows, return the {target, max}
+// that applied on `dateIso`. Returns null if no row qualifies.
+// IMPORTANT: `history` must be sorted ascending by valid_from
+// (as returned by listProfileHistory). The early-break exit relies on this.
 export function getTargetForDate(history, dateIso) {
   let result = null;
   for (const row of history) {
