@@ -53,6 +53,14 @@ export async function updateMyProfile({ daily_target_kcal, daily_max_kcal }) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated');
 
+  // Read current values to detect a real change.
+  const { data: current, error: readErr } = await supabase
+    .from('profiles')
+    .select('daily_target_kcal, daily_max_kcal')
+    .eq('id', session.user.id)
+    .maybeSingle();
+  if (readErr) throw readErr;
+
   const { data, error } = await supabase
     .from('profiles')
     .update({ daily_target_kcal, daily_max_kcal })
@@ -61,5 +69,22 @@ export async function updateMyProfile({ daily_target_kcal, daily_max_kcal }) {
     .single();
 
   if (error) throw error;
+
+  // Only write a new history row if at least one value actually changed.
+  // Best-effort: profile update already committed, no transactions.
+  if (!current ||
+      current.daily_target_kcal !== daily_target_kcal ||
+      current.daily_max_kcal !== daily_max_kcal) {
+    try {
+      await upsertProfileHistory({
+        daily_target_kcal,
+        daily_max_kcal,
+        valid_from: todayIso(),
+      });
+    } catch (e) {
+      console.warn('profile_history upsert failed', e);
+    }
+  }
+
   return data;
 }
