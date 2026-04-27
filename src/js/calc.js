@@ -33,7 +33,10 @@ export function formatDateNl(date = new Date()) {
   });
 }
 
-// Today as YYYY-MM-DD (for `entries.date` column).
+// Today as YYYY-MM-DD in LOCAL time (for `entries.date` column).
+// Earlier this used `toISOString()` which is UTC — that put entries from
+// the late evening (after local midnight UTC) on the wrong calendar day.
+import { isoDate } from './utils/dates.js';
 export function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return isoDate(new Date());
 }
