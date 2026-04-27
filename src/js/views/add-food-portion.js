@@ -31,6 +31,7 @@ export async function render(container, params) {
   let inputType = 'grams';   // 'grams' | 'units'
   let inputValue = supportsUnits ? 1 : 100;
   let selectedMeal = params.meal || guessMeal();
+  const dateParam = params.date || todayIso();
 
   container.innerHTML = `
     <div class="view-header">
@@ -63,11 +64,17 @@ export async function render(container, params) {
 
     <div style="height:16px;"></div>
 
-    <button class="btn" id="save-btn">Toevoegen aan vandaag</button>
+    <button class="btn" id="save-btn">Toevoegen${dateParam === todayIso() ? ' aan vandaag' : ''}</button>
     <p class="error" id="ap-error" hidden></p>
   `;
 
-  document.getElementById('back-btn').addEventListener('click', () => navigate('#/add'));
+  document.getElementById('back-btn').addEventListener('click', () => {
+    const qs = new URLSearchParams();
+    if (selectedMeal) qs.set('meal', selectedMeal);
+    if (dateParam !== todayIso()) qs.set('date', dateParam);
+    const q = qs.toString();
+    navigate(`#/add${q ? '?' + q : ''}`);
+  });
 
   // Type toggle
   document.getElementById('type-toggle').querySelectorAll('button').forEach(btn => {
@@ -129,15 +136,16 @@ export async function render(container, params) {
         amount_grams: grams,
         kcal,
         meal_type: selectedMeal,
-        date: todayIso(),
+        date: dateParam,
       });
       showToast(`Toegevoegd: ${kcal} kcal`);
-      navigate('#/');
+      const target = dateParam === todayIso() ? '#/' : `#/day?date=${dateParam}`;
+      navigate(target);
     } catch (err) {
       error.textContent = 'Kon niet opslaan: ' + err.message;
       error.hidden = false;
       saveBtn.disabled = false;
-      saveBtn.textContent = 'Toevoegen aan vandaag';
+      saveBtn.textContent = `Toevoegen${dateParam === todayIso() ? ' aan vandaag' : ''}`;
     }
   });
 }
