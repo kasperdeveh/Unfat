@@ -132,12 +132,15 @@ export async function render(container, params) {
               <span class="meal-sum">${items.length === 0 ? '' : sum}</span>
             </header>
             ${items.map(e => `
-              <div class="entry-row" data-entry-id="${e.id}">
-                <div class="entry-info">
-                  <div class="entry-name">${escapeHtml(e.products?.name || 'Onbekend')}</div>
-                  <div class="entry-meta">${formatEntryMeta(e)}</div>
+              <div class="entry-row-wrap">
+                <div class="entry-row-bg"><span>🗑 Verwijderen</span></div>
+                <div class="entry-row" data-entry-id="${e.id}">
+                  <div class="entry-info">
+                    <div class="entry-name">${escapeHtml(e.products?.name || 'Onbekend')}</div>
+                    <div class="entry-meta">${formatEntryMeta(e)}</div>
+                  </div>
+                  <span class="entry-chevron">›</span>
                 </div>
-                <span class="entry-chevron">›</span>
               </div>
             `).join('')}
             <button class="entry-add-btn" data-add-meal="${meal}">+ toevoegen</button>
