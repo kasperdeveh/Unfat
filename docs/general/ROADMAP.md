@@ -33,6 +33,15 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Barcode scannen via camera (gebruikt OFF voor product-data)
 - Eigen producten cache uitbreiden met OFF data
 
+### H. Statistieken & inzichten
+**Status:** open
+
+- Persoonlijke stats: "deze maand X keer doel overschreden / gehaald", "gemiddeld bevat je lunch het meeste calorieën"
+- Trends: dag/week/maand-gemiddelden
+- Verdeling per maaltijdtype
+- Eventueel grafieken (lijn voor dagtotalen, stacked bars voor maaltijden)
+- Bouwt voort op data uit sub-project C (historie)
+
 ### G. Wensenlijst voor de toekomst
 **Status:** open / nog niet ingepland
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-04-27
+- ROADMAP.md: added sub-project H (Statistieken & inzichten) for personal stats and trends, separated from sub-project E (motivation/badges)
+- Design spec for sub-project C (Historie & terugwerkende invoer) at `docs/superpowers/specs/2026-04-27-history-design.md` — hybrid architecture (date-aware dashboard + new Historie tab with week/month toggle), individual entry editing with bottom-sheet + swipe-to-delete-with-undo, new `profile_history` table for historically correct target/max colouring on backdated days
+
 ## 2026-04-26
 - Initial CLAUDE.md with project context, tech stack and conventions
 - ROADMAP.md filled with sub-project decomposition (A-G)
