@@ -50,4 +50,7 @@ echo "ccstatusline settings linked."
 git config --global user.name "Kasper"
 git config --global user.email "kasperheijnen@hotmail.com"
 
+# Auto-mode: "claude" start automatisch met auto mode aan
+grep -qxF 'alias claude="claude --enable-auto-mode"' ~/.bashrc || echo 'alias claude="claude --enable-auto-mode"' >> ~/.bashrc
+
 echo "=== Post-create setup voltooid ==="
