@@ -16,6 +16,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Vrienden zoeken, verzoek sturen, accepteren/weigeren
 - Voortgang van vrienden bekijken (dashboard naast elkaar)
 - **Vergelijk-widget op eigen dashboard**: kies een vooraf gekozen vriend, zie zijn/haar voortgang van vandaag direct naast die van jou (zonder naar aparte vrienden-pagina te gaan)
+- **Vrienden in historie/kalender**: stats van vrienden bekijken in week/maand-view. Vereist navigatie voorbij je eigen account-creatie (vrienden kunnen eerder begonnen zijn) — dag-view-pijl ‹ moet dan een vriend-context kennen
 - Maaltijden / producten overnemen van vrienden (één-klik kopiëren)
 - Competitie-element: bijv. wie blijft deze week vaakst binnen z'n doel
 
