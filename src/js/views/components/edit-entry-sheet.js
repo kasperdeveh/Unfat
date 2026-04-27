@@ -9,6 +9,9 @@ const MEAL_KEYS = ['breakfast', 'lunch', 'dinner', 'snack'];
 // Open the edit sheet for an existing entry.
 // onChange is called when entry was updated or deleted (so caller can reload).
 export async function openEditSheet(entryId, entry, onChange) {
+  // Guard against double-open: if a sheet is already in the DOM, ignore this call.
+  if (document.querySelector('.sheet-overlay')) return;
+
   // entry: { id, amount_grams, kcal, meal_type, products: { id, name, unit_grams, kcal_per_100g } }
   // products may not have kcal_per_100g loaded — fetch full product if needed.
   let product = entry.products;
