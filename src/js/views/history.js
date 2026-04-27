@@ -106,8 +106,12 @@ export async function render(container, params) {
     btn.addEventListener('click', () => {
       const newView = btn.getAttribute('data-view');
       if (newView === view) return;
-      // Pick a new start that aligns with the new period type for the same anchor date.
-      const newStart = newView === 'month' ? monthStart(start) : weekStart(start);
+      // Pick a new start that aligns with the new period type. Going week → month
+      // uses the Thursday of the week (ISO 8601 rule: a week belongs to the year
+      // and month containing its Thursday) so e.g. 30 mrt - 5 apr maps to april,
+      // not march.
+      const anchor = view === 'week' ? addDays(start, 3) : start;
+      const newStart = newView === 'month' ? monthStart(anchor) : weekStart(anchor);
       navigate(`#/history?view=${newView}&start=${isoDate(newStart)}`);
     });
   });
