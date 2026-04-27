@@ -104,36 +104,46 @@ export async function render(container, params) {
       ${heroBadge}
     </div>
 
-    <ul class="list" id="meal-list">
+    <div id="meal-list">
       ${MEAL_ORDER.map(meal => {
         const items = byMeal[meal];
         const sum = items.reduce((s, e) => s + e.kcal, 0);
-        const isEmpty = items.length === 0;
-        const itemsLabel = isEmpty
-          ? '<span class="kcal">+ toevoegen</span>'
-          : `<span class="kcal">${sum}</span>`;
-        const itemsList = isEmpty
-          ? ''
-          : `<div class="items">${items.map(e =>
-              `${escapeHtml(e.products?.name || 'Onbekend')} (${Math.round(e.amount_grams)}g)`
-            ).join(' · ')}</div>`;
         return `
-          <li class="meal-row ${isEmpty ? 'empty' : ''}" data-meal="${meal}">
-            <div>
-              <div>${MEAL_LABELS[meal]}</div>
-              ${itemsList}
-            </div>
-            ${itemsLabel}
-          </li>
+          <section class="meal-section" data-meal="${meal}">
+            <header class="meal-header">
+              <span class="meal-title">${MEAL_LABELS[meal]}</span>
+              <span class="meal-sum">${items.length === 0 ? '' : sum}</span>
+            </header>
+            ${items.map(e => `
+              <div class="entry-row" data-entry-id="${e.id}">
+                <div class="entry-info">
+                  <div class="entry-name">${escapeHtml(e.products?.name || 'Onbekend')}</div>
+                  <div class="entry-meta">${formatEntryMeta(e)}</div>
+                </div>
+                <span class="entry-chevron">›</span>
+              </div>
+            `).join('')}
+            <button class="entry-add-btn" data-add-meal="${meal}">+ toevoegen</button>
+          </section>
         `;
       }).join('')}
-    </ul>
+    </div>
   `;
 
-  container.querySelectorAll('.meal-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const meal = row.getAttribute('data-meal');
+  // + toevoegen per maaltijd
+  container.querySelectorAll('.entry-add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const meal = btn.getAttribute('data-add-meal');
       navigate(`#/add?meal=${meal}&date=${dateIso}`);
+    });
+  });
+
+  // Tap entry → opens edit-sheet (implemented in Task 13)
+  container.querySelectorAll('.entry-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.getAttribute('data-entry-id');
+      // TODO: openEditSheet(id) — added in Task 13
+      console.log('tap entry', id);
     });
   });
 }
@@ -142,4 +152,14 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
+}
+
+function formatEntryMeta(entry) {
+  const grams = Math.round(entry.amount_grams);
+  const unitGrams = entry.products?.unit_grams;
+  if (unitGrams) {
+    const units = +(grams / unitGrams).toFixed(1);
+    return `${units} ${units === 1 ? 'stuk' : 'stuks'} · ${entry.kcal} kcal`;
+  }
+  return `${grams}g · ${entry.kcal} kcal`;
 }
