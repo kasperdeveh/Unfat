@@ -26,9 +26,10 @@ const NAV_TABS = [
 export function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   const path = getPath();
-  // Show nav on all logged-in views including #/day.
+  // Show nav on all logged-in views including #/day. Filtering #/ out
+  // explicitly is more robust than slice(1) if NAV_TABS is ever reordered.
   const showNav = path === '#/' || path === '#/day' ||
-    NAV_TABS.slice(1).some(t => path === t.hash || path.startsWith(t.hash + '/'));
+    NAV_TABS.filter(t => t.hash !== '#/').some(t => path === t.hash || path.startsWith(t.hash + '/'));
 
   if (!showNav) {
     nav.hidden = true;
