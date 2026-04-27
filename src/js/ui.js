@@ -14,18 +14,21 @@ export function showToast(message, ms = 2500) {
 }
 
 // =====================================================================
-// Bottom nav — 3 tabs. Hidden on login/onboarding.
+// Bottom nav — 4 tabs. Hidden on login/onboarding.
 // =====================================================================
 const NAV_TABS = [
   { hash: '#/',         label: 'Home' },
   { hash: '#/add',      label: 'Voeg toe' },
+  { hash: '#/history',  label: 'Historie' },
   { hash: '#/settings', label: 'Settings' },
 ];
 
 export function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   const path = getPath();
-  const showNav = NAV_TABS.some(t => path === t.hash || path.startsWith(t.hash + '/') || (t.hash === '#/' && path === '#/'));
+  // Show nav on all logged-in views including #/day.
+  const showNav = path === '#/' || path === '#/day' ||
+    NAV_TABS.slice(1).some(t => path === t.hash || path.startsWith(t.hash + '/'));
 
   if (!showNav) {
     nav.hidden = true;
@@ -36,9 +39,9 @@ export function renderBottomNav() {
   nav.innerHTML = '';
 
   for (const tab of NAV_TABS) {
-    const isActive =
-      (tab.hash === '#/' && path === '#/') ||
-      (tab.hash !== '#/' && (path === tab.hash || path.startsWith(tab.hash + '/')));
+    let isActive;
+    if (tab.hash === '#/') isActive = (path === '#/' || path === '#/day');
+    else isActive = (path === tab.hash || path.startsWith(tab.hash + '/'));
 
     const btn = document.createElement('div');
     btn.className = 'nav-item' + (isActive ? ' active' : '');
