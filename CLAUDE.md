@@ -26,6 +26,11 @@ Wanneer je zelf voorstelt om iets op een later moment op te pakken (een feature 
 ## Plugins
 - Gebruik altijd de **superpowers** plugin voor brainstorming, planning, debugging en code review
 
+## Specs en plans archiveren
+Houd de werkdirectories `docs/superpowers/specs/` en `docs/superpowers/plans/` overzichtelijk door afgeronde documenten naar de `done/`-submap te verplaatsen. Doe dit automatisch — de gebruiker hoeft er niet om te vragen.
+- **Spec → `specs/done/`**: zodra een spec is uitgewerkt naar een implementatie-plan (writing-plans skill is afgerond). Gebruik `git mv` zodat git de rename volgt.
+- **Plan → `plans/done/`**: zodra alle taken in het plan zijn geïmplementeerd en de feature af is (typisch tijdens finishing-a-development-branch, vlak voor of ná de CHANGELOG/ROADMAP-update).
+
 ## Projectstructuur
 - `src/` - Web app (HTML, CSS, JS) — wordt vanaf src/ gehost
 - `docs/general/` - Algemene documentatie (CHANGELOG, ROADMAP)
