@@ -81,9 +81,42 @@ const authReady = new Promise((resolve) => {
 // the SW manually), so skip it on localhost.
 const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 if ('serviceWorker' in navigator && !isLocalhost) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch((err) => {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js');
+
+      // When the SW finds a new version, an `updatefound` event fires.
+      // Once the new worker reaches `installed` AND there is already a
+      // controller, that means we just upgraded — show an update prompt.
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdatePrompt();
+          }
+        });
+      });
+
+      // Browsers update SWs on their own schedule (~24h). Speed it up by
+      // checking when the user returns to the app.
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) reg.update();
+      });
+    } catch (err) {
       console.warn('SW registration failed:', err);
-    });
+    }
+  });
+}
+
+function showUpdatePrompt() {
+  if (document.getElementById('update-toast')) return;
+  const toast = document.createElement('div');
+  toast.id = 'update-toast';
+  toast.className = 'update-toast';
+  toast.innerHTML = `<span>Nieuwe versie beschikbaar</span><button id="update-btn">Vernieuwen</button>`;
+  document.body.appendChild(toast);
+  toast.querySelector('#update-btn').addEventListener('click', () => {
+    window.location.reload();
   });
 }

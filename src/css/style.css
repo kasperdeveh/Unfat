@@ -439,6 +439,36 @@ button, input {
 }
 
 /* =========================================================================
+   Update prompt — appears bottom of screen when a new SW is ready
+   ========================================================================= */
+.update-toast {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #15151a;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  z-index: 91;
+  border: 1px solid rgba(0,230,118,0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  font-size: 13px;
+}
+.update-toast button {
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =========================================================================
    Undo toast (separate from existing #toast — appears with button)
    ========================================================================= */
 .undo-toast {
