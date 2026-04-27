@@ -64,10 +64,10 @@ export async function render(container, params) {
       : `Week ${wnr} · <button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
   }
 
-  // Determine arrow availability.
+  // Determine arrow availability. ISO-string compare avoids time-of-day drift.
   const prevStart = view === 'month' ? addMonths(start, -1) : addDays(start, -7);
   const nextStart = view === 'month' ? addMonths(start, 1) : addDays(start, 7);
-  const nextDisabled = nextStart > today;
+  const nextDisabled = isoDate(nextStart) > isoDate(today);
 
   container.innerHTML = `
     <div class="history-toggle">
@@ -107,8 +107,7 @@ export async function render(container, params) {
       const newView = btn.getAttribute('data-view');
       if (newView === view) return;
       // Pick a new start that aligns with the new period type for the same anchor date.
-      const anchor = view === 'month' ? start : start;
-      const newStart = newView === 'month' ? monthStart(anchor) : weekStart(anchor);
+      const newStart = newView === 'month' ? monthStart(start) : weekStart(start);
       navigate(`#/history?view=${newView}&start=${isoDate(newStart)}`);
     });
   });
