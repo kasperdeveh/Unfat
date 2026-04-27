@@ -163,8 +163,8 @@ export async function render(container, params) {
   const nextBtn = container.querySelector('#next-day');
   if (nextBtn && !nextBtn.disabled) {
     nextBtn.addEventListener('click', () => {
-      const target = isSameDay(next, new Date()) ? '#/' : `#/day?date=${isoDate(next)}`;
-      navigate(target);
+      const nextRoute = isSameDay(next, new Date()) ? '#/' : `#/day?date=${isoDate(next)}`;
+      navigate(nextRoute);
     });
   }
 
