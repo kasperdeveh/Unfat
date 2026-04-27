@@ -1,6 +1,6 @@
 import { supabase } from '../supabase.js';
 import { upsertProfileHistory } from './profile_history.js';
-import { isoDate } from '../utils/dates.js';
+import { todayIso } from '../calc.js';
 
 export async function getMyProfile() {
   const { data: { session } } = await supabase.auth.getSession();
@@ -33,11 +33,18 @@ export async function createMyProfile({ daily_target_kcal, daily_max_kcal }) {
   if (error) throw error;
 
   // Seed profile_history with today's snapshot so backdated lookups work.
-  await upsertProfileHistory({
-    daily_target_kcal,
-    daily_max_kcal,
-    valid_from: isoDate(new Date()),
-  });
+  // Best-effort: profile is already committed, no transactions available.
+  // A missing row only affects history colour coding; T6 (settings save)
+  // will write a row on the first goal change as natural recovery.
+  try {
+    await upsertProfileHistory({
+      daily_target_kcal,
+      daily_max_kcal,
+      valid_from: todayIso(),
+    });
+  } catch (e) {
+    console.warn('profile_history seed failed; will recover on next settings save', e);
+  }
 
   return data;
 }
