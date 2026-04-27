@@ -30,7 +30,7 @@ export async function openEditSheet(entryId, entry, onChange) {
   const overlay = document.createElement('div');
   overlay.className = 'sheet-overlay';
   overlay.innerHTML = `
-    <div class="sheet" role="dialog" aria-label="Entry bewerken">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Entry bewerken">
       <div class="sheet-handle"></div>
       <div class="sheet-title">${escapeHtml(product.name)}</div>
       <div class="sheet-subtitle">${product.kcal_per_100g} kcal/100g${product.unit_grams ? ` · ${product.unit_grams}g/stuk` : ''}</div>
