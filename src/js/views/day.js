@@ -169,20 +169,21 @@ export async function render(container, params) {
     });
   }
 
-  // Tap entry → opens edit-sheet
+  // Tap = edit-sheet, swipe-left = delete with undo.
+  // Both handlers share `swiped` so the synthesized click on iOS Safari
+  // after a swipe-delete does not also trigger openEditSheet.
   container.querySelectorAll('.entry-row').forEach(row => {
+    let startX = null;
+    let dx = 0;
+    let swiped = false;
+
     row.addEventListener('click', () => {
+      if (swiped) return; // suppress synthetic click after swipe
       const id = row.getAttribute('data-entry-id');
       const entry = entries.find(e => e.id === id);
       if (!entry) return;
       openEditSheet(id, entry, () => render(container, params));
     });
-  });
-
-  // Swipe-to-delete with undo
-  container.querySelectorAll('.entry-row').forEach(row => {
-    let startX = null;
-    let dx = 0;
 
     row.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
@@ -202,7 +203,7 @@ export async function render(container, params) {
       if (startX == null) return;
       row.style.transition = 'transform 0.2s';
       if (dx < -100) {
-        // Trigger delete
+        swiped = true;
         const id = row.getAttribute('data-entry-id');
         const entry = entries.find(e => e.id === id);
         if (entry) {

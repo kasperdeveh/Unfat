@@ -67,12 +67,6 @@ export async function deleteEntry(id) {
   if (error) throw error;
 }
 
-// Re-insert an entry from its full data (used for undo).
-// Same as createEntry but allows passing all fields including a future re-insert.
-export async function reinsertEntry({ product_id, amount_grams, kcal, meal_type, date }) {
-  return createEntry({ product_id, amount_grams, kcal, meal_type, date });
-}
-
 // Entries between two ISO dates (inclusive). Used for week/month aggregation.
 export async function listEntriesForDateRange(startIso, endIso) {
   const { data: { session } } = await supabase.auth.getSession();
