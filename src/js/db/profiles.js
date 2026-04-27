@@ -1,4 +1,6 @@
 import { supabase } from '../supabase.js';
+import { upsertProfileHistory } from './profile_history.js';
+import { todayIso } from '../calc.js';
 
 export async function getMyProfile() {
   const { data: { session } } = await supabase.auth.getSession();
@@ -29,12 +31,35 @@ export async function createMyProfile({ daily_target_kcal, daily_max_kcal }) {
     .single();
 
   if (error) throw error;
+
+  // Seed profile_history with today's snapshot so backdated lookups work.
+  // Best-effort: profile is already committed, no transactions available.
+  // A missing row only affects history colour coding; T6 (settings save)
+  // will write a row on the first goal change as natural recovery.
+  try {
+    await upsertProfileHistory({
+      daily_target_kcal,
+      daily_max_kcal,
+      valid_from: todayIso(),
+    });
+  } catch (e) {
+    console.warn('profile_history seed failed; will recover on next settings save', e);
+  }
+
   return data;
 }
 
 export async function updateMyProfile({ daily_target_kcal, daily_max_kcal }) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated');
+
+  // Read current values to detect a real change.
+  const { data: current, error: readErr } = await supabase
+    .from('profiles')
+    .select('daily_target_kcal, daily_max_kcal')
+    .eq('id', session.user.id)
+    .maybeSingle();
+  if (readErr) throw readErr;
 
   const { data, error } = await supabase
     .from('profiles')
@@ -44,5 +69,22 @@ export async function updateMyProfile({ daily_target_kcal, daily_max_kcal }) {
     .single();
 
   if (error) throw error;
+
+  // Only write a new history row if at least one value actually changed.
+  // Best-effort: profile update already committed, no transactions.
+  if (!current ||
+      current.daily_target_kcal !== daily_target_kcal ||
+      current.daily_max_kcal !== daily_max_kcal) {
+    try {
+      await upsertProfileHistory({
+        daily_target_kcal,
+        daily_max_kcal,
+        valid_from: todayIso(),
+      });
+    } catch (e) {
+      console.warn('profile_history upsert failed', e);
+    }
+  }
+
   return data;
 }

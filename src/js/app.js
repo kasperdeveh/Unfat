@@ -5,13 +5,15 @@ import { renderBottomNav } from './ui.js';
 // Register routes — view modules are loaded lazily.
 defineRoute('#/login',          () => import('./views/login.js'));
 defineRoute('#/onboarding',     () => import('./views/onboarding.js'));
-defineRoute('#/',               () => import('./views/dashboard.js'));
+defineRoute('#/',               () => import('./views/day.js'));
+defineRoute('#/day',            () => import('./views/day.js'));
+defineRoute('#/history',        () => import('./views/history.js'));
 defineRoute('#/add',            () => import('./views/add-food.js'));
 defineRoute('#/add/portion',    () => import('./views/add-food-portion.js'));
 defineRoute('#/add/new',        () => import('./views/add-food-new.js'));
 defineRoute('#/settings',       () => import('./views/settings.js'));
 
-const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/add', '#/add/portion', '#/add/new', '#/settings'];
+const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/day', '#/history', '#/add', '#/add/portion', '#/add/new', '#/settings'];
 
 // Determine where the user should be based on their session and profile state.
 // Returns the target hash, or null if the current route is fine.

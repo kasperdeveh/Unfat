@@ -2,7 +2,8 @@ import { listProducts } from '../db/products.js';
 import { navigate } from '../router.js';
 
 export async function render(container, params) {
-  const meal = params.meal || ''; // optional pre-selected meal
+  const meal = params.meal || '';
+  const dateParam = params.date || '';
 
   container.innerHTML = `
     <div class="view-header">
@@ -24,10 +25,15 @@ export async function render(container, params) {
     </button>
   `;
 
-  document.getElementById('back-btn').addEventListener('click', () => navigate('#/'));
+  document.getElementById('back-btn').addEventListener('click', () => {
+    navigate(dateParam ? `#/day?date=${dateParam}` : '#/');
+  });
   document.getElementById('new-btn').addEventListener('click', () => {
-    const q = meal ? `?meal=${meal}` : '';
-    navigate(`#/add/new${q}`);
+    const qs = new URLSearchParams();
+    if (meal) qs.set('meal', meal);
+    if (dateParam) qs.set('date', dateParam);
+    const q = qs.toString();
+    navigate(`#/add/new${q ? '?' + q : ''}`);
   });
 
   let products = [];
@@ -66,8 +72,10 @@ export async function render(container, params) {
     resultsEl.querySelectorAll('.meal-row').forEach(row => {
       row.addEventListener('click', () => {
         const id = row.getAttribute('data-id');
-        const q = meal ? `&meal=${meal}` : '';
-        navigate(`#/add/portion?product=${id}${q}`);
+        const qs = new URLSearchParams({ product: id });
+        if (meal) qs.set('meal', meal);
+        if (dateParam) qs.set('date', dateParam);
+        navigate(`#/add/portion?${qs}`);
       });
     });
   }

@@ -3,6 +3,7 @@ import { navigate } from '../router.js';
 
 export async function render(container, params) {
   const meal = params.meal || '';
+  const dateParam = params.date || '';
 
   container.innerHTML = `
     <div class="view-header">
@@ -36,8 +37,11 @@ export async function render(container, params) {
   `;
 
   document.getElementById('back-btn').addEventListener('click', () => {
-    const q = meal ? `?meal=${meal}` : '';
-    navigate(`#/add${q}`);
+    const qs = new URLSearchParams();
+    if (meal) qs.set('meal', meal);
+    if (dateParam) qs.set('date', dateParam);
+    const q = qs.toString();
+    navigate(`#/add${q ? '?' + q : ''}`);
   });
 
   const form = document.getElementById('new-product-form');
@@ -62,8 +66,10 @@ export async function render(container, params) {
         kcal_per_100g: kcal,
         unit_grams,
       });
-      const q = meal ? `&meal=${meal}` : '';
-      navigate(`#/add/portion?product=${product.id}${q}`);
+      const qs = new URLSearchParams({ product: product.id });
+      if (meal) qs.set('meal', meal);
+      if (dateParam) qs.set('date', dateParam);
+      navigate(`#/add/portion?${qs}`);
     } catch (err) {
       error.textContent = 'Kon product niet opslaan: ' + err.message;
       error.hidden = false;

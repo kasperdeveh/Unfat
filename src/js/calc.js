@@ -24,16 +24,10 @@ export function heroState(consumedKcal, targetKcal, maxKcal) {
   return 'green';
 }
 
-// Format date as Dutch long form, e.g. "vrijdag 26 april".
-export function formatDateNl(date = new Date()) {
-  return date.toLocaleDateString('nl-NL', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
-}
-
-// Today as YYYY-MM-DD (for `entries.date` column).
+// Today as YYYY-MM-DD in LOCAL time (for `entries.date` column).
+// Earlier this used `toISOString()` which is UTC — that put entries from
+// the late evening (after local midnight UTC) on the wrong calendar day.
+import { isoDate } from './utils/dates.js';
 export function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return isoDate(new Date());
 }

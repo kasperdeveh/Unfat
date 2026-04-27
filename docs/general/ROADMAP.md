@@ -4,18 +4,13 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 
 ## Sub-projecten
 
-### C. Historie & terugwerkende invoer
-**Status:** open
-
-- Eerdere dagen / weken / maanden bekijken
-- Invoer wijzigen of toevoegen voor dagen in het verleden
-
 ### D. Vrienden & sociale features
 **Status:** open
 
 - Vrienden zoeken, verzoek sturen, accepteren/weigeren
 - Voortgang van vrienden bekijken (dashboard naast elkaar)
 - **Vergelijk-widget op eigen dashboard**: kies een vooraf gekozen vriend, zie zijn/haar voortgang van vandaag direct naast die van jou (zonder naar aparte vrienden-pagina te gaan)
+- **Vrienden in historie/kalender**: stats van vrienden bekijken in week/maand-view. Vereist navigatie voorbij je eigen account-creatie (vrienden kunnen eerder begonnen zijn) — dag-view-pijl ‹ moet dan een vriend-context kennen
 - Maaltijden / producten overnemen van vrienden (één-klik kopiëren)
 - Competitie-element: bijv. wie blijft deze week vaakst binnen z'n doel
 
@@ -67,3 +62,4 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 |-------|------|
 | 2026-04-26 | A. Foundation (Supabase, Auth via magic link, PWA, GitHub Pages deploy) |
 | 2026-04-26 | B. Solo tracking MVP (dashboard, gedeelde producten, invoer, doelen) |
+| 2026-04-27 | C. Historie & terugwerkende invoer (date-aware day-view met ‹ › nav, Historie-tab met week/maand toggle + anchor-stable navigation, individuele entry-rijen met edit-sheet + swipe-undo, `profile_history` tabel voor historisch correcte target/max-snapshots) |
