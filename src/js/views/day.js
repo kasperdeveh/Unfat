@@ -60,7 +60,7 @@ export async function render(container, params) {
   for (const e of entries) byMeal[e.meal_type].push(e);
 
   // Hero text varies for today vs past
-  let heroLabel, heroNum;
+  let heroLabel, heroNum, heroBadge = '';
   if (isToday) {
     if (state === 'green') {
       heroLabel = 'Nog beschikbaar';
@@ -68,9 +68,11 @@ export async function render(container, params) {
     } else if (state === 'orange') {
       heroLabel = 'Boven streefdoel';
       heroNum = `+${overTarget}<small> kcal</small>`;
+      heroBadge = `<div class="hero-badge">⚠ Let op je max</div>`;
     } else {
       heroLabel = 'Max overschreden';
       heroNum = `+${overMax}<small> kcal boven max</small>`;
+      heroBadge = `<div class="hero-badge">🚫 Max overschreden</div>`;
     }
   } else {
     if (state === 'green') {
@@ -89,7 +91,7 @@ export async function render(container, params) {
 
   container.innerHTML = `
     <h1 class="page-title">${isToday ? 'Vandaag' : formatDayLongNl(date)}</h1>
-    <p class="page-subtitle">${isToday ? formatDayLongNl(date) : ''}</p>
+    ${isToday ? `<p class="page-subtitle">${formatDayLongNl(date)}</p>` : ''}
 
     <div class="hero hero-${state}">
       <div class="hero-label">${heroLabel}</div>
@@ -99,6 +101,7 @@ export async function render(container, params) {
         <span>${totalKcal} gehad</span>
         <span>max ${max}</span>
       </div>
+      ${heroBadge}
     </div>
 
     <ul class="list" id="meal-list">
