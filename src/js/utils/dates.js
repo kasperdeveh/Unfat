@@ -48,7 +48,7 @@ export function addDays(d, n) {
   return r;
 }
 
-// Add months (returns new Date, clamps to last day if needed).
+// Add n months; always returns the 1st of the target month (used for month navigation).
 export function addMonths(d, n) {
   return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
