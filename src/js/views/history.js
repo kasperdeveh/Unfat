@@ -3,7 +3,7 @@ import { listProfileHistory } from '../db/profile_history.js';
 import { listEntriesForDateRange } from '../db/entries.js';
 import {
   parseIso, isoDate, weekStart, weekEnd, monthStart, monthEnd,
-  addDays, addMonths, isoWeekNumber, formatWeekRangeNl, formatMonthNl, isSameDay,
+  addDays, addMonthsKeepDay, isoWeekNumber, formatWeekRangeNl, formatMonthNl,
 } from '../utils/dates.js';
 import { renderWeekRows, computeWeekStats } from './components/week-view.js';
 import { renderMonthGrid, computeMonthStats } from './components/month-view.js';
@@ -13,17 +13,26 @@ export async function render(container, params) {
   const view = params?.view === 'month' ? 'month' : 'week';
   const today = new Date();
 
-  // Default start = current week-start or month-start.
-  let start;
-  if (params?.start) {
-    start = parseIso(params.start);
+  // Anchor = a representative day. Survives toggles, moves with arrows so
+  // toggling Week ↔ Maand keeps you in the same neighbourhood. Defaults to
+  // today on first load. Legacy `start` param is converted to a sensible
+  // anchor for back-compat with old links.
+  let anchor;
+  if (params?.anchor) {
+    anchor = parseIso(params.anchor);
+  } else if (params?.start) {
+    const s = parseIso(params.start);
+    // Pick mid-period so weekStart/monthStart of it stays inside.
+    anchor = view === 'week' ? addDays(s, 3) : addDays(s, 14);
   } else {
-    start = view === 'month' ? monthStart(today) : weekStart(today);
+    anchor = today;
   }
+
+  // Period start derived from anchor.
+  const start = view === 'month' ? monthStart(anchor) : weekStart(anchor);
 
   container.innerHTML = `<p class="text-muted" style="padding:1rem 0;">Laden...</p>`;
 
-  // Determine date range to query.
   const rangeStart = view === 'month' ? monthStart(start) : weekStart(start);
   const rangeEnd = view === 'month' ? monthEnd(start) : weekEnd(start);
 
@@ -42,12 +51,13 @@ export async function render(container, params) {
   const fbTarget = profile.daily_target_kcal;
   const fbMax = profile.daily_max_kcal;
 
-  // Compute period stats.
   const stats = view === 'month'
     ? computeMonthStats(start, entries, history, fbTarget, fbMax)
     : computeWeekStats(start, entries, history, fbTarget, fbMax);
 
-  // Period title + sub-label
+  // Period title + sub-label (with today-pill if not current period)
+  const todayIso = isoDate(today);
+  const startIso = isoDate(start);
   let title, sub, isCurrent;
   if (view === 'month') {
     title = formatMonthNl(start);
@@ -57,17 +67,18 @@ export async function render(container, params) {
       : `<button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
   } else {
     title = formatWeekRangeNl(start);
-    isCurrent = isSameDay(start, weekStart(today));
+    isCurrent = startIso === isoDate(weekStart(today));
     const wnr = isoWeekNumber(start);
     sub = isCurrent
       ? `Week ${wnr} · deze week`
       : `Week ${wnr} · <button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
   }
 
-  // Determine arrow availability. ISO-string compare avoids time-of-day drift.
-  const prevStart = view === 'month' ? addMonths(start, -1) : addDays(start, -7);
-  const nextStart = view === 'month' ? addMonths(start, 1) : addDays(start, 7);
-  const nextDisabled = isoDate(nextStart) > isoDate(today);
+  // Arrow targets shift the anchor by one period. ISO-string compare for time-of-day robustness.
+  const prevAnchor = view === 'month' ? addMonthsKeepDay(anchor, -1) : addDays(anchor, -7);
+  const nextAnchor = view === 'month' ? addMonthsKeepDay(anchor, 1) : addDays(anchor, 7);
+  const nextStart = view === 'month' ? monthStart(nextAnchor) : weekStart(nextAnchor);
+  const nextDisabled = isoDate(nextStart) > todayIso;
 
   container.innerHTML = `
     <div class="history-toggle">
@@ -101,39 +112,32 @@ export async function render(container, params) {
     }
   `;
 
-  // Toggle handlers
+  // Toggle handlers — anchor stays the same, only view changes.
   container.querySelectorAll('.history-toggle button').forEach(btn => {
     btn.addEventListener('click', () => {
       const newView = btn.getAttribute('data-view');
       if (newView === view) return;
-      // Pick a new start that aligns with the new period type. Going week → month
-      // uses the Thursday of the week (ISO 8601 rule: a week belongs to the year
-      // and month containing its Thursday) so e.g. 30 mrt - 5 apr maps to april,
-      // not march.
-      const anchor = view === 'week' ? addDays(start, 3) : start;
-      const newStart = newView === 'month' ? monthStart(anchor) : weekStart(anchor);
-      navigate(`#/history?view=${newView}&start=${isoDate(newStart)}`);
+      navigate(`#/history?view=${newView}&anchor=${isoDate(anchor)}`);
     });
   });
 
-  // Period arrows
+  // Period arrows — shift anchor, view stays.
   container.querySelector('#prev-period').addEventListener('click', () => {
-    navigate(`#/history?view=${view}&start=${isoDate(prevStart)}`);
+    navigate(`#/history?view=${view}&anchor=${isoDate(prevAnchor)}`);
   });
   const nextBtn = container.querySelector('#next-period');
   if (nextBtn && !nextBtn.disabled) {
     nextBtn.addEventListener('click', () => {
-      navigate(`#/history?view=${view}&start=${isoDate(nextStart)}`);
+      navigate(`#/history?view=${view}&anchor=${isoDate(nextAnchor)}`);
     });
   }
 
-  // Today pill
+  // Today pill — anchor = today, view stays.
   const todayBtn = container.querySelector('#today-pill');
   if (todayBtn) {
     todayBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const target = view === 'month' ? monthStart(today) : weekStart(today);
-      navigate(`#/history?view=${view}&start=${isoDate(target)}`);
+      navigate(`#/history?view=${view}&anchor=${todayIso}`);
     });
   }
 

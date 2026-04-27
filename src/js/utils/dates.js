@@ -53,6 +53,15 @@ export function addMonths(d, n) {
   return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
 
+// Add n months while keeping the day-of-month, clamped to last day of the target.
+// E.g. 31 jan + 1 month → 28/29 feb. Used for shifting an anchor across months.
+export function addMonthsKeepDay(d, n) {
+  const y = d.getFullYear();
+  const m = d.getMonth() + n;
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  return new Date(y, m, Math.min(d.getDate(), lastDay));
+}
+
 // ISO 8601 week number for given date.
 export function isoWeekNumber(d) {
   const target = new Date(d.valueOf());
