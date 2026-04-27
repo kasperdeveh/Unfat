@@ -1,4 +1,6 @@
 import { supabase } from '../supabase.js';
+import { upsertProfileHistory } from './profile_history.js';
+import { isoDate } from '../utils/dates.js';
 
 export async function getMyProfile() {
   const { data: { session } } = await supabase.auth.getSession();
@@ -29,6 +31,14 @@ export async function createMyProfile({ daily_target_kcal, daily_max_kcal }) {
     .single();
 
   if (error) throw error;
+
+  // Seed profile_history with today's snapshot so backdated lookups work.
+  await upsertProfileHistory({
+    daily_target_kcal,
+    daily_max_kcal,
+    valid_from: isoDate(new Date()),
+  });
+
   return data;
 }
 
