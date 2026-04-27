@@ -345,14 +345,35 @@ button, input {
 }
 .meal-title { font-weight: 600; }
 .meal-sum { color: #888; font-size: 13px; }
+/* Row wraps a red "delete" cue that shows while the user swipes left. */
+.entry-row-wrap {
+  position: relative;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.entry-row-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #ef5350, #c62828);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  pointer-events: none;
+}
 .entry-row {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 14px;
-  background: rgba(255,255,255,0.04);
+  /* Opaque so the red cue underneath stays hidden until the row slides left. */
+  background: #15151a;
   border-radius: 8px;
-  margin-bottom: 6px;
   cursor: pointer;
   user-select: none;
 }
