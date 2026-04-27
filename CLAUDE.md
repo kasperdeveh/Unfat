@@ -60,6 +60,8 @@ This is a vanilla HTML/CSS/JavaScript web application. There is no build step.
 
 **Testing:** Geen geautomatiseerde tests opgezet. Handmatig testen in browser via Live Server. Pas tests opzetten als blijkt dat we iets vaak breken.
 
+**Service worker cache (PWA):** Bij elke deploy waarbij een static asset wijzigt (CSS, JS, HTML, manifest, of de SW zelf) MOET `CACHE_NAME` in `src/sw.js` worden bumped (bv. `unfat-v4` → `unfat-v5`). Dit triggert het update-prompt-mechanisme in `app.js`, waardoor bestaande gebruikers een "Nieuwe versie beschikbaar"-toast zien en in 1 tap kunnen verversen. Zonder bump blijven gebruikers op de oude cache zitten tot ze handmatig hun cache legen.
+
 ## Devcontainer
 - Pas NOOIT `.devcontainer/devcontainer.json` aan zonder expliciete toestemming
 - Pas NOOIT `.devcontainer/post-create.sh` aan zonder expliciete toestemming
