@@ -2,8 +2,9 @@ import { getMyProfile } from '../db/profiles.js';
 import { listProfileHistory, getTargetForDate } from '../db/profile_history.js';
 import { listEntriesForDate } from '../db/entries.js';
 import { heroState, todayIso } from '../calc.js';
-import { isoDate, parseIso, formatDayLongNl, isSameDay } from '../utils/dates.js';
+import { isoDate, parseIso, formatDayLongNl, isSameDay, addDays } from '../utils/dates.js';
 import { navigate } from '../router.js';
+import { supabase } from '../supabase.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -48,6 +49,15 @@ export async function render(container, params) {
     max = t?.max ?? profile.daily_max_kcal;
   }
 
+  // Determine arrow availability.
+  // `›` disabled after today; `‹` disabled at/before account creation date.
+  const { data: { session } } = await supabase.auth.getSession();
+  const accountCreated = parseIso(session.user.created_at.slice(0, 10));
+  const prev = addDays(date, -1);
+  const next = addDays(date, 1);
+  const prevDisabled = prev < accountCreated;
+  const nextDisabled = next > new Date();
+
   const totalKcal = entries.reduce((sum, e) => sum + e.kcal, 0);
   const remaining = target - totalKcal;
   const overTarget = totalKcal - target;
@@ -90,8 +100,14 @@ export async function render(container, params) {
   const barPct = target > 0 ? Math.min(100, Math.round(totalKcal / target * 100)) : 0;
 
   container.innerHTML = `
-    <h1 class="page-title">${isToday ? 'Vandaag' : formatDayLongNl(date)}</h1>
-    ${isToday ? `<p class="page-subtitle">${formatDayLongNl(date)}</p>` : ''}
+    <div class="day-nav">
+      <button class="day-nav-btn" id="prev-day" ${prevDisabled ? 'disabled' : ''}>‹</button>
+      <div class="day-nav-title">
+        <h1 class="page-title">${isToday ? 'Vandaag' : formatDayLongNl(date)}</h1>
+        ${isToday ? `<p class="page-subtitle">${formatDayLongNl(date)}</p>` : ''}
+      </div>
+      <button class="day-nav-btn" id="next-day" ${nextDisabled ? 'disabled' : ''}>›</button>
+    </div>
 
     <div class="hero hero-${state}">
       <div class="hero-label">${heroLabel}</div>
@@ -137,6 +153,20 @@ export async function render(container, params) {
       navigate(`#/add?meal=${meal}&date=${dateIso}`);
     });
   });
+
+  const prevBtn = container.querySelector('#prev-day');
+  if (prevBtn && !prevBtn.disabled) {
+    prevBtn.addEventListener('click', () => {
+      navigate(`#/day?date=${isoDate(prev)}`);
+    });
+  }
+  const nextBtn = container.querySelector('#next-day');
+  if (nextBtn && !nextBtn.disabled) {
+    nextBtn.addEventListener('click', () => {
+      const target = isSameDay(next, new Date()) ? '#/' : `#/day?date=${isoDate(next)}`;
+      navigate(target);
+    });
+  }
 
   // Tap entry → opens edit-sheet (implemented in Task 13)
   container.querySelectorAll('.entry-row').forEach(row => {
