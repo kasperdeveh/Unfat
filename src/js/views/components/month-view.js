@@ -1,4 +1,4 @@
-import { addDays, monthStart, monthEnd, isoDate, isSameDay } from '../../utils/dates.js';
+import { addDays, monthStart, monthEnd, isoDate } from '../../utils/dates.js';
 import { heroState } from '../../calc.js';
 import { getTargetForDate } from '../../db/profile_history.js';
 
@@ -6,8 +6,7 @@ import { getTargetForDate } from '../../db/profile_history.js';
 // Cells: weekday header row + grid with leading/trailing days from neighbour months greyed out.
 export function renderMonthGrid(monthDate, entries, history, fallbackTarget, fallbackMax) {
   const start = monthStart(monthDate);
-  const end = monthEnd(monthDate);
-  const today = new Date();
+  const todayIso = isoDate(new Date());
 
   // Calendar starts from Monday of the week containing `start`.
   const firstWeekday = start.getDay(); // 0=Sun
@@ -23,8 +22,9 @@ export function renderMonthGrid(monthDate, entries, history, fallbackTarget, fal
     const total = dayEntries.reduce((s, e) => s + e.kcal, 0);
     const t = getTargetForDate(history, iso) || { target: fallbackTarget, max: fallbackMax };
     const state = !inMonth ? 'outside' : (total === 0 ? 'empty' : heroState(total, t.target, t.max));
-    const isToday = isSameDay(d, today);
-    const isFuture = d > today;
+    // ISO-string compare for time-of-day robustness (matches week-view).
+    const isToday = iso === todayIso;
+    const isFuture = iso > todayIso;
 
     cells.push(`
       <div class="month-cell ${state}${isToday ? ' today' : ''}${isFuture ? ' future' : ''}"
@@ -47,13 +47,14 @@ export function renderMonthGrid(monthDate, entries, history, fallbackTarget, fal
 // Stats for the displayed month (avg kcal, days met).
 export function computeMonthStats(monthDate, entries, history, fallbackTarget, fallbackMax) {
   const start = monthStart(monthDate);
-  const end = monthEnd(monthDate);
-  const today = new Date();
+  const endIso = isoDate(monthEnd(monthDate));
+  const todayIso = isoDate(new Date());
   let totalKcalSum = 0;
   let daysWithEntries = 0;
   let daysMet = 0;
-  for (let d = new Date(start); d <= end && d <= today; d = addDays(d, 1)) {
+  for (let d = new Date(start); ; d = addDays(d, 1)) {
     const iso = isoDate(d);
+    if (iso > endIso || iso > todayIso) break;
     const dayEntries = entries.filter(e => e.date === iso);
     if (dayEntries.length === 0) continue;
     daysWithEntries += 1;
