@@ -1,5 +1,4 @@
 import { supabase } from '../supabase.js';
-import { isoDate } from '../utils/dates.js';
 
 // All rows for the current user, ordered ascending by valid_from.
 export async function listProfileHistory() {
