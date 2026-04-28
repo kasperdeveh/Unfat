@@ -76,6 +76,16 @@ const authReady = new Promise((resolve) => {
   startRouter();
   window.addEventListener('hashchange', renderBottomNav);
   renderBottomNav();
+
+  // Initialize nav badge — best-effort; failure is non-fatal.
+  try {
+    const { listFriendBuckets } = await import('./db/friendships.js');
+    const { setNavBadge } = await import('./ui.js');
+    const buckets = await listFriendBuckets();
+    setNavBadge('incomingRequests', buckets.incoming.length);
+  } catch (e) {
+    // ignore — user may not be logged in or table may not exist yet
+  }
 })();
 
 // PWA service worker — only register in production. The cache makes development
