@@ -14,6 +14,10 @@
   - Compare-widget on dashboard: horizontal swipe-carousel under the hero with one card per friend, tinted by their hero state. Tap → friend day-view.
   - Settings extended with username editor (live availability check) and segmented share-level control.
   - SW cache bumped to `unfat-v5` with new modules pre-cached.
+- D-A bug-fixes after first manual test:
+  - Bottom nav now stays visible on the friend day-view (`#/friend`) and the Vrienden-tab is highlighted there. Previously the nav disappeared because `#/friend` (singular) is not a tab hash.
+  - Pending friend-requests now show the other party's username instead of `?`. Migration `20260428b_friends_pending_handles.sql` loosens the `profiles_select_own_or_friend` RLS policy to match any friendship row (pending or accepted), not just accepted. Privacy is unaffected because handles are already public-searchable via `search_users`.
+  - SW cache bumped to `unfat-v6`.
 
 ## 2026-04-27
 - ROADMAP.md: added sub-project H (Statistieken & inzichten) for personal stats and trends, separated from sub-project E (motivation/badges)

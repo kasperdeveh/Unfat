@@ -1,7 +1,7 @@
 // Service worker for Unfat. Cache-first for static assets, network-first for Supabase.
 // Bump CACHE_NAME on every deploy that ships static asset changes to invalidate caches.
 
-const CACHE_NAME = 'unfat-v5';
+const CACHE_NAME = 'unfat-v6';
 const STATIC_ASSETS = [
   './',
   './index.html',
