@@ -785,3 +785,79 @@ button, input {
   opacity: 0.95;
 }
 .entry-row-readonly .entry-chevron { display: none; }
+
+/* Compare widget — horizontal swipe-carousel on dashboard */
+.compare-widget {
+  margin-top: 16px;
+}
+.compare-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  gap: 8px;
+}
+.compare-track::-webkit-scrollbar { display: none; }
+.compare-card {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  background: #1a1a20;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+}
+.compare-state-green  { border-left: 4px solid #4caf50; }
+.compare-state-orange { border-left: 4px solid #ff9800; }
+.compare-state-red    { border-left: 4px solid #e53935; }
+.compare-card-muted   { opacity: 0.7; }
+.compare-handle {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.compare-num {
+  font-size: 22px;
+  font-weight: 700;
+}
+.compare-num small {
+  font-size: 12px;
+  font-weight: 400;
+  color: #888;
+}
+.compare-bar {
+  height: 6px;
+  background: #2a2a30;
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.compare-bar-fill {
+  height: 100%;
+  background: #5cb6ff;
+}
+.compare-meals {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #aaa;
+}
+.compare-meals b {
+  color: #ddd;
+  font-weight: 600;
+}
+.compare-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.compare-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #444;
+}
+.compare-dots .dot.active {
+  background: #5cb6ff;
+}
