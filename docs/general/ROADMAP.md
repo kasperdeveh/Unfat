@@ -9,6 +9,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 
 - **Scope B**: vrienden in week/maand-historie. Friend dag-view ‹ › navigatie. Historie-tab met vriend-context. Vereist navigatie voorbij je eigen account-creatie (vrienden kunnen eerder begonnen zijn) — dag-view-pijl ‹ moet dan een vriend-context kennen.
 - **Scope C**: maaltijden / producten overnemen van vrienden (één-klik kopiëren). Competitie-element: bijv. wie blijft deze week vaakst binnen z'n doel.
+- **Vergelijk-widget verfijning** (geparkeerd na D-A): nu toont het dashboard een swipe-carousel met álle vrienden. Mogelijke verbetering: één geselecteerde "vergelijk-vriend" via Settings-dropdown, of per-vriend-ster-toggle in de Vrienden-tab die bepaalt wie op het dashboard verschijnt. UX-hint (titel + halve next-kaart zichtbaar) is een lichtere variant.
 
 ### E. Motivatie: badges, rewards en notificaties
 **Status:** open
