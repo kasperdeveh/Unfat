@@ -770,3 +770,18 @@ button, input {
   font-size: 18px;
 }
 .modal .btn { margin-top: 16px; }
+
+/* Back-button (used in friend-day) and read-only entries */
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #5cb6ff;
+  font-size: 14px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.entry-row-readonly {
+  cursor: default;
+  opacity: 0.95;
+}
+.entry-row-readonly .entry-chevron { display: none; }
