@@ -35,9 +35,9 @@ export function setNavBadge(key, count) {
 export function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   const path = getPath();
-  // Show nav on all logged-in views including #/day. Filtering #/ out
-  // explicitly is more robust than slice(1) if NAV_TABS is ever reordered.
-  const showNav = path === '#/' || path === '#/day' ||
+  // `#/friend` (singular) is the friend day-view — a sub-page of the Vrienden tab.
+  const isFriendDay = path === '#/friend';
+  const showNav = path === '#/' || path === '#/day' || isFriendDay ||
     NAV_TABS.filter(t => t.hash !== '#/').some(t => path === t.hash || path.startsWith(t.hash + '/'));
 
   if (!showNav) {
@@ -51,6 +51,7 @@ export function renderBottomNav() {
   for (const tab of NAV_TABS) {
     let isActive;
     if (tab.hash === '#/') isActive = (path === '#/' || path === '#/day');
+    else if (tab.hash === '#/friends') isActive = (path === '#/friends' || path.startsWith('#/friends/') || isFriendDay);
     else isActive = (path === tab.hash || path.startsWith(tab.hash + '/'));
 
     const btn = document.createElement('div');
