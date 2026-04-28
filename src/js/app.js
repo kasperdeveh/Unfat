@@ -11,9 +11,11 @@ defineRoute('#/history',        () => import('./views/history.js'));
 defineRoute('#/add',            () => import('./views/add-food.js'));
 defineRoute('#/add/portion',    () => import('./views/add-food-portion.js'));
 defineRoute('#/add/new',        () => import('./views/add-food-new.js'));
+defineRoute('#/friends',        () => import('./views/friends.js'));
+defineRoute('#/friend',         () => import('./views/friend-day.js'));
 defineRoute('#/settings',       () => import('./views/settings.js'));
 
-const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/day', '#/history', '#/add', '#/add/portion', '#/add/new', '#/settings'];
+const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/day', '#/history', '#/add', '#/add/portion', '#/add/new', '#/friends', '#/friend', '#/settings'];
 
 // Determine where the user should be based on their session and profile state.
 // Returns the target hash, or null if the current route is fine.
