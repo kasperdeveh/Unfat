@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-04-28
+- Design spec for sub-project D (Vrienden & sociale features, scope A) at `docs/superpowers/specs/2026-04-27-friends-design.md`
+- Implementation plan for sub-project D-A at `docs/superpowers/plans/2026-04-27-friends-implementation.md`
+- Documented spec/plan archive convention in CLAUDE.md
+- Implemented sub-project D-A (Vrienden & sociale features, basis):
+  - New `friendships` table with symmetric RLS, accepted/pending status, request-direction tracked via `requested_by`. `my_friends` view hides the case-when from app code.
+  - Six SECURITY DEFINER RPCs: `search_users` (handle-prefix lookup with friendship_status), `send_friend_request` (idempotent, auto-accepts on mutual intent), `respond_friend_request`, `unfriend`, `get_friend_day` (returns day data scaled to friend's share_level), `check_handle_available` (bypasses RLS for global uniqueness check).
+  - `profiles` extended with `handle` (unique lowercase, 3-20 chars) and `share_level` (`none` / `total` / `per_meal` / `entries`, default `entries`). `profiles_select_own` policy replaced by `profiles_select_own_or_friend` so accepted friends can read each other's handle.
+  - New onboarding step prompts for a username; existing users without handle see a modal on first Vrienden-tab visit.
+  - New 5th bottom-nav tab "Vrienden" with red badge for incoming requests (initialized at app-start). View has search-by-username + three sections (inkomend, verstuurd, vrienden) with accept / reject / withdraw / unfriend.
+  - Friend day-view at `#/friend?id=X&date=Y` — read-only rendering scaled to friend's share_level (none = niets / total = hero only / per_meal = hero + meal totals / entries = full read-only).
+  - Compare-widget on dashboard: horizontal swipe-carousel under the hero with one card per friend, tinted by their hero state. Tap → friend day-view.
+  - Settings extended with username editor (live availability check) and segmented share-level control.
+  - SW cache bumped to `unfat-v5` with new modules pre-cached.
+
 ## 2026-04-27
 - ROADMAP.md: added sub-project H (Statistieken & inzichten) for personal stats and trends, separated from sub-project E (motivation/badges)
 - Design spec for sub-project C (Historie & terugwerkende invoer) at `docs/superpowers/specs/2026-04-27-history-design.md` — hybrid architecture (date-aware dashboard + new Historie tab with week/month toggle), individual entry editing with bottom-sheet + swipe-to-delete-with-undo, new `profile_history` table for historically correct target/max colouring on backdated days
