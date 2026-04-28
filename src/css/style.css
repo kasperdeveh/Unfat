@@ -861,3 +861,27 @@ button, input {
 .compare-dots .dot.active {
   background: #5cb6ff;
 }
+
+/* Segmented control (used for share-level in Settings) */
+.segmented {
+  display: flex;
+  gap: 4px;
+  background: #1a1a20;
+  padding: 4px;
+  border-radius: 8px;
+}
+.seg-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 8px 4px;
+  color: #aaa;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.seg-btn.active {
+  background: #5cb6ff;
+  color: #0f0f12;
+  font-weight: 600;
+}
