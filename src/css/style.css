@@ -704,3 +704,69 @@ button, input {
   text-align: center;
   font-weight: 600;
 }
+
+/* Friend list rows */
+.friend-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+.friend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #1a1a20;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.friend-clickable { cursor: pointer; }
+.friend-handle {
+  font-weight: 500;
+  font-size: 15px;
+}
+.friend-actions {
+  display: flex;
+  gap: 4px;
+}
+.btn-icon {
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #ddd;
+}
+.btn-icon:hover { background: #2a2a30; }
+
+/* Handle-input live status */
+.handle-status[data-state="checking"] { color: #888; font-size: 12px; }
+.handle-status[data-state="available"] { color: #4caf50; font-size: 12px; }
+.handle-status[data-state="taken"],
+.handle-status[data-state="invalid"] { color: #e53935; font-size: 12px; }
+
+/* Modal (used for handle-prompt in Vrienden-tab) */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+.modal {
+  background: #1a1a20;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+}
+.modal h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.modal .btn { margin-top: 16px; }
