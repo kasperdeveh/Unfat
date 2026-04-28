@@ -885,3 +885,14 @@ button, input {
   color: #0f0f12;
   font-weight: 600;
 }
+
+/* Handle-input polish */
+.handle-input {
+  font-family: inherit;
+  letter-spacing: 0.5px;
+}
+.handle-status {
+  margin: 4px 0 0;
+  min-height: 16px;
+  font-size: 12px;
+}
