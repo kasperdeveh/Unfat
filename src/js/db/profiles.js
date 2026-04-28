@@ -49,6 +49,48 @@ export async function createMyProfile({ daily_target_kcal, daily_max_kcal }) {
   return data;
 }
 
+// Update only the handle for the current user. Throws on duplicate (lowercase) handle.
+export async function updateMyHandle(handle) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ handle })
+    .eq('id', session.user.id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Update only share_level for the current user.
+// level: 'none' | 'total' | 'per_meal' | 'entries'
+export async function updateMyShareLevel(level) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ share_level: level })
+    .eq('id', session.user.id);
+  if (error) throw error;
+}
+
+// Read another user's public profile fields (handle, share_level).
+// RLS allows this only when the caller and target are accepted friends
+// (or when target is self). Returns null if blocked or missing.
+export async function getProfileById(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, handle, share_level')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function updateMyProfile({ daily_target_kcal, daily_max_kcal }) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated');
