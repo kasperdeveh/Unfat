@@ -14,14 +14,23 @@ export function showToast(message, ms = 2500) {
 }
 
 // =====================================================================
-// Bottom nav — 4 tabs. Hidden on login/onboarding.
+// Bottom nav — 5 tabs. Hidden on login/onboarding. Badge for incoming friend
+// requests is updated via setNavBadge().
 // =====================================================================
 const NAV_TABS = [
   { hash: '#/',         label: 'Home' },
   { hash: '#/add',      label: 'Voeg toe' },
   { hash: '#/history',  label: 'Historie' },
+  { hash: '#/friends',  label: 'Vrienden', badgeKey: 'incomingRequests' },
   { hash: '#/settings', label: 'Settings' },
 ];
+
+const navBadges = { incomingRequests: 0 };
+
+export function setNavBadge(key, count) {
+  navBadges[key] = count;
+  renderBottomNav();
+}
 
 export function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
@@ -46,7 +55,9 @@ export function renderBottomNav() {
 
     const btn = document.createElement('div');
     btn.className = 'nav-item' + (isActive ? ' active' : '');
-    btn.innerHTML = `<span class="nav-icon"></span>${tab.label}`;
+    const badgeCount = tab.badgeKey ? (navBadges[tab.badgeKey] || 0) : 0;
+    const badgeHtml = badgeCount > 0 ? `<span class="nav-badge">${badgeCount}</span>` : '';
+    btn.innerHTML = `<span class="nav-icon">${badgeHtml}</span>${tab.label}`;
     btn.addEventListener('click', () => navigate(tab.hash));
     nav.appendChild(btn);
   }

@@ -679,3 +679,28 @@ button, input {
 .month-cell.orange .month-cell-kcal { color: #000; }
 .month-cell.red .month-cell-num,
 .month-cell.red .month-cell-kcal { color: #fff; }
+
+/* =====================================================================
+   Friends sub-project D-A
+   ===================================================================== */
+
+/* Bottom-nav badge */
+.nav-icon {
+  position: relative;
+  display: inline-block;
+}
+.nav-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #e53935;
+  color: #fff;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+  font-weight: 600;
+}
