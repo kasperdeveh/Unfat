@@ -1,7 +1,9 @@
 import { getMyProfile } from '../db/profiles.js';
 import { listProfileHistory, getTargetForDate } from '../db/profile_history.js';
 import { listEntriesForDate, deleteEntry, createEntry } from '../db/entries.js';
+import { listFriendBuckets, getHandlesForUsers } from '../db/friendships.js';
 import { openEditSheet } from './components/edit-entry-sheet.js';
+import { mountCompareWidget } from './components/compare-widget.js';
 import { heroState, todayIso } from '../calc.js';
 import { isoDate, parseIso, formatDayLongNl, isSameDay, addDays } from '../utils/dates.js';
 import { navigate } from '../router.js';
@@ -149,6 +151,31 @@ export async function render(container, params) {
       }).join('')}
     </div>
   `;
+
+  // Render compare-widget for friends (only on today's view, only if friends exist).
+  if (isToday) {
+    const widgetMount = document.createElement('div');
+    widgetMount.id = 'compare-widget-mount';
+    container.appendChild(widgetMount);
+
+    try {
+      const buckets = await listFriendBuckets();
+      if (buckets.accepted.length > 0) {
+        const ids = buckets.accepted.map(r => r.friend_id);
+        const handleMap = await getHandlesForUsers(ids);
+        const friends = buckets.accepted.map(r => ({
+          friend_id: r.friend_id,
+          handle: handleMap.get(r.friend_id) || '?',
+        }));
+        await mountCompareWidget(widgetMount, friends, dateIso);
+      } else {
+        widgetMount.remove();
+      }
+    } catch (err) {
+      console.warn('Compare widget failed:', err);
+      widgetMount.remove();
+    }
+  }
 
   // + toevoegen per maaltijd
   container.querySelectorAll('.entry-add-btn').forEach(btn => {
