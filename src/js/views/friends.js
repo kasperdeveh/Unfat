@@ -213,7 +213,7 @@ function renderFriends(div, rows, handleMap, refresh) {
     row.addEventListener('click', (e) => {
       if (e.target.closest('.remove-btn')) return;
       const userId = row.dataset.userId;
-      navigate(`#/friend?id=${userId}`);
+      navigate(`#/friend-day?id=${userId}`);
     });
   });
   div.querySelectorAll('.remove-btn').forEach(btn => {

@@ -35,8 +35,8 @@ export function setNavBadge(key, count) {
 export function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   const path = getPath();
-  // `#/friend` (singular) is the friend day-view — a sub-page of the Vrienden tab.
-  const isFriendDay = path === '#/friend';
+  // `#/friend-day|week|month` are friend sub-pages of the Vrienden tab.
+  const isFriendDay = path === '#/friend-day' || path === '#/friend-week' || path === '#/friend-month';
   const showNav = path === '#/' || path === '#/day' || isFriendDay ||
     NAV_TABS.filter(t => t.hash !== '#/').some(t => path === t.hash || path.startsWith(t.hash + '/'));
 
