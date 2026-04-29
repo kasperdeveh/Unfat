@@ -9,7 +9,8 @@
   - Bottom-sheet date-picker bij elke kopieer-actie (default vandaag, grenzen aan eigen `created_at` en vandaag)
   - Migratie: `get_friend_day` levert entry-id, product-id en `friend_created_at`; nieuwe RPC `get_friend_period` voor week/maand-totalen
   - Route `#/friend` hernoemd naar `#/friend-day`; nieuwe routes `#/friend-week` en `#/friend-month`
-  - SW cache bump v6 → v7
+  - SW cache bump v6 → v8 (v7 → v8 voor CSS-fix op meal-header spacing met kopieer-knop)
+- Bugfix: meal-header spacing — `.meal-sum` krijgt `margin-left: auto` zodat kcal-totaal rechts blijft staan ook als de Kopieer-knop ernaast staat
 
 ## 2026-04-28
 - Design spec for sub-project D (Vrienden & sociale features, scope A) at `docs/superpowers/specs/2026-04-27-friends-design.md`
