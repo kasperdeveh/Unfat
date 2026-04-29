@@ -2,6 +2,7 @@ import { getFriendDay } from '../db/friendships.js';
 import { heroState, todayIso } from '../calc.js';
 import { parseIso, formatDayLongNl } from '../utils/dates.js';
 import { navigate } from '../router.js';
+import { mount as mountFriendHeader } from './components/friend-header.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -28,16 +29,23 @@ export async function render(container, params) {
   }
 
   const handle = day.handle || 'Vriend';
-  const back = `<button class="back-btn" id="back-btn">‹ Vrienden</button>`;
+
+  // Build skeleton: header at top, then a content slot beneath
+  container.innerHTML = `
+    <div id="friend-header-slot"></div>
+    <p class="page-subtitle">${formatDayLongNl(date)}</p>
+    <div id="friend-day-content"></div>
+  `;
+
+  mountFriendHeader(
+    container.querySelector('#friend-header-slot'),
+    { friendId, handle, currentView: 'day', anchor: dateIso }
+  );
+
+  const content = container.querySelector('#friend-day-content');
 
   if (day.share_level === 'none') {
-    container.innerHTML = `
-      ${back}
-      <h1 class="page-title">${escapeHtml(handle)}</h1>
-      <p class="page-subtitle">${formatDayLongNl(date)}</p>
-      <p class="text-muted" style="margin-top:32px;text-align:center;">${escapeHtml(handle)} deelt geen voortgang.</p>
-    `;
-    container.querySelector('#back-btn').addEventListener('click', () => navigate('#/friends'));
+    content.innerHTML = `<p class="text-muted" style="margin-top:32px;text-align:center;">${escapeHtml(handle)} deelt geen voortgang.</p>`;
     return;
   }
 
@@ -92,11 +100,7 @@ export async function render(container, params) {
     }).join('');
   }
 
-  container.innerHTML = `
-    ${back}
-    <h1 class="page-title">${escapeHtml(handle)}</h1>
-    <p class="page-subtitle">${formatDayLongNl(date)}</p>
-
+  content.innerHTML = `
     <div class="hero hero-${state}">
       <div class="hero-label">${heroLabel}</div>
       <div class="hero-num">${heroNum}</div>
@@ -106,8 +110,6 @@ export async function render(container, params) {
 
     ${mealsHtml}
   `;
-
-  container.querySelector('#back-btn').addEventListener('click', () => navigate('#/friends'));
 }
 
 function escapeHtml(s) {
