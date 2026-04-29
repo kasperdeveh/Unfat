@@ -1,6 +1,6 @@
 import { getFriendDay } from '../db/friendships.js';
 import { heroState, todayIso } from '../calc.js';
-import { parseIso, formatDayLongNl } from '../utils/dates.js';
+import { parseIso, formatDayLongNl, isoDate, addDays } from '../utils/dates.js';
 import { navigate } from '../router.js';
 import { mount as mountFriendHeader } from './components/friend-header.js';
 
@@ -31,9 +31,20 @@ export async function render(container, params) {
   const handle = day.handle || 'Vriend';
 
   // Build skeleton: header at top, then a content slot beneath
+  const friendCreated = day.friend_created_at ? parseIso(day.friend_created_at) : null;
+  const today = parseIso(todayIso());
+  const prevIso = isoDate(addDays(date, -1));
+  const nextIso = isoDate(addDays(date, 1));
+  const prevDisabled = friendCreated && dateIso <= day.friend_created_at;
+  const nextDisabled = dateIso >= todayIso();
+
   container.innerHTML = `
     <div id="friend-header-slot"></div>
-    <p class="page-subtitle">${formatDayLongNl(date)}</p>
+    <div class="day-nav">
+      <button class="day-nav-btn" id="friend-prev-day" ${prevDisabled ? 'disabled' : ''}>‹</button>
+      <p class="page-subtitle" style="margin:0 1rem;">${formatDayLongNl(date)}</p>
+      <button class="day-nav-btn" id="friend-next-day" ${nextDisabled ? 'disabled' : ''}>›</button>
+    </div>
     <div id="friend-day-content"></div>
   `;
 
@@ -41,6 +52,19 @@ export async function render(container, params) {
     container.querySelector('#friend-header-slot'),
     { friendId, handle, currentView: 'day', anchor: dateIso }
   );
+
+  const prevBtn = container.querySelector('#friend-prev-day');
+  const nextBtn = container.querySelector('#friend-next-day');
+  if (prevBtn && !prevBtn.disabled) {
+    prevBtn.addEventListener('click', () => {
+      navigate(`#/friend-day?id=${encodeURIComponent(friendId)}&date=${prevIso}`);
+    });
+  }
+  if (nextBtn && !nextBtn.disabled) {
+    nextBtn.addEventListener('click', () => {
+      navigate(`#/friend-day?id=${encodeURIComponent(friendId)}&date=${nextIso}`);
+    });
+  }
 
   const content = container.querySelector('#friend-day-content');
 
