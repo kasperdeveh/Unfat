@@ -32,7 +32,6 @@ export async function render(container, params) {
 
   // Build skeleton: header at top, then a content slot beneath
   const friendCreated = day.friend_created_at ? parseIso(day.friend_created_at) : null;
-  const today = parseIso(todayIso());
   const prevIso = isoDate(addDays(date, -1));
   const nextIso = isoDate(addDays(date, 1));
   const prevDisabled = friendCreated && dateIso <= day.friend_created_at;
