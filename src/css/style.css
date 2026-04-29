@@ -344,7 +344,7 @@ button, input {
   margin-bottom: 8px;
 }
 .meal-title { font-weight: 600; }
-.meal-sum { color: #888; font-size: 13px; }
+.meal-sum { color: #888; font-size: 13px; margin-left: auto; }
 /* Row wraps a red "delete" cue that shows while the user swipes left. */
 .entry-row-wrap {
   position: relative;
@@ -936,8 +936,9 @@ button, input {
   border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
-  margin-left: auto;
 }
+.meal-copy-btn { margin-left: 12px; }
+.entry-copy-btn { margin-left: auto; }
 .meal-copy-btn:hover,
 .entry-copy-btn:hover {
   background: rgba(74, 222, 128, 0.1);
