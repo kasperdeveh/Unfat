@@ -47,6 +47,18 @@ export async function getFriendDay(friendUserId, day) {
   return data;
 }
 
+// Read a friend's period (week/month) data, scaled to their share_level.
+// Returns: { share_level, handle, friend_created_at, days[] }
+export async function getFriendPeriod(friendId, startIso, endIso) {
+  const { data, error } = await supabase.rpc('get_friend_period', {
+    friend_user_id: friendId,
+    start_date: startIso,
+    end_date: endIso,
+  });
+  if (error) throw error;
+  return data;
+}
+
 // List all my_friends rows. Returns: [{ friend_id, status, requested_by, created_at, accepted_at }]
 // Note: friend_id is the OTHER user's id, regardless of who sent the request.
 export async function listMyFriends() {
