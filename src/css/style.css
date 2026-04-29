@@ -896,3 +896,180 @@ button, input {
   min-height: 16px;
   font-size: 12px;
 }
+
+/* === Friend-header (sub-project D-vervolg) === */
+.friend-view-toggle {
+  display: flex;
+  background: var(--surface, #1a1a1a);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  margin: 8px 0 16px;
+}
+.friend-view-toggle button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #888);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.friend-view-toggle button.active {
+  background: var(--accent, #4ade80);
+  color: #000;
+  font-weight: 600;
+}
+
+/* === Friend-day ‹ › navigatie ===
+   Hergebruikt bestaande .day-nav + .day-nav-btn (zie boven). */
+
+/* === Kopieer-knoppen in friend-day === */
+.meal-copy-btn,
+.entry-copy-btn {
+  background: transparent;
+  border: 1px solid var(--accent, #4ade80);
+  color: var(--accent, #4ade80);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.meal-copy-btn:hover,
+.entry-copy-btn:hover {
+  background: rgba(74, 222, 128, 0.1);
+}
+/* .entry-row-readonly + .entry-info layout: bestaande .entry-row regel
+   (display:flex, align-items:center) en .entry-info {flex:1} dekken dit al. */
+
+/* === Copy-date-sheet bottom-sheet === */
+.copy-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.copy-sheet {
+  background: var(--surface, #1a1a1a);
+  width: 100%;
+  max-width: 480px;
+  padding: 16px 20px 24px;
+  border-radius: 16px 16px 0 0;
+  animation: copy-sheet-rise 200ms ease-out;
+}
+@keyframes copy-sheet-rise {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.copy-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--text-muted, #444);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.copy-sheet-title {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.copy-sheet-date {
+  width: 100%;
+  background: var(--bg, #0d0d0d);
+  border: 1px solid var(--border, #2a2a2a);
+  color: var(--text, #eaeaea);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+.copy-sheet-actions {
+  display: flex;
+  gap: 8px;
+}
+.copy-sheet-cancel,
+.copy-sheet-confirm {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.copy-sheet-cancel {
+  background: var(--bg, #0d0d0d);
+  color: var(--text-muted, #888);
+}
+.copy-sheet-confirm {
+  background: var(--accent, #4ade80);
+  color: #000;
+  font-weight: 600;
+}
+
+/* === Period bars (week/month) — gedeeld met eigen historie waar mogelijk ===
+   .period-nav bestaat al (zie boven, gebruikt door history.js); hergebruik.
+   .period-nav-btn is nieuw — friend-week/month gebruikt deze i.p.v. .period-arrow. */
+.period-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text, #eaeaea);
+  font-size: 24px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.period-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.period-bars {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 200px;
+  padding: 12px 0;
+}
+.period-bars-month {
+  gap: 2px;
+  height: 180px;
+}
+.period-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  height: 100%;
+  padding: 0;
+}
+.period-bar:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+.period-bar-fill {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: var(--bar-color, #4ade80);
+  transition: height 200ms ease-out;
+}
+.period-bar.bar-green   { --bar-color: #4ade80; }
+.period-bar.bar-orange  { --bar-color: #fb923c; }
+.period-bar.bar-red     { --bar-color: #ef4444; }
+.period-bar.bar-grey    { --bar-color: #444; }
+.period-bar-label {
+  font-size: 11px;
+  color: var(--text-muted, #888);
+  margin-top: 4px;
+}
+.period-bar-month .period-bar-label {
+  font-size: 9px;
+}
