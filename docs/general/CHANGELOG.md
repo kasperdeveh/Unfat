@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-04-29
+
+- D-vervolg: vrienden in week/maand-historie + één-klik kopiëren
+  - Friend dag-view krijgt ‹ › datum-navigatie (begrensd op vriend's account-creatie)
+  - Nieuwe friend week-view en friend month-view, bereikbaar via Dag/Week/Maand-toggle
+  - Per-entry én per-maaltijd kopiëren vanuit friend dag-view (alleen bij `share_level=entries`)
+  - Bottom-sheet date-picker bij elke kopieer-actie (default vandaag, grenzen aan eigen `created_at` en vandaag)
+  - Migratie: `get_friend_day` levert entry-id, product-id en `friend_created_at`; nieuwe RPC `get_friend_period` voor week/maand-totalen
+  - Route `#/friend` hernoemd naar `#/friend-day`; nieuwe routes `#/friend-week` en `#/friend-month`
+  - SW cache bump v6 → v7
+
 ## 2026-04-28
 - Design spec for sub-project D (Vrienden & sociale features, scope A) at `docs/superpowers/specs/2026-04-27-friends-design.md`
 - Implementation plan for sub-project D-A at `docs/superpowers/plans/2026-04-27-friends-implementation.md`

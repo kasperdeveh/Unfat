@@ -4,12 +4,13 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 
 ## Sub-projecten
 
-### D. Vrienden — vervolg (scope B + C)
-**Status:** open
+### D. Vrienden — wensen (geparkeerd)
+**Status:** open / lage prioriteit
 
-- **Scope B**: vrienden in week/maand-historie. Friend dag-view ‹ › navigatie. Historie-tab met vriend-context. Vereist navigatie voorbij je eigen account-creatie (vrienden kunnen eerder begonnen zijn) — dag-view-pijl ‹ moet dan een vriend-context kennen.
-- **Scope C**: maaltijden / producten overnemen van vrienden (één-klik kopiëren). Competitie-element: bijv. wie blijft deze week vaakst binnen z'n doel.
-- **Vergelijk-widget verfijning** (geparkeerd na D-A): nu toont het dashboard een swipe-carousel met álle vrienden. Mogelijke verbetering: één geselecteerde "vergelijk-vriend" via Settings-dropdown, of per-vriend-ster-toggle in de Vrienden-tab die bepaalt wie op het dashboard verschijnt. UX-hint (titel + halve next-kaart zichtbaar) is een lichtere variant.
+- **Per-dag kopiëren** vanuit friend dag-view (workaround = 4× per-maaltijd)
+- **Vergelijk-widget verfijning**: één geselecteerde "vergelijk-vriend" via Settings-dropdown of per-vriend-ster-toggle
+- **Competitie-element**: "wie blijft deze week vaakst binnen z'n doel"
+- **Notificeren van vriend** bij kopieer-actie
 
 ### E. Motivatie: badges, rewards en notificaties
 **Status:** open
@@ -61,3 +62,4 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 | 2026-04-26 | B. Solo tracking MVP (dashboard, gedeelde producten, invoer, doelen) |
 | 2026-04-27 | C. Historie & terugwerkende invoer (date-aware day-view met ‹ › nav, Historie-tab met week/maand toggle + anchor-stable navigation, individuele entry-rijen met edit-sheet + swipe-undo, `profile_history` tabel voor historisch correcte target/max-snapshots) |
 | 2026-04-28 | D-A. Vrienden basis (handle, verzoeken met auto-accept bij wederzijdse intentie, per-gebruiker deel-niveau, Vrienden-tab met zoek + secties, vergelijk-carousel op dashboard, read-only friend dag-view) |
+| 2026-04-29 | D-vervolg. Vrienden in week/maand-historie (friend day/week/month-views met ‹ › nav, gedeelde Dag/Week/Maand-header), één-klik kopiëren per-entry en per-maaltijd vanuit friend dag-view met date-picker bottom-sheet, `get_friend_period` RPC) |
