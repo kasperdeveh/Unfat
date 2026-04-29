@@ -101,21 +101,27 @@ export async function render(container, params) {
   if (day.share_level === 'per_meal' || day.share_level === 'entries') {
     const perMeal = day.per_meal || {};
     const entries = day.entries || [];
+    const showCopy = day.share_level === 'entries';
     mealsHtml = MEAL_ORDER.map(meal => {
       const sum = perMeal[meal] || 0;
       const items = entries.filter(e => e.meal_type === meal);
+      const mealCopyBtn = (showCopy && items.length > 0)
+        ? `<button class="meal-copy-btn" data-meal="${meal}">Kopieer</button>`
+        : '';
       return `
         <section class="meal-section">
           <header class="meal-header">
             <span class="meal-title">${MEAL_LABELS[meal]}</span>
             <span class="meal-sum">${sum === 0 ? '' : sum}</span>
+            ${mealCopyBtn}
           </header>
           ${items.map(e => `
-            <div class="entry-row entry-row-readonly">
+            <div class="entry-row entry-row-readonly" data-entry-idx="${entries.indexOf(e)}">
               <div class="entry-info">
                 <div class="entry-name">${escapeHtml(e.product_name)}</div>
                 <div class="entry-meta">${Math.round(e.amount_grams)}g · ${e.kcal} kcal</div>
               </div>
+              ${showCopy ? `<button class="entry-copy-btn" data-entry-idx="${entries.indexOf(e)}">Kopieer</button>` : ''}
             </div>
           `).join('')}
         </section>
@@ -133,6 +139,56 @@ export async function render(container, params) {
 
     ${mealsHtml}
   `;
+
+  if (day.share_level === 'entries') {
+    const entries = day.entries || [];
+
+    content.querySelectorAll('.entry-copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = parseInt(btn.dataset.entryIdx, 10);
+        const entry = entries[idx];
+        if (!entry) return;
+        await runCopy(handle, [entry], MEAL_LABELS[entry.meal_type] + ' entry');
+      });
+    });
+
+    content.querySelectorAll('.meal-copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const meal = btn.dataset.meal;
+        const items = entries.filter(e => e.meal_type === meal);
+        if (items.length === 0) return;
+        await runCopy(handle, items, MEAL_LABELS[meal]);
+      });
+    });
+  }
+}
+
+async function runCopy(handle, items, label) {
+  const { open: openCopySheet } = await import('./components/copy-date-sheet.js');
+  const { createEntry } = await import('../db/entries.js');
+  const { showToast } = await import('../ui.js');
+
+  const target = await openCopySheet({
+    title: `Kopieer ${label} naar...`,
+    defaultDate: todayIso(),
+  });
+  if (!target) return;
+
+  try {
+    for (const e of items) {
+      await createEntry({
+        product_id: e.product_id,
+        amount_grams: e.amount_grams,
+        kcal: e.kcal,
+        meal_type: e.meal_type,
+        date: target,
+      });
+    }
+    const n = items.length;
+    showToast(`${n} ${n === 1 ? 'entry' : 'entries'} gekopieerd naar ${target}`);
+  } catch (err) {
+    showToast(`Kopieer-fout: ${err.message}`);
+  }
 }
 
 function escapeHtml(s) {
