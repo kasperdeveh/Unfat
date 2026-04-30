@@ -1,9 +1,11 @@
 import { supabase } from '../supabase.js';
 
+const PRODUCT_FIELDS = 'id, name, kcal_per_100g, unit_grams, source, synonyms, nevo_code';
+
 export async function listProducts() {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, kcal_per_100g, unit_grams')
+    .select(PRODUCT_FIELDS)
     .order('name', { ascending: true });
 
   if (error) throw error;
@@ -13,7 +15,7 @@ export async function listProducts() {
 export async function getProduct(id) {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, kcal_per_100g, unit_grams, created_by')
+    .select(`${PRODUCT_FIELDS}, created_by`)
     .eq('id', id)
     .single();
 
