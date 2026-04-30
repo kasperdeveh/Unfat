@@ -2,14 +2,25 @@ import { supabase } from '../supabase.js';
 
 const PRODUCT_FIELDS = 'id, name, kcal_per_100g, unit_grams, source, synonyms, nevo_code';
 
+// Supabase API caps a single select at 1000 rows by default; we have 2300+
+// NEVO products plus user-added ones, so paginate via .range() until exhausted.
 export async function listProducts() {
-  const { data, error } = await supabase
-    .from('products')
-    .select(PRODUCT_FIELDS)
-    .order('name', { ascending: true });
-
-  if (error) throw error;
-  return data;
+  const PAGE = 1000;
+  const all = [];
+  let from = 0;
+  while (true) {
+    const { data, error } = await supabase
+      .from('products')
+      .select(PRODUCT_FIELDS)
+      .order('name', { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PAGE) break;
+    from += PAGE;
+  }
+  return all;
 }
 
 export async function getProduct(id) {
