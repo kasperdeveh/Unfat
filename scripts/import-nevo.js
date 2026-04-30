@@ -112,7 +112,8 @@ function main() {
     inserts.push(
       `insert into public.products (name, kcal_per_100g, unit_grams, source, nevo_code, synonyms, created_by) ` +
       `values (${sqlString(name)}, ${kcal}, ${unitGrams}, 'nevo', ${sqlString(code)}, ${sqlArray(syns)}, null) ` +
-      `on conflict (nevo_code) where nevo_code is not null do nothing;`
+      `on conflict (nevo_code) where nevo_code is not null do update set ` +
+      `name = excluded.name, kcal_per_100g = excluded.kcal_per_100g, unit_grams = excluded.unit_grams, synonyms = excluded.synonyms;`
     );
     kept++;
   }
