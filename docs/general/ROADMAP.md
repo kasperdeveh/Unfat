@@ -19,12 +19,11 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Push notificaties via PWA (herinneringen, motiverende teksten)
 - Motiverende teksten in de UI bij milestones
 
-### F. Open Food Facts integratie + barcode scanning
-**Status:** open
+### F. Producten zoeken & barcode-scanning
+**Status:** F-A afgerond, F-B en F-C open
 
-- Producten zoeken via OFF API (eerst goed testen, vorige keer werkte deze API niet lekker)
-- Barcode scannen via camera (gebruikt OFF voor product-data)
-- Eigen producten cache uitbreiden met OFF data
+- **F-B**: Open Food Facts integratie — barcode-scan via camera → OFF lookup → product wordt gecached in onze gedeelde `products`-tabel zodat brand-precisie voor iedereen beschikbaar wordt
+- **F-C**: "Zoek ook in Open Food Facts"-knop bij beperkte lokale resultaten, voor brand-producten zonder barcode (één call per knop-klik om binnen OFF-rate-limit te blijven; resultaat cachen in `products` bij keuze)
 
 ### H. Statistieken & inzichten
 **Status:** open
@@ -65,3 +64,4 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 | 2026-04-27 | C. Historie & terugwerkende invoer (date-aware day-view met ‹ › nav, Historie-tab met week/maand toggle + anchor-stable navigation, individuele entry-rijen met edit-sheet + swipe-undo, `profile_history` tabel voor historisch correcte target/max-snapshots) |
 | 2026-04-28 | D-A. Vrienden basis (handle, verzoeken met auto-accept bij wederzijdse intentie, per-gebruiker deel-niveau, Vrienden-tab met zoek + secties, vergelijk-carousel op dashboard, read-only friend dag-view) |
 | 2026-04-29 | D-vervolg. Vrienden in week/maand-historie (friend day/week/month-views met ‹ › nav, gedeelde Dag/Week/Maand-header), één-klik kopiëren per-entry en per-maaltijd vanuit friend dag-view met date-picker bottom-sheet, `get_friend_period` RPC) |
+| 2026-04-30 | F-A. NEVO seed (~2300 NL-staples in shared products-tabel met `source`/`nevo_code`/`synonyms`-kolommen, gecureerde `unit_grams` voor stukbare items, ranking-aware zoeken met synoniem-match en accent-strip, NEVO-attributie in Settings, Supabase CLI workflow + 14-digit migration-naamgeving) |

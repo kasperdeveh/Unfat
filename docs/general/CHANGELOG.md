@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-04-30
+
+- F-A: NEVO seed (Nederlandse productdatabase, ~2300 staples)
+  - Schema-uitbreiding op `products`: nieuwe kolommen `source`, `nevo_code`, `synonyms`; `created_by` nullable; RLS-policies beperken user-CRUD tot `source='user'` zodat NEVO-records read-only zijn
+  - Eenmalig import-script `scripts/import-nevo.js` (pure Node, zonder dependencies) parseert de RIVM-CSV en genereert een Supabase-migration met INSERT-statements; ON CONFLICT DO UPDATE voor idempotente re-runs na JSON-edits
+  - Gecureerde `scripts/data/nevo-unit-grams.json` (~80 entries voor stukbare staples: fruit per stuk, eieren, brood-snees, plakken kaas/vleeswaren, snacks, basis-groenten)
+  - 2312 NEVO-records geseed (16 zonder kcal overgeslagen)
+  - `add-food.js`: default-view = laatst gegeten top 20 (met fallback-hint voor nieuwe users); zoeken matcht naam én synoniemen met diakritisch-strip; ranking-score (exact > naam-prefix > woord-grens > substring) zodat "appel" de echte appels boven "Aardappel" toont
+  - Pagination-fix in `db/products.js`: Supabase REST cap van 1000 rijen per select wordt nu via `.range()` doorlopen tot uitputting (zonder fix verloren we ~1300 NEVO-rijen stil)
+  - NEVO-attributie footer in Settings (verplicht per RIVM-voorwaarden)
+  - SW cache v8 → v9
+- Project-infrastructuur:
+  - Supabase CLI workflow gedocumenteerd in CLAUDE.md (install, `login --token`, `link --project-ref`, `db push`); SQL-files in `supabase/migrations/` blijven single source of truth
+  - Bestaande migrations hernoemd van 8-digit naar 14-digit `YYYYMMDDHHMMSS_*.sql`-formaat zodat de CLI's filename-sort consistent is met DB-version-sort (mixed lengths brak `db push`); `20260428b_friends_pending_handles.sql` → `20260428100000_friends_pending_handles.sql` (suffix `b` wordt door CLI afgewezen)
+  - `supabase/.temp/` en `scripts/data/*.csv` toegevoegd aan `.gitignore`
+- `docs/general/toekomstmuziek.md` aangemaakt als parkeerplaats voor lange-termijn-ideeën; bevat onderzoek over supermarkt-APIs (AH/Jumbo/Dirk niet haalbaar vanuit static PWA wegens CORS + ToS + endpoint-instabiliteit) en native iPhone-app als gerelateerd toekomstidee
+- ROADMAP G: 2 nieuwe parked items — Supabase MCP/directe SQL vanuit Claude, en UI-polish ronde
+
 ## 2026-04-29
 
 - D-vervolg: vrienden in week/maand-historie + één-klik kopiëren
