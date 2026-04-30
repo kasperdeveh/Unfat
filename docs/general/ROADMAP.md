@@ -53,6 +53,8 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Database met gerechten en suggesties op basis van wat de gebruiker nog mag eten
 - Splitsen van Supabase dev en prod environments (zodra de app echte gebruikers krijgt)
 - Hosting migreren naar Cloudflare Pages / Netlify / Vercel (alle drie gratis met private repo support, edge caching wereldwijd) — relevant zodra de repo private moet worden of als de Pages-build te traag wordt
+- Supabase MCP / directe SQL-uitvoering vanuit Claude — zodat schema-checks en data-verificatie ter plekke kunnen, terwijl alle wijzigingen nog steeds als `.sql`-migrations in `supabase/migrations/` worden weggeschreven (single source of truth blijft de migration-folder)
+- UI-polish ronde — diverse styling/UX-zaken die niet mooi zijn op de PWA-versie (concrete punten verzamelen tijdens dagelijks gebruik)
 
 ## Afgerond ✅
 
