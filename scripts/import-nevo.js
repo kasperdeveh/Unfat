@@ -11,16 +11,16 @@
 const fs = require('fs');
 const path = require('path');
 
-const CSV_PATH    = path.join(__dirname, 'data', 'nevo-2025-9.csv');
+const CSV_PATH    = path.join(__dirname, 'data', 'NEVO2025_v9.0', 'NEVO2025_v9.0.csv');
 const UNITS_PATH  = path.join(__dirname, 'data', 'nevo-unit-grams.json');
 const OUT_PATH    = path.join(__dirname, '..', 'supabase', 'migrations', '20260430100000_nevo_seed.sql');
 
-// CSV column names we expect in the NEVO export.
-// If RIVM uses different headers (English vs Dutch), update these.
+// CSV column names from NEVO 2025/9.0 export.
 const COL_CODE    = 'NEVO-code';
-const COL_NAME    = 'Voedingsmiddelnaam';
+const COL_NAME    = 'Voedingsmiddelnaam/Dutch food name';
+const COL_NAME_EN = 'Engelse naam/Food name';
 const COL_SYNS    = 'Synoniem';
-const COL_KCAL    = 'kcal (kcal)';
+const COL_KCAL    = 'ENERCC (kcal)';
 
 // --- Tiny CSV parser (RFC 4180-ish, supports quoted fields with delimiter inside).
 function parseCsv(text) {
@@ -28,7 +28,9 @@ function parseCsv(text) {
 
   const firstNl = text.indexOf('\n');
   const headerLine = text.slice(0, firstNl);
-  const delim = headerLine.includes(';') ? ';' : ',';
+  const delim = headerLine.includes('|') ? '|'
+              : headerLine.includes(';') ? ';'
+              : ',';
 
   const rows = [];
   let row = [];
@@ -96,17 +98,21 @@ function main() {
     if (!code || !name) continue;
     if (!kcal) { skippedNoKcal++; continue; }
 
-    const syns = (r[COL_SYNS] || '')
-      .split(/[,;]/)
+    const synsRaw = [
+      r[COL_NAME_EN] || '',
+      ...(r[COL_SYNS] || '').split(/[,;]/),
+    ];
+    const syns = synsRaw
       .map(s => s.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .filter((s, i, arr) => arr.indexOf(s) === i);  // dedup
 
     const unitGrams = units[code] != null ? String(units[code]) : 'null';
 
     inserts.push(
       `insert into public.products (name, kcal_per_100g, unit_grams, source, nevo_code, synonyms, created_by) ` +
       `values (${sqlString(name)}, ${kcal}, ${unitGrams}, 'nevo', ${sqlString(code)}, ${sqlArray(syns)}, null) ` +
-      `on conflict (nevo_code) do nothing;`
+      `on conflict (nevo_code) where nevo_code is not null do nothing;`
     );
     kept++;
   }
