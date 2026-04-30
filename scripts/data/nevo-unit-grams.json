@@ -1,0 +1,3 @@
+{
+  "_comment": "Curated map: NEVO-code (string) -> grams per piece. Fill in once CSV is downloaded; codes are visible in the CSV first column. Coverage target: ~50-100 stukbare staples (fruit per stuk, eggs, slices of bread/cheese/cold cuts, single snacks). Items not listed here will have unit_grams=null and the per-piece toggle will be hidden in add-food-portion."
+}

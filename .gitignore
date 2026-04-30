@@ -13,3 +13,6 @@
 
 # Supabase CLI runtime state (created by `supabase link`)
 supabase/.temp/
+
+# NEVO source CSV — RIVM copyright, not redistributed
+scripts/data/*.csv
