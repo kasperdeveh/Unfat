@@ -10,3 +10,6 @@
 
 # Superpowers brainstorm mockups
 .superpowers/
+
+# Supabase CLI runtime state (created by `supabase link`)
+supabase/.temp/

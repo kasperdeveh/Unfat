@@ -67,6 +67,28 @@ This is a vanilla HTML/CSS/JavaScript web application. There is no build step.
 
 **Service worker cache (PWA):** Bij elke deploy waarbij een static asset wijzigt (CSS, JS, HTML, manifest, of de SW zelf) MOET `CACHE_NAME` in `src/sw.js` worden bumped (bv. `unfat-v4` → `unfat-v5`). Dit triggert het update-prompt-mechanisme in `app.js`, waardoor bestaande gebruikers een "Nieuwe versie beschikbaar"-toast zien en in 1 tap kunnen verversen. Zonder bump blijven gebruikers op de oude cache zitten tot ze handmatig hun cache legen.
 
+**Supabase CLI:** Migrations en directe DB-queries lopen via de `supabase` CLI. Niet in de devcontainer-base — installeer opnieuw na elke rebuild:
+
+```bash
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+curl -L -o /tmp/supabase.tar.gz "https://github.com/supabase/cli/releases/latest/download/supabase_linux_${ARCH}.tar.gz"
+tar -xzf /tmp/supabase.tar.gz -C /tmp/ && mv /tmp/supabase ~/.local/bin/ && chmod +x ~/.local/bin/supabase
+```
+
+Eenmalige login met een Personal Access Token (https://supabase.com/dashboard/account/tokens) — token persisteert in `~/.supabase/access-token`:
+
+```bash
+supabase login --token sbp_...
+```
+
+Project linken vanuit repo-root (één keer per devcontainer; maakt `supabase/.temp/` aan, gitignored):
+
+```bash
+supabase link --project-ref zkdmijseblullnjdmgpc
+```
+
+Migration toepassen op de cloud-DB: `supabase db push`. SQL-files in `supabase/migrations/` blijven het single source of truth — alle schemawijzigingen worden daar gecommit.
+
 ## Devcontainer
 - Pas NOOIT `.devcontainer/devcontainer.json` aan zonder expliciete toestemming
 - Pas NOOIT `.devcontainer/post-create.sh` aan zonder expliciete toestemming
