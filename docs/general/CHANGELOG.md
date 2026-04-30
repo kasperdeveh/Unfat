@@ -2,6 +2,10 @@
 
 ## 2026-04-30
 
+- Search: multi-token AND-match en compound-vs-standalone-prefix onderscheid
+  - `scoreQuery` tokenizet de query nu op whitespace: elke token moet matchen (anders 0), totaalscore = som van per-token scores. "Appel schil" matcht zo "Appel m schil gem" (was: 0 resultaten omdat de hele string als één substring werd gematcht)
+  - Prefix-tier gesplitst: "Appel " (prefix + word-end) scoort 850, "Appelcarre" (prefix + letter) scoort 750. Bij zoekterm "appel" tonen we nu echte appel-varianten boven compound-words als Appelcarre/Appelmoes
+  - SW cache v9 → v10
 - F-A: NEVO seed (Nederlandse productdatabase, ~2300 staples)
   - Schema-uitbreiding op `products`: nieuwe kolommen `source`, `nevo_code`, `synonyms`; `created_by` nullable; RLS-policies beperken user-CRUD tot `source='user'` zodat NEVO-records read-only zijn
   - Eenmalig import-script `scripts/import-nevo.js` (pure Node, zonder dependencies) parseert de RIVM-CSV en genereert een Supabase-migration met INSERT-statements; ON CONFLICT DO UPDATE voor idempotente re-runs na JSON-edits
