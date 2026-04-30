@@ -2,6 +2,17 @@ import { defineRoute, startRouter, navigate } from './router.js';
 import { supabase } from './supabase.js';
 import { renderBottomNav } from './ui.js';
 
+// Belt-and-suspenders against iOS double-tap-zoom: viewport meta has
+// `user-scalable=no, maximum-scale=1` and CSS has `touch-action: manipulation`,
+// but iOS Safari (especially in standalone PWA) sometimes still triggers a
+// zoom-tap. If two touchend events fire within 350ms we cancel the second.
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (event) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 350) event.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
+
 // Register routes — view modules are loaded lazily.
 defineRoute('#/login',          () => import('./views/login.js'));
 defineRoute('#/onboarding',     () => import('./views/onboarding.js'));
