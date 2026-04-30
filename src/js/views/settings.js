@@ -77,6 +77,11 @@ export async function render(container) {
       ${escapeHtml(session.user.email)}<br>
       Geregistreerd op ${created}
     </p>
+
+    <p class="text-muted" style="font-size:11px;text-align:center;margin-top:16px;opacity:0.7;">
+      Productdata mede gebaseerd op<br>
+      <a href="https://www.rivm.nl/nederlands-voedingsstoffenbestand" target="_blank" rel="noopener" style="color:inherit;">NEVO-online versie 2025/9.0, RIVM, Bilthoven</a>.
+    </p>
   `;
 
   // Goal save
