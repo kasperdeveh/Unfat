@@ -54,7 +54,18 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Hosting migreren naar Cloudflare Pages / Netlify / Vercel (alle drie gratis met private repo support, edge caching wereldwijd) — relevant zodra de repo private moet worden of als de Pages-build te traag wordt
 - Supabase MCP / directe SQL-uitvoering vanuit Claude — zodat schema-checks en data-verificatie ter plekke kunnen, terwijl alle wijzigingen nog steeds als `.sql`-migrations in `supabase/migrations/` worden weggeschreven (single source of truth blijft de migration-folder)
 - UI-polish ronde — diverse styling/UX-zaken die niet mooi zijn op de PWA-versie (concrete punten verzamelen tijdens dagelijks gebruik)
-- Update-prompt cache-invalidation onderzoeken — gebruiker meldde dat ondanks de "Nieuwe versie beschikbaar"-toast en bijbehorende tap-actie de PWA toch nog op de oude cache bleef hangen tot handmatig cache leegmaken. Reproduceren en root cause vinden in het `skipWaiting` + `clients.claim` + reload-flow tussen `app.js` en `sw.js`
+- Update-prompt cache-invalidation onderzoeken — bug bevestigd 2026-04-30:
+  - **Symptoom:** "Nieuwe versie beschikbaar"-toast verschijnt netjes, maar tap op Vernieuwen ververst niet altijd. Gebruiker moest soms alsnog handmatig de PWA-cache legen om de nieuwe versie te zien
+  - **Hypothese:** `sw.js` doet wel `self.skipWaiting()` in install, maar geen `self.clients.claim()` in activate. Daardoor blijft de huidige pagina onder de OUDE SW-controller hangen tot een echte navigatie. `window.location.reload()` in `app.js:156` herlaadt onder die oude controller → resources uit oude cache → niets verandert visueel
+  - **Mogelijke fix:** `self.clients.claim()` toevoegen in `activate` event van `sw.js`, en page-side luisteren op `controllerchange` vóór de reload (i.p.v. direct reload na tap)
+  - **Code-pointers:** `src/js/app.js:120-145` (SW-registratie/updatefound), `src/js/app.js:148-158` (`showUpdatePrompt`), `src/sw.js` activate/install
+  - **Testscenario:**
+    1. PWA op iPhone staat op de huidige cache-versie
+    2. Maak een goed-zichtbare visuele wijziging zonder functionele impact — bv. de bottom-nav UI-fix tijdelijk reverten (commits `86fb770` + `aad3842` → flat squares terug) óf de accent-kleur even van groen naar oranje
+    3. Bump `CACHE_NAME` in `sw.js`, commit + push, wacht op GitHub-Pages-deploy
+    4. Open de PWA → toast moet verschijnen → tap Vernieuwen
+    5. **Verifieer:** wijziging is direct zichtbaar zonder dat handmatig cache leeg gemaakt hoeft te worden
+    6. Revert de test-wijziging (of zet accent terug), bump cache nogmaals, push → herhaal stap 4-5 om reproduceerbaarheid te bewijzen (in beide richtingen smooth = fix werkt; één richting hapert = nog niet helemaal goed)
 
 ## Afgerond ✅
 
