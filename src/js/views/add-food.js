@@ -1,5 +1,9 @@
 import { listProducts } from '../db/products.js';
+import { listRecentProductsForUser } from '../db/entries.js';
 import { navigate } from '../router.js';
+
+const TOP_N_DEFAULT = 20;
+const TOP_N_SEARCH  = 50;
 
 export async function render(container, params) {
   const meal = params.meal || '';
@@ -36,9 +40,13 @@ export async function render(container, params) {
     navigate(`#/add/new${q ? '?' + q : ''}`);
   });
 
-  let products = [];
+  let allProducts = [];
+  let recentProducts = [];
   try {
-    products = await listProducts();
+    [allProducts, recentProducts] = await Promise.all([
+      listProducts(),
+      listRecentProductsForUser(TOP_N_DEFAULT),
+    ]);
   } catch (err) {
     document.getElementById('results').innerHTML =
       `<p class="error">Kon producten niet laden: ${err.message}</p>`;
@@ -49,39 +57,75 @@ export async function render(container, params) {
   const resultsEl = document.getElementById('results');
 
   function renderResults(query) {
-    const q = query.trim().toLowerCase();
-    const filtered = q
-      ? products.filter(p => p.name.toLowerCase().includes(q))
-      : products;
+    const q = normalize(query.trim());
 
+    if (!q) {
+      if (recentProducts.length > 0) {
+        renderList(resultsEl, recentProducts, 'Laatst gegeten', allProducts.length);
+      } else {
+        resultsEl.innerHTML = `
+          <p class="text-muted" style="padding:12px 0;">
+            Typ om te zoeken in ${allProducts.length} producten — probeer: appel, brood, yoghurt
+          </p>`;
+      }
+      return;
+    }
+
+    const filtered = allProducts.filter(p => matchesQuery(p, q)).slice(0, TOP_N_SEARCH);
     if (filtered.length === 0) {
       resultsEl.innerHTML = `<p class="text-muted" style="padding:12px 0;">Geen producten gevonden. Maak een nieuw product aan ↓</p>`;
       return;
     }
-
-    resultsEl.innerHTML = `<ul class="list">${filtered.map(p => `
-      <li class="meal-row" data-id="${p.id}">
-        <div>
-          <div>${escapeHtml(p.name)}</div>
-          <div class="items">${p.kcal_per_100g} kcal/100g${p.unit_grams ? ` · ${p.unit_grams}g/stuk` : ''}</div>
-        </div>
-        <span>›</span>
-      </li>
-    `).join('')}</ul>`;
-
-    resultsEl.querySelectorAll('.meal-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const id = row.getAttribute('data-id');
-        const qs = new URLSearchParams({ product: id });
-        if (meal) qs.set('meal', meal);
-        if (dateParam) qs.set('date', dateParam);
-        navigate(`#/add/portion?${qs}`);
-      });
-    });
+    renderList(resultsEl, filtered, null, null);
   }
 
   search.addEventListener('input', () => renderResults(search.value));
   renderResults('');
+
+  resultsEl.addEventListener('click', (e) => {
+    const row = e.target.closest('.meal-row');
+    if (!row) return;
+    const id = row.getAttribute('data-id');
+    const qs = new URLSearchParams({ product: id });
+    if (meal) qs.set('meal', meal);
+    if (dateParam) qs.set('date', dateParam);
+    navigate(`#/add/portion?${qs}`);
+  });
+}
+
+function normalize(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '');
+}
+
+function matchesQuery(product, normalizedQuery) {
+  if (normalize(product.name).includes(normalizedQuery)) return true;
+  if (Array.isArray(product.synonyms)) {
+    for (const syn of product.synonyms) {
+      if (normalize(syn).includes(normalizedQuery)) return true;
+    }
+  }
+  return false;
+}
+
+function renderList(el, products, sectionLabel, totalCount) {
+  const header = sectionLabel
+    ? `<p class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 4px;">${sectionLabel}</p>`
+    : '';
+  const footer = totalCount != null
+    ? `<p class="text-muted" style="font-size:11px;text-align:center;padding:12px 0;">Typ om te zoeken in ${totalCount} producten</p>`
+    : '';
+  el.innerHTML = header + `<ul class="list">${products.map(p => `
+    <li class="meal-row" data-id="${p.id}">
+      <div>
+        <div>${escapeHtml(p.name)}</div>
+        <div class="items">${p.kcal_per_100g} kcal/100g${p.unit_grams ? ` · ${p.unit_grams}g/stuk` : ''}</div>
+      </div>
+      <span>›</span>
+    </li>
+  `).join('')}</ul>` + footer;
 }
 
 function escapeHtml(s) {
