@@ -83,3 +83,30 @@ export async function listEntriesForDateRange(startIso, endIso) {
   if (error) throw error;
   return data;
 }
+
+// Returns up to `limit` distinct products the current user has logged,
+// ordered by most recent entry. Used for the default view in add-food.
+export async function listRecentProductsForUser(limit = 20) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase
+    .from('entries')
+    .select('product_id, created_at, products(id, name, kcal_per_100g, unit_grams, source, synonyms, nevo_code)')
+    .eq('user_id', session.user.id)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) throw error;
+
+  const seen = new Set();
+  const result = [];
+  for (const row of data) {
+    if (!row.products) continue;
+    if (seen.has(row.product_id)) continue;
+    seen.add(row.product_id);
+    result.push(row.products);
+    if (result.length >= limit) break;
+  }
+  return result;
+}
