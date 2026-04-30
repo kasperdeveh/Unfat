@@ -71,12 +71,20 @@ export async function render(container, params) {
       return;
     }
 
-    const filtered = allProducts.filter(p => matchesQuery(p, q)).slice(0, TOP_N_SEARCH);
-    if (filtered.length === 0) {
+    const scored = allProducts
+      .map(p => ({ p, score: scoreQuery(p, q) }))
+      .filter(x => x.score > 0)
+      .sort((a, b) =>
+        b.score - a.score ||
+        a.p.name.length - b.p.name.length ||
+        a.p.name.localeCompare(b.p.name, 'nl'))
+      .slice(0, TOP_N_SEARCH)
+      .map(x => x.p);
+    if (scored.length === 0) {
       resultsEl.innerHTML = `<p class="text-muted" style="padding:12px 0;">Geen producten gevonden. Maak een nieuw product aan ↓</p>`;
       return;
     }
-    renderList(resultsEl, filtered, null, null);
+    renderList(resultsEl, scored, null, null);
   }
 
   search.addEventListener('input', () => renderResults(search.value));
@@ -100,14 +108,29 @@ function normalize(s) {
     .replace(/\p{Diacritic}/gu, '');
 }
 
-function matchesQuery(product, normalizedQuery) {
-  if (normalize(product.name).includes(normalizedQuery)) return true;
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Higher score = better match. 0 = no match.
+// Ordering: exact > prefix > word-boundary > substring; name beats synonym.
+function scoreQuery(product, q) {
+  const wordRe = new RegExp(`\\b${escapeRegex(q)}`);
+  const name = normalize(product.name);
+  if (name === q) return 1000;
+  if (name.startsWith(q)) return 800;
+  if (wordRe.test(name)) return 600;
+  let best = name.includes(q) ? 200 : 0;
   if (Array.isArray(product.synonyms)) {
     for (const syn of product.synonyms) {
-      if (normalize(syn).includes(normalizedQuery)) return true;
+      const s = normalize(syn);
+      if (s === q)              best = Math.max(best, 500);
+      else if (s.startsWith(q)) best = Math.max(best, 400);
+      else if (wordRe.test(s))  best = Math.max(best, 300);
+      else if (s.includes(q))   best = Math.max(best, 100);
     }
   }
-  return false;
+  return best;
 }
 
 function renderList(el, products, sectionLabel, totalCount) {
