@@ -2,6 +2,28 @@ import { defineRoute, startRouter, navigate } from './router.js';
 import { supabase } from './supabase.js';
 import { renderBottomNav } from './ui.js';
 
+// Suppress iOS double-tap-zoom in standalone PWA. CSS `touch-action:
+// manipulation` and viewport `user-scalable=no` aren't enough in iOS
+// standalone PWA — Safari still triggers a zoom on quick repeat taps.
+//
+// We only cancel the EXACT second tap of a sequence (when within 350ms
+// on the same DOM target). Tap #3 and beyond pass through, so rapid
+// hammering on a button keeps responding instead of locking up.
+let lastTapTime = 0;
+let lastTapTarget = null;
+let tapCount = 0;
+document.addEventListener('touchend', (event) => {
+  const now = Date.now();
+  if (now - lastTapTime > 500) tapCount = 1;
+  else tapCount++;
+
+  if (tapCount === 2 && now - lastTapTime <= 350 && event.target === lastTapTarget) {
+    event.preventDefault();
+  }
+  lastTapTime = now;
+  lastTapTarget = event.target;
+}, { passive: false });
+
 // Register routes — view modules are loaded lazily.
 defineRoute('#/login',          () => import('./views/login.js'));
 defineRoute('#/onboarding',     () => import('./views/onboarding.js'));

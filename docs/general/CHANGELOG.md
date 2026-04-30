@@ -7,8 +7,8 @@
   - Alignment-bug in PWA-modus: `box-sizing: border-box` + fixed `height: 64px` + `padding-bottom: env(safe-area-inset-bottom)` perste het content-gebied tot ~30px → iconen + labels stonden te ver naar boven. Nu rekent zowel de nav-`height` als `body` padding-bottom de safe-area extra mee (`calc(--bottom-nav-h + env(safe-area-inset-bottom))`)
   - Tap-feedback: lichte `scale(0.94)` op `:active`
   - Toast en update-toast posities meegegroeid zodat ze niet meer over de home-indicator zweven
-- iOS double-tap-zoom onderdrukt via twee lagen: (1) `* { touch-action: manipulation }` en (2) viewport meta `maximum-scale=1.0, user-scalable=no`. iOS heeft system-level zoom voor accessibility (Settings > Accessibility > Zoom). Tussentijds geprobeerde JS-handler op `touchend` met `{ passive: false }` weer verwijderd — die blokkeerde elke touch-event tot de handler klaar was, waardoor de UI hing tijdens snelle, herhaalde taps
-- SW cache v10 → v13 (drie bumps deze release tijdens iteratie)
+- iOS double-tap-zoom onderdrukt — drie lagen omdat iOS standalone PWA hardnekkig is: (1) `* { touch-action: manipulation }`, (2) viewport meta `maximum-scale=1.0, user-scalable=no`, (3) JS-handler op `touchend` die alleen de **tweede** tap van een rij blokkeert (binnen 350ms na de vorige, op hetzelfde DOM-target). Tap 3, 4, 5… komen er weer normaal door zodat rapid hammeren niet langer de app laat "hangen". iOS heeft system-level zoom voor accessibility (Settings > Accessibility > Zoom)
+- SW cache v10 → v14 (vier bumps deze release tijdens iteratie)
 - `.gitignore`: `screenshots/` map (lokale UI-feedback voor Claude, niet checked-in)
 
 - Search: multi-token AND-match en compound-vs-standalone-prefix onderscheid

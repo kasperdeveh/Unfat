@@ -54,6 +54,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Hosting migreren naar Cloudflare Pages / Netlify / Vercel (alle drie gratis met private repo support, edge caching wereldwijd) — relevant zodra de repo private moet worden of als de Pages-build te traag wordt
 - Supabase MCP / directe SQL-uitvoering vanuit Claude — zodat schema-checks en data-verificatie ter plekke kunnen, terwijl alle wijzigingen nog steeds als `.sql`-migrations in `supabase/migrations/` worden weggeschreven (single source of truth blijft de migration-folder)
 - UI-polish ronde — diverse styling/UX-zaken die niet mooi zijn op de PWA-versie (concrete punten verzamelen tijdens dagelijks gebruik)
+- Update-prompt cache-invalidation onderzoeken — gebruiker meldde dat ondanks de "Nieuwe versie beschikbaar"-toast en bijbehorende tap-actie de PWA toch nog op de oude cache bleef hangen tot handmatig cache leegmaken. Reproduceren en root cause vinden in het `skipWaiting` + `clients.claim` + reload-flow tussen `app.js` en `sw.js`
 
 ## Afgerond ✅
 
