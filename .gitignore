@@ -17,3 +17,6 @@ supabase/.temp/
 # NEVO source files — RIVM copyright, not redistributed
 scripts/data/*.csv
 scripts/data/NEVO*/
+
+# Local screenshots for sharing UI feedback with Claude
+screenshots/

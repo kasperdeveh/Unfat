@@ -2,6 +2,15 @@
 
 ## 2026-04-30
 
+- UI-polish: bottom-nav iconen + alignment fix in PWA-standalone modus
+  - Iconen vervangen: flat gevulde vierkantjes → Lucide-style outline SVG's (huis, plus-cirkel, klok, twee personen, tandwiel) met `stroke=currentColor` zodat de active accent automatisch volgt
+  - Alignment-bug in PWA-modus: `box-sizing: border-box` + fixed `height: 64px` + `padding-bottom: env(safe-area-inset-bottom)` perste het content-gebied tot ~30px → iconen + labels stonden te ver naar boven. Nu rekent zowel de nav-`height` als `body` padding-bottom de safe-area extra mee (`calc(--bottom-nav-h + env(safe-area-inset-bottom))`)
+  - Tap-feedback: lichte `scale(0.94)` op `:active`
+  - Toast en update-toast posities meegegroeid zodat ze niet meer over de home-indicator zweven
+- iOS double-tap-zoom onderdrukt via `* { touch-action: manipulation }`; pinch-zoom en scrollen blijven werken (geen `user-scalable=no` in viewport want dat blokkeert ook accessibility-zoom)
+- SW cache v10 → v11
+- `.gitignore`: `screenshots/` map (lokale UI-feedback voor Claude, niet checked-in)
+
 - Search: multi-token AND-match en compound-vs-standalone-prefix onderscheid
   - `scoreQuery` tokenizet de query nu op whitespace: elke token moet matchen (anders 0), totaalscore = som van per-token scores. "Appel schil" matcht zo "Appel m schil gem" (was: 0 resultaten omdat de hele string als één substring werd gematcht)
   - Prefix-tier gesplitst: "Appel " (prefix + word-end) scoort 850, "Appelcarre" (prefix + letter) scoort 750. Bij zoekterm "appel" tonen we nu echte appel-varianten boven compound-words als Appelcarre/Appelmoes
