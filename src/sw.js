@@ -1,7 +1,7 @@
 // Service worker for Unfat. Cache-first for static assets, network-first for Supabase.
 // Bump CACHE_NAME on every deploy that ships static asset changes to invalidate caches.
 
-const CACHE_NAME = 'unfat-v17';
+const CACHE_NAME = 'unfat-v18';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -47,10 +47,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
-  // Don't skipWaiting here. We defer activation until the user taps
-  // "Vernieuwen" in the update toast (via a SKIP_WAITING message), so the
-  // page-side controllerchange listener can drive the reload at the right
-  // moment instead of racing the activation.
+  // Auto-skip so any client still running pre-v18 app.js (which doesn't
+  // know how to send SKIP_WAITING) still gets rescued on next reload.
+  // The page-side controllerchange listener handles the actual refresh
+  // cleanly; the SKIP_WAITING message handler below remains as a no-op
+  // safety net for future updates.
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
