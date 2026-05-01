@@ -167,6 +167,7 @@ export async function render(container) {
   });
 
   document.getElementById('signout-btn').addEventListener('click', async () => {
+    if (!confirm('Weet je zeker dat je wil uitloggen?')) return;
     try { await signOut(); navigate('#/login'); }
     catch (err) { showToast('Uitloggen mislukt'); }
   });
