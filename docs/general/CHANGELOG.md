@@ -4,7 +4,8 @@
 
 - Update-prompt: reload werkt nu betrouwbaar
   - Race opgelost door auto-`skipWaiting()` in install te vervangen door een door de gebruiker gestuurde flow: tap "Vernieuwen" → page post `SKIP_WAITING` naar de waiting SW → SW activeert + `clients.claim()` → page-side `controllerchange`-listener doet één reload. De oude opzet riep `skipWaiting()` direct in install aan, waardoor de nieuwe SW soms al actief was vóór de tap en `reload()` op het verkeerde moment de oude cache trof
-  - SW cache v14 → v15
+- Subtiele app-versie onderaan Settings (bv. `v17`); leest live uit `caches.keys()` zodat `CACHE_NAME` in `sw.js` single source of truth blijft
+- SW cache v14 → v17 (één productie-bump per change; v15/v16 waren tussentijdse verificatie-deploys)
 
 ## 2026-04-30
 

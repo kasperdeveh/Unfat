@@ -82,7 +82,21 @@ export async function render(container) {
       Productdata mede gebaseerd op<br>
       <a href="https://www.rivm.nl/nederlands-voedingsstoffenbestand" target="_blank" rel="noopener" style="color:inherit;">NEVO-online versie 2025/9.0, RIVM, Bilthoven</a>.
     </p>
+
+    <p id="app-version-line" class="text-muted" style="font-size:10px;text-align:center;margin-top:24px;opacity:0.4;" hidden></p>
   `;
+
+  // Show app version (read from active SW cache; absent on localhost where SW is disabled).
+  if ('caches' in window) {
+    caches.keys().then((keys) => {
+      const cache = keys.find((k) => k.startsWith('unfat-v'));
+      const el = document.getElementById('app-version-line');
+      if (cache && el) {
+        el.textContent = cache.replace('unfat-', '');
+        el.hidden = false;
+      }
+    }).catch(() => { /* ignore */ });
+  }
 
   // Goal save
   document.getElementById('settings-form').addEventListener('submit', async (e) => {
