@@ -4,6 +4,7 @@ import { navigate } from '../router.js';
 export async function render(container, params) {
   const meal = params.meal || '';
   const dateParam = params.date || '';
+  const namePrefill = params.name || '';
 
   container.innerHTML = `
     <div class="view-header">
@@ -17,7 +18,7 @@ export async function render(container, params) {
     <form id="new-product-form">
       <div class="field">
         <label class="field-label" for="name">Naam</label>
-        <input class="input" id="name" type="text" required maxlength="120" placeholder="bv. Volkoren brood">
+        <input class="input" id="name" type="text" required maxlength="120" placeholder="bv. Volkoren brood" value="${escapeHtml(namePrefill)}">
       </div>
 
       <div class="field">
@@ -77,4 +78,10 @@ export async function render(container, params) {
       saveBtn.textContent = 'Opslaan en kiezen';
     }
   });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
 }

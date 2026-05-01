@@ -36,6 +36,8 @@ export async function render(container, params) {
     const qs = new URLSearchParams();
     if (meal) qs.set('meal', meal);
     if (dateParam) qs.set('date', dateParam);
+    const name = document.getElementById('search').value.trim();
+    if (name) qs.set('name', name);
     const q = qs.toString();
     navigate(`#/add/new${q ? '?' + q : ''}`);
   });

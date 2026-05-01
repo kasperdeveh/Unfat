@@ -2,6 +2,7 @@
 
 ## 2026-05-01
 
+- UX: zoekterm uit "Voeg eten toe" wordt geprefilled in het naam-veld bij "+ Nieuw product aanmaken" — bespaart een tweede keer typen. SW cache v23 → v24
 - Bugfix: streefdoel/max kcal accepteerden geen niet-veelvoud-van-50 (bv. 1733). `step="50"` op de inputs in `settings.js` en `onboarding.js` blokkeerde browser-side submit met "dichtstbijzijnde geldige waarden zijn 1700 en 1750". Step weggehaald → default `step=1`, dus elke integer ≥800 werkt nu. SW cache v22 → v23
 - Update-prompt: reload werkt nu in één tap, in beide richtingen geverifieerd op iPhone-PWA
   - Echte root cause: `cache.addAll` tijdens SW-install gebruikte standaard `fetch()` zonder cache-bypass. GitHub Pages serveert CSS/JS met `Cache-Control: max-age=600`, dus de nieuwe SW vulde z'n cache met **stale bytes** uit de browser-HTTP-laag — toast verscheen, SW activeerde, maar de pagina laadde alsnog de oude assets. Fix: elke STATIC_ASSET wordt nu in een `Request(..., { cache: 'reload' })` gewikkeld zodat de install-fetch direct naar het netwerk gaat
