@@ -2,10 +2,12 @@
 
 ## 2026-05-01
 
-- Update-prompt: reload werkt nu betrouwbaar
-  - Race opgelost door auto-`skipWaiting()` in install te vervangen door een door de gebruiker gestuurde flow: tap "Vernieuwen" → page post `SKIP_WAITING` naar de waiting SW → SW activeert + `clients.claim()` → page-side `controllerchange`-listener doet één reload. De oude opzet riep `skipWaiting()` direct in install aan, waardoor de nieuwe SW soms al actief was vóór de tap en `reload()` op het verkeerde moment de oude cache trof
-- Subtiele app-versie onderaan Settings (bv. `v18`); leest live uit `caches.keys()` zodat `CACHE_NAME` in `sw.js` single source of truth blijft
-- SW cache v14 → v18 (rescue-deploy houdt `skipWaiting()` in install zodat clients die nog op pre-fix `app.js` draaien ook overgaan; `controllerchange`-listener regelt vervolgens de reload-volgorde correct)
+- Update-prompt: reload werkt nu in één tap, in beide richtingen geverifieerd op iPhone-PWA
+  - Echte root cause: `cache.addAll` tijdens SW-install gebruikte standaard `fetch()` zonder cache-bypass. GitHub Pages serveert CSS/JS met `Cache-Control: max-age=600`, dus de nieuwe SW vulde z'n cache met **stale bytes** uit de browser-HTTP-laag — toast verscheen, SW activeerde, maar de pagina laadde alsnog de oude assets. Fix: elke STATIC_ASSET wordt nu in een `Request(..., { cache: 'reload' })` gewikkeld zodat de install-fetch direct naar het netwerk gaat
+  - Tweede verbetering — door-gebruiker-bestuurde activatie: `skipWaiting()` is uit `install` weg; in plaats daarvan post de page een `SKIP_WAITING`-bericht wanneer de gebruiker tapt op "Vernieuwen". SW handelt dat af → activeert + `clients.claim()` → page-side `controllerchange`-listener doet één reload. Geen race meer met "reload-vóór-active"
+  - Tijdens de roll-out was één rescue-deploy nodig (`skipWaiting()` kort terug in install) om bestaande PWA-installaties die nog op pre-fix `app.js` draaiden vooruit te helpen; vanaf v19 is `skipWaiting()` weer permanent uit install
+- Subtiele app-versie onderaan Settings (bv. `v22`); leest live uit `caches.keys()` zodat `CACHE_NAME` in `sw.js` single source of truth blijft
+- SW cache v14 → v22
 
 ## 2026-04-30
 

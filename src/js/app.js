@@ -166,12 +166,6 @@ function showUpdatePrompt(reg) {
   toast.querySelector('#update-btn').addEventListener('click', () => {
     // Tell the waiting SW to take over. It will activate, claim this
     // client, and the controllerchange listener above triggers the reload.
-    const waiting = reg.waiting;
-    if (waiting) {
-      waiting.postMessage({ type: 'SKIP_WAITING' });
-    } else {
-      // Edge case: no waiting worker (e.g. already active). Just reload.
-      window.location.reload();
-    }
+    reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
   });
 }
