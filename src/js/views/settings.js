@@ -36,12 +36,12 @@ export async function render(container) {
     <form id="settings-form">
       <div class="field">
         <label class="field-label" for="target">Dagelijks streefdoel (kcal)</label>
-        <input class="input" id="target" type="number" min="800" max="6000" step="50" required value="${profile.daily_target_kcal}" inputmode="numeric">
+        <input class="input" id="target" type="number" min="800" max="6000" required value="${profile.daily_target_kcal}" inputmode="numeric">
       </div>
 
       <div class="field">
         <label class="field-label" for="max">Absoluut max (kcal)</label>
-        <input class="input" id="max" type="number" min="800" max="8000" step="50" required value="${profile.daily_max_kcal}" inputmode="numeric">
+        <input class="input" id="max" type="number" min="800" max="8000" required value="${profile.daily_max_kcal}" inputmode="numeric">
       </div>
 
       <button class="btn" type="submit" id="save-btn">Opslaan</button>

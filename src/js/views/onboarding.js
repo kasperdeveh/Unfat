@@ -16,11 +16,11 @@ export async function render(container) {
       <form id="onboarding-form-1">
         <div class="field">
           <label class="field-label" for="target">Dagelijks streefdoel (kcal)</label>
-          <input class="input" id="target" type="number" min="800" max="6000" step="50" required value="${target}" inputmode="numeric">
+          <input class="input" id="target" type="number" min="800" max="6000" required value="${target}" inputmode="numeric">
         </div>
         <div class="field">
           <label class="field-label" for="max">Absoluut max (kcal)</label>
-          <input class="input" id="max" type="number" min="800" max="8000" step="50" required value="${max}" inputmode="numeric">
+          <input class="input" id="max" type="number" min="800" max="8000" required value="${max}" inputmode="numeric">
           <p class="text-muted" style="font-size:11px;margin-top:4px;">Mag overschreden worden — je krijgt dan een rode waarschuwing.</p>
         </div>
         <button class="btn" type="submit">Volgende</button>
