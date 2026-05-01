@@ -40,6 +40,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Doel-berekening via Mifflin-St Jeor formule (geslacht, leeftijd, lengte, gewicht, activiteit, gewenst tempo van afvallen) — als optie naast handmatige invoer
 - Custom SMTP via Resend (3000 mails/maand gratis) — maakt het mogelijk om magic link login terug te brengen als alternatief naast email+wachtwoord, en transactional mails (welkom, badges, etc.) te sturen zonder Supabase free tier rate limit van 2 mails/uur
 - Light mode als toggle in instellingen (basis is dark sporty)
+- Theme-instelling om het uiterlijk aan te passen — minimaal accent-kleur kiezen (bv. mint-groen / oranje / blauw); gebruiker liet zien dat oranje (`#ff9800`) ook prima werkt op dark, dus de basis-set kan klein blijven
 - Privé producten — keuze per product om alleen voor jezelf zichtbaar te maken
 - Duplicaten-detectie / merge-flow voor gedeelde producten database
 - Quick-add bottom sheet op dashboard voor 1-klik invoer van favorieten / recent

@@ -1,7 +1,7 @@
 // Service worker for Unfat. Cache-first for static assets, network-first for Supabase.
 // Bump CACHE_NAME on every deploy that ships static asset changes to invalidate caches.
 
-const CACHE_NAME = 'unfat-v19';
+const CACHE_NAME = 'unfat-v20';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -44,8 +44,15 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  // `cache: 'reload'` bypasses the browser HTTP cache so a new SW always
+  // populates its cache with truly fresh assets. Without this, GitHub
+  // Pages' max-age=600 on CSS/JS could leave the new cache filled with
+  // pre-deploy bytes — the toast appears, the SW activates, but the
+  // page still loads the old look.
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      cache.addAll(STATIC_ASSETS.map((url) => new Request(url, { cache: 'reload' })))
+    )
   );
   // No skipWaiting here. From v18 onwards every page runs the new app.js
   // that knows how to post SKIP_WAITING when the user taps "Vernieuwen",
