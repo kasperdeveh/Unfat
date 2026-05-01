@@ -121,6 +121,17 @@ if ('serviceWorker' in navigator && !isLocalhost) {
     try {
       const reg = await navigator.serviceWorker.register('./sw.js');
 
+      // The new SW takes over when it activates and calls clients.claim();
+      // that fires controllerchange here. We reload exactly once at that
+      // moment so the page is guaranteed to load resources from the new
+      // cache (no race with reload-before-active).
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+
       // When the SW finds a new version, an `updatefound` event fires.
       // Once the new worker reaches `installed` AND there is already a
       // controller, that means we just upgraded — show an update prompt.
@@ -129,7 +140,7 @@ if ('serviceWorker' in navigator && !isLocalhost) {
         if (!newWorker) return;
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            showUpdatePrompt();
+            showUpdatePrompt(reg);
           }
         });
       });
@@ -145,7 +156,7 @@ if ('serviceWorker' in navigator && !isLocalhost) {
   });
 }
 
-function showUpdatePrompt() {
+function showUpdatePrompt(reg) {
   if (document.getElementById('update-toast')) return;
   const toast = document.createElement('div');
   toast.id = 'update-toast';
@@ -153,6 +164,14 @@ function showUpdatePrompt() {
   toast.innerHTML = `<span>Nieuwe versie beschikbaar</span><button id="update-btn">Vernieuwen</button>`;
   document.body.appendChild(toast);
   toast.querySelector('#update-btn').addEventListener('click', () => {
-    window.location.reload();
+    // Tell the waiting SW to take over. It will activate, claim this
+    // client, and the controllerchange listener above triggers the reload.
+    const waiting = reg.waiting;
+    if (waiting) {
+      waiting.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      // Edge case: no waiting worker (e.g. already active). Just reload.
+      window.location.reload();
+    }
   });
 }

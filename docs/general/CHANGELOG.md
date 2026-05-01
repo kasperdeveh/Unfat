@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-05-01
+
+- Update-prompt: reload werkt nu betrouwbaar
+  - Race opgelost door auto-`skipWaiting()` in install te vervangen door een door de gebruiker gestuurde flow: tap "Vernieuwen" → page post `SKIP_WAITING` naar de waiting SW → SW activeert + `clients.claim()` → page-side `controllerchange`-listener doet één reload. De oude opzet riep `skipWaiting()` direct in install aan, waardoor de nieuwe SW soms al actief was vóór de tap en `reload()` op het verkeerde moment de oude cache trof
+  - SW cache v14 → v15
+
 ## 2026-04-30
 
 - UI-polish: bottom-nav iconen + alignment fix in PWA-standalone modus
