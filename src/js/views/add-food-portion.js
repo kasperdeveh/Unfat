@@ -3,6 +3,7 @@ import { createEntry } from '../db/entries.js';
 import { calcKcal, toGrams, todayIso } from '../calc.js';
 import { showToast } from '../ui.js';
 import { navigate } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -104,7 +105,8 @@ export async function render(container, params) {
   // Amount input
   const amountEl = document.getElementById('amount');
   amountEl.addEventListener('input', () => {
-    inputValue = parseFloat(amountEl.value) || 0;
+    // Users on NL locale type "1,5" — parseFloat stops at the comma → 1.
+    inputValue = parseFloat(amountEl.value.replace(',', '.')) || 0;
     updatePreview();
   });
 
@@ -158,10 +160,4 @@ function guessMeal() {
   if (h < 15) return 'lunch';
   if (h < 21) return 'dinner';
   return 'snack';
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

@@ -3,6 +3,7 @@ import { heroState, todayIso } from '../calc.js';
 import { parseIso, formatDayLongNl, isoDate, addDays } from '../utils/dates.js';
 import { navigate } from '../router.js';
 import { mount as mountFriendHeader } from './components/friend-header.js';
+import { escapeHtml } from '../utils/html.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -189,10 +190,4 @@ async function runCopy(handle, items, label) {
   } catch (err) {
     showToast(`Kopieer-fout: ${err.message}`);
   }
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

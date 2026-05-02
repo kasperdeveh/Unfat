@@ -225,6 +225,15 @@ button, input {
   font-size: 10px;
   color: var(--text-muted);
   transition: color 120ms ease;
+  /* Strip default <button> chrome so it visually matches the old <div>. */
+  background: none;
+  border: none;
+  padding: 0;
+}
+#bottom-nav .nav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+  border-radius: 4px;
 }
 #bottom-nav .nav-item.active { color: var(--accent); font-weight: 600; }
 #bottom-nav .nav-item:active { transform: scale(0.94); transition: transform 80ms ease; }
@@ -1092,3 +1101,23 @@ button, input {
 .period-bar-month .period-bar-label {
   font-size: 9px;
 }
+
+/* =====================================================================
+   Skeleton placeholders — shown while a view's data is loading. The
+   shimmer animation provides a "something is happening" cue without
+   committing to a spinner that drifts on slow connections.
+   ===================================================================== */
+.skeleton-block {
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface-border) 50%, var(--surface) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite ease-in-out;
+  border-radius: 8px;
+}
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.day-skeleton .skeleton-day-nav   { height: 32px; max-width: 60%; margin: 16px auto 12px; }
+.day-skeleton .skeleton-hero      { height: 140px; border-radius: 18px; margin-bottom: 12px; }
+.day-skeleton .skeleton-meal-title { height: 14px; width: 120px; margin: 18px 0 8px; }
+.day-skeleton .skeleton-meal-row   { height: 56px; margin-bottom: 6px; }

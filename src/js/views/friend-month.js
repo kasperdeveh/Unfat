@@ -5,6 +5,7 @@ import {
 } from '../utils/dates.js';
 import { navigate } from '../router.js';
 import { mount as mountFriendHeader } from './components/friend-header.js';
+import { escapeHtml } from '../utils/html.js';
 
 export async function render(container, params) {
   const friendId = params?.id;
@@ -110,10 +111,4 @@ export async function render(container, params) {
       navigate(`#/friend-day?id=${encodeURIComponent(friendId)}&date=${d}`);
     });
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

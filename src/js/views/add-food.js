@@ -1,6 +1,7 @@
 import { listProducts } from '../db/products.js';
 import { listRecentProductsForUser } from '../db/entries.js';
 import { navigate } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
 
 const TOP_N_DEFAULT = 20;
 const TOP_N_SEARCH  = 50;
@@ -170,10 +171,4 @@ function renderList(el, products, sectionLabel, totalCount) {
       <span>›</span>
     </li>
   `).join('')}</ul>` + footer;
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

@@ -8,6 +8,7 @@ import { heroState, todayIso } from '../calc.js';
 import { isoDate, parseIso, formatDayLongNl, isSameDay, addDays } from '../utils/dates.js';
 import { navigate } from '../router.js';
 import { supabase } from '../supabase.js';
+import { escapeHtml } from '../utils/html.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -22,7 +23,19 @@ export async function render(container, params) {
   const date = parseIso(dateIso);
   const isToday = isSameDay(date, new Date());
 
-  container.innerHTML = `<p class="text-muted" style="padding:1rem 0;">Laden...</p>`;
+  container.innerHTML = `
+    <div class="day-skeleton" aria-hidden="true">
+      <div class="skeleton-block skeleton-day-nav"></div>
+      <div class="skeleton-block skeleton-hero"></div>
+      <div class="skeleton-block skeleton-meal-title"></div>
+      <div class="skeleton-block skeleton-meal-row"></div>
+      <div class="skeleton-block skeleton-meal-title"></div>
+      <div class="skeleton-block skeleton-meal-row"></div>
+      <div class="skeleton-block skeleton-meal-title"></div>
+      <div class="skeleton-block skeleton-meal-row"></div>
+      <div class="skeleton-block skeleton-meal-title"></div>
+      <div class="skeleton-block skeleton-meal-row"></div>
+    </div>`;
 
   let profile, entries, history;
   try {
@@ -249,12 +262,6 @@ export async function render(container, params) {
       dx = 0;
     });
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }
 
 function formatEntryMeta(entry) {

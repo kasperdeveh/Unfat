@@ -3,6 +3,7 @@ import { getMyProfile, updateMyHandle } from '../db/profiles.js';
 import { mountHandleInput } from './components/handle-input.js';
 import { showToast, setNavBadge } from '../ui.js';
 import { navigate } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
 
 export async function render(container) {
   container.innerHTML = `<p class="text-muted" style="padding:1rem 0;">Laden...</p>`;
@@ -267,10 +268,4 @@ function renderHandlePromptModal(container, onDone) {
       saveBtn.textContent = 'Opslaan';
     }
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

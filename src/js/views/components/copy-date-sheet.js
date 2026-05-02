@@ -1,5 +1,6 @@
 import { todayIso } from '../../calc.js';
 import { supabase } from '../../supabase.js';
+import { escapeHtml } from '../../utils/html.js';
 
 let openSheet = null;
 
@@ -62,10 +63,4 @@ export async function open({ title, defaultDate }) {
 
     openSheet = { closeSheet };
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

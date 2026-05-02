@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-05-02
+
+- A11y: bottom-nav-tabs nu echte `<button>`-elementen (waren `<div>`'s) met `aria-label` + `aria-current="page"` op de actieve tab. Toetsenbord-navigatie via TAB werkt; VoiceOver kondigt de tabs aan als knop. Visueel ongewijzigd dankzij CSS-reset op default button-chrome
+- Bugfix: hoeveelheid-input accepteert nu de NL-decimaal-komma. Op iOS/Android met NL als systeemtaal toont `inputmode="decimal"` een komma-toets; `parseFloat("1,5")` stopte op de komma → user logde 1 ipv 1.5. Fix: `value.replace(',', '.')` vóór parse, in `add-food-portion.js` en `edit-entry-sheet.js`. Punt-decimaal blijft werken
+- UX: loading-skeleton op het dashboard (day-view) — grijze blokken in de vorm van hero + 4 maaltijd-secties met shimmer-animatie. Vervangt de "Laden..."-tekst voor lagere perceived latency. Alleen day-view; rest staat op ROADMAP G
+- Refactor: `escapeHtml` gecentraliseerd naar `src/js/utils/html.js`. 13 lokale duplicaten weg, importeren via `import { escapeHtml } from '../utils/html.js'`. Voorkomt dat een nieuwe view per ongeluk zonder escape blijft
+- ROADMAP: nieuw sub-project I (Offline-first / write-queue) toegevoegd; G uitgebreid met "Wachtwoord vergeten?", "Vaak gegeten/Recent verbetering", a11y-pre-launch-pass, account-delete/data-export, viewport-zoom-toelaten, en skeletons doortrekken naar overige views
+- SW cache v25 → v26
+
 ## 2026-05-01
 
 - UX: zoekterm uit "Voeg eten toe" wordt geprefilled in het naam-veld bij "+ Nieuw product aanmaken" — bespaart een tweede keer typen. SW cache v23 → v24

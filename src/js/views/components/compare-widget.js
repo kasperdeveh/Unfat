@@ -1,6 +1,7 @@
 import { getFriendDay } from '../../db/friendships.js';
 import { heroState } from '../../calc.js';
 import { navigate } from '../../router.js';
+import { escapeHtml } from '../../utils/html.js';
 
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack'];
 const MEAL_SHORT = { breakfast: 'Ontbijt', lunch: 'Lunch', dinner: 'Diner', snack: 'Snack' };
@@ -106,10 +107,4 @@ function renderCard(d) {
       ${perMealRow}
     </div>
   `;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

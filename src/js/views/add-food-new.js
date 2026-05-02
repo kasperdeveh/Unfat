@@ -1,5 +1,6 @@
 import { createProduct } from '../db/products.js';
 import { navigate } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
 
 export async function render(container, params) {
   const meal = params.meal || '';
@@ -78,10 +79,4 @@ export async function render(container, params) {
       saveBtn.textContent = 'Opslaan en kiezen';
     }
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

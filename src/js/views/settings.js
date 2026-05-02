@@ -3,6 +3,7 @@ import { signOut } from '../auth.js';
 import { supabase } from '../supabase.js';
 import { showToast } from '../ui.js';
 import { navigate } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
 import { mountHandleInput } from './components/handle-input.js';
 
 const SHARE_LABELS = {
@@ -171,10 +172,4 @@ export async function render(container) {
     try { await signOut(); navigate('#/login'); }
     catch (err) { showToast('Uitloggen mislukt'); }
   });
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

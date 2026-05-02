@@ -2,6 +2,7 @@ import { getProduct } from '../../db/products.js';
 import { updateEntry, deleteEntry } from '../../db/entries.js';
 import { calcKcal, toGrams } from '../../calc.js';
 import { showToast } from '../../ui.js';
+import { escapeHtml } from '../../utils/html.js';
 
 const MEAL_LABELS = { breakfast: '🌅', lunch: '🥗', dinner: '🍽', snack: '🍪' };
 const MEAL_KEYS = ['breakfast', 'lunch', 'dinner', 'snack'];
@@ -95,7 +96,8 @@ export async function openEditSheet(entryId, entry, onChange) {
 
   // Amount input
   overlay.querySelector('#sheet-amount').addEventListener('input', (e) => {
-    inputValue = parseFloat(e.target.value) || 0;
+    // Users on NL locale type "1,5" — parseFloat stops at the comma → 1.
+    inputValue = parseFloat(e.target.value.replace(',', '.')) || 0;
     updatePreview();
   });
 
@@ -139,10 +141,4 @@ export async function openEditSheet(entryId, entry, onChange) {
       errEl.hidden = false;
     }
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

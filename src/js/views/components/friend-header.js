@@ -1,4 +1,5 @@
 import { navigate } from '../../router.js';
+import { escapeHtml } from '../../utils/html.js';
 
 /**
  * Mount the shared friend-views header into a container.
@@ -43,10 +44,4 @@ export function mount(container, { friendId, handle, currentView, anchor }) {
       }
     });
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
 }

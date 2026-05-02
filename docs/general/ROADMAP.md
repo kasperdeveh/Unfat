@@ -34,9 +34,23 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Eventueel grafieken (lijn voor dagtotalen, stacked bars voor maaltijden)
 - Bouwt voort op data uit sub-project C (historie)
 
+### I. Offline-first
+**Status:** open / als los sub-project oppakken
+
+Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportschool-kelder, vliegtuig). Vandaag faalt elke `createEntry`/`updateEntry`/`deleteEntry` offline silent. Doel: alle write-acties optimistic + lokaal gequeued; sync bij `online`-event of zichtbaar-worden van de tab.
+
+- Lokale `IndexedDB`-tabel `pending_entries` (geen externe lib nodig)
+- UUID-generatie client-side zodat de UI de entry direct krijgt zonder op de server te wachten
+- Sync-flow: queue → POST naar Supabase → bij succes uit queue, bij fail blijft retried bij volgende `online`
+- Conflict-strategie: append-only entries hebben geen merge-issues; updates/deletes = last-write-wins op client-side timestamp
+- Edge cases: rollback-flow als Supabase de entry alsnog afkeurt (RLS, validation), 2 devices die offline waren en pas later synchroniseren, IndexedDB-quota op iOS Safari (50 MB voor PWA's, ruim voldoende)
+- UI: subtiele indicator in entry-rij ("nog niet gesynced") tot bevestigd
+- Stappen: brainstorming → spec → plan → bouwen, eigen branch
+
 ### G. Wensenlijst voor de toekomst
 **Status:** open / nog niet ingepland
 
+- "Wachtwoord vergeten?"-knop op login → `auth.resetPasswordForEmail()` + landing-page voor nieuwe wachtwoord. Waarde stijgt zodra er meer dan 5 echte users zijn; rate-limit van Supabase free tier (~2 mails/dag) is een bottleneck bij groei → relevant samen met Resend-migratie
 - Doel-berekening via Mifflin-St Jeor formule (geslacht, leeftijd, lengte, gewicht, activiteit, gewenst tempo van afvallen) — als optie naast handmatige invoer
 - Custom SMTP via Resend (3000 mails/maand gratis) — maakt het mogelijk om magic link login terug te brengen als alternatief naast email+wachtwoord, en transactional mails (welkom, badges, etc.) te sturen zonder Supabase free tier rate limit van 2 mails/uur
 - Light mode als toggle in instellingen (basis is dark sporty)
@@ -44,6 +58,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Privé producten — keuze per product om alleen voor jezelf zichtbaar te maken
 - Duplicaten-detectie / merge-flow voor gedeelde producten database
 - Quick-add bottom sheet op dashboard voor 1-klik invoer van favorieten / recent
+- "Vaak gegeten" sectie + verbeterde "Recent" in `add-food` zoekscherm — vervangt huidige hard-cap op 50 entries-rijen die bij power-users alleen herhalingen toont. Auto-berekend op aantal hits laatste 30 dagen (geen handmatige favorieten nodig). Eigen ster-favorieten als optionele aanvulling later
 - Vandalisme-bescherming voor gedeelde producten (moderation, edit history) — pas relevant bij groei
 - Macro's toevoegen aan tracking (eiwit, koolhydraten, vet) en macro-doelen instellen
 - Sport / verbrande calorieën bijhouden (negatieve kcal)
@@ -55,6 +70,9 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Hosting migreren naar Cloudflare Pages / Netlify / Vercel (alle drie gratis met private repo support, edge caching wereldwijd) — relevant zodra de repo private moet worden of als de Pages-build te traag wordt
 - Supabase MCP / directe SQL-uitvoering vanuit Claude — zodat schema-checks en data-verificatie ter plekke kunnen, terwijl alle wijzigingen nog steeds als `.sql`-migrations in `supabase/migrations/` worden weggeschreven (single source of truth blijft de migration-folder)
 - UI-polish ronde — diverse styling/UX-zaken die niet mooi zijn op de PWA-versie (concrete punten verzamelen tijdens dagelijks gebruik)
+- Loading-skeletons doortrekken naar `history`, `friends`, `friend-day/week/month` en `add-food` (vandaag alleen `day` gedaan als demo)
+- A11y-pass voor pre-launch: `aria-label` op icon-only knoppen (✓/✗/⋯/‹›), `role="progressbar"` op hero-bar, kleurcontrast WCAG AA, `viewport: user-scalable=no` weghalen (double-tap-zoom is al via CSS+JS opgelost)
+- Account-delete + data-export self-service in Settings (relevant bij publieke launch / >10 echte users; tot die tijd via Supabase Dashboard)
 
 ## Afgerond ✅
 

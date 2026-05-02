@@ -64,8 +64,11 @@ export function renderBottomNav() {
     else if (tab.hash === '#/friends') isActive = (path === '#/friends' || path.startsWith('#/friends/') || isFriendDay);
     else isActive = (path === tab.hash || path.startsWith(tab.hash + '/'));
 
-    const btn = document.createElement('div');
+    const btn = document.createElement('button');
+    btn.type = 'button';
     btn.className = 'nav-item' + (isActive ? ' active' : '');
+    btn.setAttribute('aria-label', tab.label);
+    if (isActive) btn.setAttribute('aria-current', 'page');
     const badgeCount = tab.badgeKey ? (navBadges[tab.badgeKey] || 0) : 0;
     const badgeHtml = badgeCount > 0 ? `<span class="nav-badge">${badgeCount}</span>` : '';
     btn.innerHTML = `<span class="nav-icon">${NAV_ICONS[tab.icon]}${badgeHtml}</span><span class="nav-label">${tab.label}</span>`;
