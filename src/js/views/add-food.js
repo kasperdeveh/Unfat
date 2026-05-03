@@ -7,6 +7,7 @@ import { escapeHtml } from '../utils/html.js';
 
 const TOP_N_DEFAULT = 20;
 const TOP_N_SEARCH  = 50;
+const RECENTS_VISIBLE = 8;
 
 export async function render(container, params) {
   const meal = params.meal || '';
@@ -52,6 +53,7 @@ export async function render(container, params) {
   let allProducts = [];
   let recentProducts = [];
   let hideNevo = false;
+  let recentsExpanded = false;
   try {
     const [products, recents, profile] = await Promise.all([
       listProducts(),
@@ -103,7 +105,11 @@ export async function render(container, params) {
 
     if (!q) {
       if (visibleRecents.length > 0) {
-        renderList(resultsEl, visibleRecents, 'Laatst gegeten', visibleProducts.length);
+        const slicedRecents = recentsExpanded
+          ? visibleRecents
+          : visibleRecents.slice(0, RECENTS_VISIBLE);
+        const hiddenCount = visibleRecents.length - slicedRecents.length;
+        renderList(resultsEl, slicedRecents, 'Laatst gegeten', visibleProducts.length, hiddenCount);
       } else {
         resultsEl.innerHTML = `
           <p class="text-muted" style="padding:12px 0;">
@@ -133,6 +139,11 @@ export async function render(container, params) {
   renderResults('');
 
   resultsEl.addEventListener('click', (e) => {
+    if (e.target.id === 'more-recents-btn') {
+      recentsExpanded = true;
+      renderResults(search.value);
+      return;
+    }
     const row = e.target.closest('.meal-row');
     if (!row) return;
     const id = row.getAttribute('data-id');
@@ -194,9 +205,12 @@ function scoreToken(product, q) {
   return best;
 }
 
-function renderList(el, products, sectionLabel, totalCount) {
+function renderList(el, products, sectionLabel, totalCount, moreCount = 0) {
   const header = sectionLabel
     ? `<p class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 4px;">${sectionLabel}</p>`
+    : '';
+  const moreBtn = moreCount > 0
+    ? `<button class="btn-more-recents" id="more-recents-btn" type="button">Meer tonen (${moreCount})</button>`
     : '';
   const footer = totalCount != null
     ? `<p class="text-muted" style="font-size:11px;text-align:center;padding:12px 0;">Typ om te zoeken in ${totalCount} producten</p>`
@@ -209,5 +223,5 @@ function renderList(el, products, sectionLabel, totalCount) {
       </div>
       <span>›</span>
     </li>
-  `).join('')}</ul>` + footer;
+  `).join('')}</ul>` + moreBtn + footer;
 }

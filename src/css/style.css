@@ -1172,3 +1172,23 @@ button, input {
   vertical-align: 1px;
   letter-spacing: 0.3px;
 }
+
+/* "Meer tonen" button below Recents on the add-food page. */
+.btn-more-recents {
+  display: block;
+  width: 100%;
+  margin: 8px 0 4px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  color: #b8babe;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-more-recents:hover {
+  border-color: #3a3d43;
+  color: #d8dade;
+}
