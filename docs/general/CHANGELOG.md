@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-05-03
+
+- Sub-project J-A: rol-systeem + producten editten. Drie rollen op `profiles` (`user`/`editor`/`admin`); editors en admins kunnen alle door-gebruikers-aangemaakte producten (`source='user'`) wijzigen via een potlood-knop in het portion-screen die een bottom sheet opent met `name`, `kcal_per_100g`, `unit_grams` en `synonyms`. NEVO-rijen blijven immutable. Light edit-trail: `last_edited_by`/`last_edited_at` op `products`, gevuld door een server-trigger zodat clients niet kunnen liegen of vergeten
+- Settings → "Gebruikers beheren" (admin-only): tabel met handle + role-dropdown per user, eigen rij disabled, role-changes via SECURITY DEFINER RPC `set_user_role` die ook server-side weigert dat een admin zichzelf demote
+- Bugfix: hoeveelheid-input bij Stuks accepteert nu `1,7` op iOS Safari NL-locale. `type="number"` toonde alleen het numpad zonder komma-toets — vervangen door `type="text" inputmode="decimal" pattern="..."` in `add-food-portion.js` en `edit-entry-sheet.js`. JS-parser handelde komma al af
+- Migrations: `20260503000000_user_roles_and_product_edit.sql` (rol-kolom, edit-trail trigger, extra products update-policy voor editors/admins, twee admin RPC's `list_users_for_admin` en `set_user_role`) en `20260503010000_fix_admin_rpc_alias.sql` (table-aliases in admin-checks om `42702 ambiguous column reference` te voorkomen — OUT-parameters van `list_users_for_admin` botsten met profile-kolommen)
+- Nieuw: `docs/general/OPERATIONS.md` — eerste opzet operationele handleiding (rol-uitleg, admin-bootstrap-SQL, audit-query, fallback-recepten)
+- SW cache v26 → v27
+
 ## 2026-05-02
 
 - A11y: bottom-nav-tabs nu echte `<button>`-elementen (waren `<div>`'s) met `aria-label` + `aria-current="page"` op de actieve tab. Toetsenbord-navigatie via TAB werkt; VoiceOver kondigt de tabs aan als knop. Visueel ongewijzigd dankzij CSS-reset op default button-chrome

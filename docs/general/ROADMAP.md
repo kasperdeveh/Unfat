@@ -25,10 +25,9 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - **F-B**: Open Food Facts integratie — barcode-scan via camera → OFF lookup → product wordt gecached in onze gedeelde `products`-tabel zodat brand-precisie voor iedereen beschikbaar wordt
 - **F-C**: "Zoek ook in Open Food Facts"-knop bij beperkte lokale resultaten, voor brand-producten zonder barcode (één call per knop-klik om binnen OFF-rate-limit te blijven; resultaat cachen in `products` bij keuze)
 
-### J. Rollen & moderation
-**Status:** in spec-fase (2026-05-03)
+### J. Rollen & moderation — vervolg
+**Status:** J-A afgerond (2026-05-03), J-B/C/D open
 
-- **J-A** (huidig): rol-systeem op `profiles` (`user`/`editor`/`admin`) + producten editten door editors/admins (alleen `source='user'`-rijen) + admin-screen in Settings + light edit-trail (`last_edited_by`/`last_edited_at`). Inclusief UI-fix voor decimale stuks-invoer (1,7 stuks). Spec: `docs/superpowers/specs/2026-05-03-product-edit-rbac-design.md`.
 - **J-B**: editor mag ook andermans user-product **verwijderen**. Vraagt soft-delete + entry-merge omdat `entries.product_id` een FK met `on delete restrict` heeft. Voor nu: editors kunnen joke-producten alleen hernoemen + corrigeren.
 - **J-C**: NEVO-rijen (`source='nevo'`) corrigeerbaar maken via een override-laag (extra tabel `product_overrides`), zodat een re-seed je correcties niet wegvaagt.
 - **J-D**: volledig audit-log met voor/na waardes per edit (extra tabel + UI om in te zien). Pas relevant zodra het aantal editors of de hoeveelheid edits groeit.
@@ -93,3 +92,4 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 | 2026-04-29 | D-vervolg. Vrienden in week/maand-historie (friend day/week/month-views met ‹ › nav, gedeelde Dag/Week/Maand-header), één-klik kopiëren per-entry en per-maaltijd vanuit friend dag-view met date-picker bottom-sheet, `get_friend_period` RPC) |
 | 2026-04-30 | F-A. NEVO seed (~2300 NL-staples in shared products-tabel met `source`/`nevo_code`/`synonyms`-kolommen, gecureerde `unit_grams` voor stukbare items, ranking-aware zoeken met synoniem-match en accent-strip, NEVO-attributie in Settings, Supabase CLI workflow + 14-digit migration-naamgeving) |
 | 2026-05-01 | Update-prompt cache-invalidation fix: tap "Vernieuwen" leidt nu in één tap tot een schone reload op de nieuwe SW (root cause was stale bytes uit GitHub-Pages HTTP-cache tijdens SW-install — opgelost met `Request(..., { cache: 'reload' })`); door-gebruiker-bestuurde activatie via `SKIP_WAITING` postMessage + `controllerchange`-listener; subtiele app-versie onderaan Settings live uit `caches.keys()` |
+| 2026-05-03 | J-A. Rollen & moderation: producten editten (drie rollen `user`/`editor`/`admin` op `profiles`, editors/admins kunnen alle user-producten wijzigen via potlood-knop in portion-screen, admin-rolbeheer in Settings, light edit-trail via server-trigger, decimaal-input fix voor stuks op iOS Safari, RPC alias-fix) |
