@@ -78,8 +78,10 @@ export async function render(container, params) {
   syncChip();
 
   chipEl.addEventListener('click', async () => {
+    if (chipEl.disabled) return;
     const previous = hideNevo;
     hideNevo = !hideNevo;
+    chipEl.disabled = true;
     syncChip();
     renderResults(search.value);
     try {
@@ -89,6 +91,8 @@ export async function render(container, params) {
       syncChip();
       renderResults(search.value);
       showToast('Kon voorkeur niet opslaan');
+    } finally {
+      chipEl.disabled = false;
     }
   });
 
