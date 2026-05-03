@@ -4,6 +4,8 @@ import { calcKcal, toGrams, todayIso } from '../calc.js';
 import { showToast } from '../ui.js';
 import { navigate } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
+import { getMyProfile } from '../db/profiles.js';
+import { openEditProductSheet } from './components/edit-product-sheet.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -28,6 +30,13 @@ export async function render(container, params) {
     return;
   }
 
+  let myProfile;
+  try { myProfile = await getMyProfile(); }
+  catch { myProfile = null; }
+  const canEdit = myProfile
+    && ['editor', 'admin'].includes(myProfile.role)
+    && product.source === 'user';
+
   const supportsUnits = !!product.unit_grams;
   let inputType = 'grams';   // 'grams' | 'units'
   let inputValue = supportsUnits ? 1 : 100;
@@ -43,6 +52,7 @@ export async function render(container, params) {
         <h1>Hoeveelheid</h1>
         <small>${escapeHtml(product.name)}</small>
       </div>
+      ${canEdit ? '<button class="btn-icon-secondary" id="edit-btn" aria-label="Product bewerken" style="margin-left:auto;">✏️</button>' : ''}
     </div>
 
     <div class="hero hero-green">
@@ -56,7 +66,7 @@ export async function render(container, params) {
       <button data-type="units">Stuks</button>
     </div>
 
-    <input class="input input-large" id="amount" type="number" min="0.1" step="0.1" inputmode="decimal" value="${inputValue}">
+    <input class="input input-large" id="amount" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]?" value="${inputValue}">
 
     <div class="preview" id="preview"></div>
 
@@ -78,6 +88,19 @@ export async function render(container, params) {
     const q = qs.toString();
     navigate(`#/add${q ? '?' + q : ''}`);
   });
+
+  if (canEdit) {
+    document.getElementById('edit-btn').addEventListener('click', () => {
+      openEditProductSheet(product, async () => {
+        // Re-fetch product to refresh the hero with new values.
+        product = await getProduct(productId);
+        // Re-render via navigate to same URL is heavy; just update hero text.
+        document.querySelector('.hero-green > div:nth-child(2)').textContent = product.name;
+        document.querySelector('.hero-green > div:nth-child(3)').textContent =
+          `${product.kcal_per_100g} kcal per 100g${product.unit_grams ? ` · ${product.unit_grams}g per stuk` : ''}`;
+      });
+    });
+  }
 
   // Type toggle
   document.getElementById('type-toggle').querySelectorAll('button').forEach(btn => {
