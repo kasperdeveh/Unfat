@@ -43,6 +43,7 @@ Houd de werkdirectories `docs/superpowers/specs/` en `docs/superpowers/plans/` o
 - Row Level Security (RLS) verplicht op alle tabellen
 - Anon key mag in client code (Supabase design)
 - Schema-wijzigingen versioneren in `supabase/migrations/`
+- Migration filenames: `YYYYMMDDHHMMSS_<naam>.sql` met **echte** UTC-tijdstempel (`date -u +%Y%m%d%H%M%S`), niet een fictieve oplopende sequence. Voorkomt collisions en sluit aan bij wat `supabase migration new` zelf genereert.
 
 ## Git
 - Doe regelmatig een commit na elke logische stap of wijziging
