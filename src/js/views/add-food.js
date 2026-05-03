@@ -204,7 +204,7 @@ function renderList(el, products, sectionLabel, totalCount) {
   el.innerHTML = header + `<ul class="list">${products.map(p => `
     <li class="meal-row" data-id="${p.id}">
       <div>
-        <div>${escapeHtml(p.name)}</div>
+        <div>${escapeHtml(p.name)}${p.source === 'nevo' ? '<span class="badge-nevo">NEVO</span>' : ''}</div>
         <div class="items">${p.kcal_per_100g} kcal/100g${p.unit_grams ? ` · ${p.unit_grams}g/stuk` : ''}</div>
       </div>
       <span>›</span>
