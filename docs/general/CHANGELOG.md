@@ -9,7 +9,7 @@
 - Nieuw: `docs/general/OPERATIONS.md` — eerste opzet operationele handleiding (rol-uitleg, admin-bootstrap-SQL, audit-query, fallback-recepten)
 - Bugfix: gewicht-per-stuk (`products.unit_grams`) accepteert nu decimalen — bv. `75,5g` voor een ei. Schema-change van `int` naar `numeric(10,2)` (bestaande integer-waardes casten lossless); UI-pattern in `add-food-new.js` en `edit-product-sheet.js` naar `type="text" inputmode="decimal"` met komma-fallback in de parser. `kcal_per_100g` blijft int
 - SW cache v26 → v29 (v27 J-A code; v28 om `edit-product-sheet.js` aan `STATIC_ASSETS` toe te voegen — anders breekt portion-screen offline; v29 voor de unit_grams-decimaal-fix)
-- Sub-project M: NEVO-toggle chip onder zoekbalk op de toevoegen-pagina (state per user via `profiles.hide_nevo`, persists cross-device). "Laatst gegeten" lijst toont default 8 items met "Meer tonen"-knop voor de rest, zodat de "+ Nieuw product"-knop weer direct zichtbaar is. NEVO-badge in product-rijen alleen op de toevoegen-pagina. Migration `20260503204517_profiles_hide_nevo.sql`. SW cache v29 → v30
+- Sub-project M: NEVO-toggle chip onder zoekbalk op de toevoegen-pagina (state per user via `profiles.hide_nevo`, persists cross-device). "Laatst gegeten" lijst toont default 5 items met "Meer tonen"-knop voor de rest, zodat de "+ Nieuw product"-knop weer direct zichtbaar is. NEVO-badge in product-rijen alleen op de toevoegen-pagina. Migration `20260503204517_profiles_hide_nevo.sql`. SW cache v29 → v31 (v30 met default 8 recents; v31 verlaagd naar 5 op verzoek)
 
 ## 2026-05-02
 

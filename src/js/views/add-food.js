@@ -7,7 +7,7 @@ import { escapeHtml } from '../utils/html.js';
 
 const TOP_N_DEFAULT = 20;
 const TOP_N_SEARCH  = 50;
-const RECENTS_VISIBLE = 8;
+const RECENTS_VISIBLE = 5;
 
 export async function render(container, params) {
   const meal = params.meal || '';
