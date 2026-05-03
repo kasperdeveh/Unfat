@@ -24,12 +24,12 @@ export function openEditProductSheet(product, onSave) {
 
       <div class="field">
         <label class="field-label" for="ep-kcal">Kcal per 100 gram</label>
-        <input class="input" id="ep-kcal" type="number" required min="1" max="2000" inputmode="numeric" value="${product.kcal_per_100g}">
+        <input class="input" id="ep-kcal" type="number" required min="1" max="2000" inputmode="numeric" value="${escapeHtml(product.kcal_per_100g)}">
       </div>
 
       <div class="field">
         <label class="field-label" for="ep-unit">Gewicht per stuk in gram (optioneel)</label>
-        <input class="input" id="ep-unit" type="number" min="1" max="5000" inputmode="numeric" value="${product.unit_grams ?? ''}" placeholder="leeg = niet stukbaar">
+        <input class="input" id="ep-unit" type="number" min="1" max="5000" inputmode="numeric" value="${escapeHtml(product.unit_grams ?? '')}" placeholder="leeg = niet stukbaar">
       </div>
 
       <div class="field">
