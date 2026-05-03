@@ -1,6 +1,8 @@
 import { listProducts } from '../db/products.js';
 import { listRecentProductsForUser } from '../db/entries.js';
+import { getMyProfile, updateMyHideNevo } from '../db/profiles.js';
 import { navigate } from '../router.js';
+import { showToast } from '../ui.js';
 import { escapeHtml } from '../utils/html.js';
 
 const TOP_N_DEFAULT = 20;
@@ -20,6 +22,10 @@ export async function render(container, params) {
     </div>
 
     <input class="input" id="search" type="search" placeholder="Zoek product..." autocomplete="off">
+
+    <div class="chiprow">
+      <button class="chip" id="nevo-chip" type="button" aria-pressed="false">NEVO producten verbergen</button>
+    </div>
 
     <div id="results" style="margin-top:12px;">
       <p class="text-muted" style="padding:8px 0;">Laden...</p>
@@ -45,11 +51,16 @@ export async function render(container, params) {
 
   let allProducts = [];
   let recentProducts = [];
+  let hideNevo = false;
   try {
-    [allProducts, recentProducts] = await Promise.all([
+    const [products, recents, profile] = await Promise.all([
       listProducts(),
       listRecentProductsForUser(TOP_N_DEFAULT),
+      getMyProfile(),
     ]);
+    allProducts = products;
+    recentProducts = recents;
+    hideNevo = !!(profile && profile.hide_nevo);
   } catch (err) {
     document.getElementById('results').innerHTML =
       `<p class="error">Kon producten niet laden: ${err.message}</p>`;
@@ -58,23 +69,47 @@ export async function render(container, params) {
 
   const search = document.getElementById('search');
   const resultsEl = document.getElementById('results');
+  const chipEl = document.getElementById('nevo-chip');
+
+  function syncChip() {
+    chipEl.setAttribute('aria-pressed', String(hideNevo));
+    chipEl.textContent = hideNevo ? 'NEVO producten tonen' : 'NEVO producten verbergen';
+  }
+  syncChip();
+
+  chipEl.addEventListener('click', async () => {
+    const previous = hideNevo;
+    hideNevo = !hideNevo;
+    syncChip();
+    renderResults(search.value);
+    try {
+      await updateMyHideNevo(hideNevo);
+    } catch (err) {
+      hideNevo = previous;
+      syncChip();
+      renderResults(search.value);
+      showToast('Kon voorkeur niet opslaan');
+    }
+  });
 
   function renderResults(query) {
     const q = normalize(query.trim());
+    const visibleRecents  = hideNevo ? recentProducts.filter(p => p.source !== 'nevo') : recentProducts;
+    const visibleProducts = hideNevo ? allProducts.filter(p => p.source !== 'nevo')    : allProducts;
 
     if (!q) {
-      if (recentProducts.length > 0) {
-        renderList(resultsEl, recentProducts, 'Laatst gegeten', allProducts.length);
+      if (visibleRecents.length > 0) {
+        renderList(resultsEl, visibleRecents, 'Laatst gegeten', visibleProducts.length);
       } else {
         resultsEl.innerHTML = `
           <p class="text-muted" style="padding:12px 0;">
-            Typ om te zoeken in ${allProducts.length} producten — probeer: appel, brood, yoghurt
+            Typ om te zoeken in ${visibleProducts.length} producten — probeer: appel, brood, yoghurt
           </p>`;
       }
       return;
     }
 
-    const scored = allProducts
+    const scored = visibleProducts
       .map(p => ({ p, score: scoreQuery(p, q) }))
       .filter(x => x.score > 0)
       .sort((a, b) =>
