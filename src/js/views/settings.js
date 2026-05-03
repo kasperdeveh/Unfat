@@ -185,7 +185,7 @@ export async function render(container) {
       mount.innerHTML = users.map(u => `
         <div class="user-row" data-id="${u.id}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2a2a;">
           <span>${escapeHtml(u.handle)}</span>
-          <select class="input" data-id="${u.id}" ${u.id === session.user.id ? 'disabled' : ''} style="width:auto;min-width:120px;">
+          <select class="input" data-id="${u.id}" aria-label="Rol voor ${escapeHtml(u.handle)}" ${u.id === session.user.id ? 'disabled' : ''} style="width:auto;min-width:120px;">
             ${['user','editor','admin'].map(r =>
               `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`
             ).join('')}
@@ -199,10 +199,13 @@ export async function render(container) {
           sel.disabled = true;
           try {
             await setUserRole(id, newRole);
+            // Update cached role so a later failed change reverts to the LATEST
+            // committed value, not the originally loaded one.
+            const u = users.find(x => x.id === id);
+            if (u) u.role = newRole;
             showToast('Rol bijgewerkt');
           } catch (err) {
             showToast('Fout: ' + err.message);
-            // Revert select to previous value by re-rendering this row.
             const u = users.find(x => x.id === id);
             sel.value = u.role;
           } finally {
