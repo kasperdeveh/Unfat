@@ -130,3 +130,19 @@ export async function updateMyProfile({ daily_target_kcal, daily_max_kcal }) {
 
   return data;
 }
+
+// Admin only: list all profiles with a handle. RPC enforces admin role server-side.
+export async function listUsersForAdmin() {
+  const { data, error } = await supabase.rpc('list_users_for_admin');
+  if (error) throw error;
+  return data;
+}
+
+// Admin only: change a user's role. Cannot target self (RPC blocks it).
+export async function setUserRole(targetUserId, newRole) {
+  const { error } = await supabase.rpc('set_user_role', {
+    target_user_id: targetUserId,
+    new_role: newRole,
+  });
+  if (error) throw error;
+}
