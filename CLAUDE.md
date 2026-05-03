@@ -54,6 +54,7 @@ Houd de werkdirectories `docs/superpowers/specs/` en `docs/superpowers/plans/` o
 - Bundel meerdere wijzigingen van dezelfde dag onder één datum
 - Werk ook `docs/general/ROADMAP.md` bij als een feature is afgerond
 - **ROADMAP.md structuur**: open items bovenaan met volledige omschrijving, afgeronde items compact samengevat in een tabel onderaan onder het kopje `## Afgerond ✅`
+- Werk `docs/general/OPERATIONS.md` bij als een wijziging een operationele/admin-procedure introduceert of verandert (nieuwe rol/permissie, SQL-recept voor beheer, nieuwe deploy- of bootstrap-stap)
 - Bij het afronden van een feature (finishing-a-development-branch): altijd eerst CHANGELOG.md en ROADMAP.md bijwerken, dan pas pushen of mergen
 
 ## Development
