@@ -32,6 +32,35 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - **J-C**: NEVO-rijen (`source='nevo'`) corrigeerbaar maken via een override-laag (extra tabel `product_overrides`), zodat een re-seed je correcties niet wegvaagt.
 - **J-D**: volledig audit-log met voor/na waardes per edit (extra tabel + UI om in te zien). Pas relevant zodra het aantal editors of de hoeveelheid edits groeit.
 
+### K. Gerechten / maaltijden
+**Status:** open, brainstorm volgt
+
+Meerdere producten bundelen tot één gerecht (bv. "Spaghetti bolognese") zodat een gebruiker in één tap een hele maaltijd kan loggen i.p.v. ingrediënten apart. Open vragen voor brainstorm:
+
+- **Statisch vs. flexibel**: kan de gebruiker per keer afwijken (kleinere portie, ingrediënt weglaten zoals "zonder kaas")?
+- **UX voor aanmaken**: vanaf toevoegen-pagina, vanuit Settings, of "verzamel-mode" waarbij je losse entries achteraf bundelt?
+- **Datamodel**: 1 gerecht = 1 entry of 1 gerecht = N entries (één per ingrediënt)? Heeft impact op edit/delete-flow en op `entries.product_id` FK-structuur (NEVO + user products)
+- **Interactie met sub-project L**: kunnen gerechten favoriet gemaakt worden?
+
+Stappen: brainstorming → spec → plan → bouwen, eigen branch.
+
+### L. Favorieten + "Vaak gegeten"
+**Status:** open, brainstorm volgt
+
+Snelle toegang tot producten en gerechten die je vaak eet. Vandaag toont het toevoegen-scherm "Recent" gebaseerd op de laatste entries, wat bij power-users alleen herhalingen oplevert. Twee complementaire mechanismen om af te wegen:
+
+- **Vaak gegeten (auto)**: gebaseerd op hits laatste 30 dagen, geen handmatige actie nodig
+- **Favoriete ster (handmatig)**: gebruiker pin't bewust een product/gerecht
+
+Open vragen voor brainstorm:
+
+- Combineren we beide secties of kiezen we één?
+- Werken favorieten ook op gerechten (vereist K)?
+- **Quick-add bottom sheet** op dashboard voor 1-klik invoer van favorieten/recent — onderdeel van dit sub-project of los?
+- Hoe verhoudt dit zich tot de Recent-aanpassing uit sessie 1 (waar Recent ingekort wordt)?
+
+Stappen: brainstorming → spec → plan → bouwen, eigen branch.
+
 ### H. Statistieken & inzichten
 **Status:** open
 
@@ -64,13 +93,9 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 - Theme-instelling om het uiterlijk aan te passen — minimaal accent-kleur kiezen (bv. mint-groen / oranje / blauw); gebruiker liet zien dat oranje (`#ff9800`) ook prima werkt op dark, dus de basis-set kan klein blijven
 - Privé producten — keuze per product om alleen voor jezelf zichtbaar te maken
 - Duplicaten-detectie / merge-flow voor gedeelde producten database
-- Quick-add bottom sheet op dashboard voor 1-klik invoer van favorieten / recent
-- "Vaak gegeten" sectie + verbeterde "Recent" in `add-food` zoekscherm — vervangt huidige hard-cap op 50 entries-rijen die bij power-users alleen herhalingen toont. Auto-berekend op aantal hits laatste 30 dagen (geen handmatige favorieten nodig). Eigen ster-favorieten als optionele aanvulling later
 - Vandalisme-bescherming voor gedeelde producten (moderation, edit history) — pas relevant bij groei
 - Macro's toevoegen aan tracking (eiwit, koolhydraten, vet) en macro-doelen instellen
 - Sport / verbrande calorieën bijhouden (negatieve kcal)
-- Meerdere producten samenvoegen tot één gerecht
-- Favoriete gerechten en producten
 - Foto maken van een product → AI bepaalt welk product en kcal
 - Database met gerechten en suggesties op basis van wat de gebruiker nog mag eten
 - Splitsen van Supabase dev en prod environments (zodra de app echte gebruikers krijgt)
