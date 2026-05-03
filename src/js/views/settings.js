@@ -1,4 +1,5 @@
-import { getMyProfile, updateMyProfile, updateMyHandle, updateMyShareLevel } from '../db/profiles.js';
+import { getMyProfile, updateMyProfile, updateMyHandle, updateMyShareLevel,
+         listUsersForAdmin, setUserRole } from '../db/profiles.js';
 import { signOut } from '../auth.js';
 import { supabase } from '../supabase.js';
 import { showToast } from '../ui.js';
@@ -69,6 +70,15 @@ export async function render(container) {
         </button>
       `).join('')}
     </div>
+
+    ${profile.role === 'admin' ? `
+      <hr style="margin:32px 0;border:0;border-top:1px solid #333;">
+      <h2 style="font-size:16px;margin:0 0 12px;">Gebruikers beheren</h2>
+      <p class="text-muted" style="font-size:12px;margin-bottom:12px;">
+        Editors kunnen alle door-gebruikers-aangemaakte producten bewerken. Admins kunnen rollen toekennen.
+      </p>
+      <div id="users-admin-mount">Laden...</div>
+    ` : ''}
 
     <hr style="margin:32px 0;border:0;border-top:1px solid #333;">
 
@@ -166,6 +176,44 @@ export async function render(container) {
       }
     });
   });
+
+  // Admin section: render user list with role dropdowns.
+  if (profile.role === 'admin') {
+    const mount = document.getElementById('users-admin-mount');
+    try {
+      const users = await listUsersForAdmin();
+      mount.innerHTML = users.map(u => `
+        <div class="user-row" data-id="${u.id}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2a2a;">
+          <span>${escapeHtml(u.handle)}</span>
+          <select class="input" data-id="${u.id}" ${u.id === session.user.id ? 'disabled' : ''} style="width:auto;min-width:120px;">
+            ${['user','editor','admin'].map(r =>
+              `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`
+            ).join('')}
+          </select>
+        </div>
+      `).join('');
+      mount.querySelectorAll('select[data-id]').forEach(sel => {
+        sel.addEventListener('change', async () => {
+          const id = sel.getAttribute('data-id');
+          const newRole = sel.value;
+          sel.disabled = true;
+          try {
+            await setUserRole(id, newRole);
+            showToast('Rol bijgewerkt');
+          } catch (err) {
+            showToast('Fout: ' + err.message);
+            // Revert select to previous value by re-rendering this row.
+            const u = users.find(x => x.id === id);
+            sel.value = u.role;
+          } finally {
+            sel.disabled = id === session.user.id; // keep self disabled
+          }
+        });
+      });
+    } catch (err) {
+      mount.innerHTML = `<p class="error">Kon gebruikers niet laden: ${err.message}</p>`;
+    }
+  }
 
   document.getElementById('signout-btn').addEventListener('click', async () => {
     if (!confirm('Weet je zeker dat je wil uitloggen?')) return;
