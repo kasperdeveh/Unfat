@@ -41,7 +41,7 @@ export async function openEditSheet(entryId, entry, onChange) {
         <button data-type="units" class="${inputType === 'units' ? 'active' : ''}">Stuks</button>
       </div>
 
-      <input class="input" id="sheet-amount" type="number" min="0.1" step="0.1" inputmode="decimal" value="${inputValue}">
+      <input class="input" id="sheet-amount" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]?" value="${inputValue}">
       <div class="preview" id="sheet-preview"></div>
 
       <div class="field-label">Maaltijd</div>
