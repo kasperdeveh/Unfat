@@ -1132,7 +1132,7 @@ button, input {
 
 .chip {
   background: transparent;
-  border: 1px solid #2a2d33;
+  border: 1px solid var(--surface-border);
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 12px;
@@ -1164,7 +1164,7 @@ button, input {
 /* NEVO source badge in product rows on the add-food page. */
 .badge-nevo {
   font-size: 10px;
-  background: #2a2d33;
+  background: var(--surface-border);
   color: #8a8d92;
   padding: 1px 6px;
   border-radius: 3px;
