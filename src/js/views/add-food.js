@@ -139,7 +139,7 @@ export async function render(container, params) {
   renderResults('');
 
   resultsEl.addEventListener('click', (e) => {
-    if (e.target.id === 'more-recents-btn') {
+    if (e.target.closest('#more-recents-btn')) {
       recentsExpanded = true;
       renderResults(search.value);
       return;
