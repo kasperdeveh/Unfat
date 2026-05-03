@@ -78,6 +78,19 @@ export async function updateMyShareLevel(level) {
   if (error) throw error;
 }
 
+// Update only the hide_nevo preference for the current user.
+// Used by the toevoegen-pagina chip to persist the filter cross-device.
+export async function updateMyHideNevo(hide) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ hide_nevo: hide })
+    .eq('id', session.user.id);
+  if (error) throw error;
+}
+
 // Read another user's public profile fields (handle, share_level).
 // RLS allows this only when the caller and target are accepted friends
 // (or when target is self). Returns null if blocked or missing.
