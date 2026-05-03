@@ -29,7 +29,7 @@ export async function render(container, params) {
 
       <div class="field">
         <label class="field-label" for="unit">Gewicht per stuk in gram (optioneel)</label>
-        <input class="input" id="unit" type="number" min="1" max="5000" inputmode="numeric" placeholder="bv. 102 voor een banaan">
+        <input class="input" id="unit" type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9])?" placeholder="bv. 102 (banaan) of 75,5 (ei)">
         <p class="text-muted" style="font-size:11px;margin-top:4px;">Vul alleen in als het product per stuk telt (banaan, plak, blik). Anders leeg laten.</p>
       </div>
 
@@ -57,7 +57,7 @@ export async function render(container, params) {
     const name = document.getElementById('name').value.trim();
     const kcal = parseInt(document.getElementById('kcal').value, 10);
     const unitRaw = document.getElementById('unit').value.trim();
-    const unit_grams = unitRaw === '' ? null : parseInt(unitRaw, 10);
+    const unit_grams = unitRaw === '' ? null : parseFloat(unitRaw.replace(',', '.'));
 
     saveBtn.disabled = true;
     saveBtn.textContent = 'Bezig...';

@@ -29,7 +29,7 @@ export function openEditProductSheet(product, onSave) {
 
       <div class="field">
         <label class="field-label" for="ep-unit">Gewicht per stuk in gram (optioneel)</label>
-        <input class="input" id="ep-unit" type="number" min="1" max="5000" inputmode="numeric" value="${escapeHtml(product.unit_grams ?? '')}" placeholder="leeg = niet stukbaar">
+        <input class="input" id="ep-unit" type="text" inputmode="decimal" pattern="[0-9]+([.,][0-9])?" value="${escapeHtml(product.unit_grams ?? '')}" placeholder="leeg = niet stukbaar">
       </div>
 
       <div class="field">
@@ -70,7 +70,7 @@ export function openEditProductSheet(product, onSave) {
       errEl.hidden = false;
       return;
     }
-    const unit_grams = unitRaw === '' ? null : parseInt(unitRaw, 10);
+    const unit_grams = unitRaw === '' ? null : parseFloat(unitRaw.replace(',', '.'));
     if (unit_grams !== null && (!Number.isFinite(unit_grams) || unit_grams < 1 || unit_grams > 5000)) {
       errEl.textContent = 'Gewicht per stuk moet tussen 1 en 5000 liggen.';
       errEl.hidden = false;

@@ -7,7 +7,8 @@
 - Bugfix: hoeveelheid-input bij Stuks accepteert nu `1,7` op iOS Safari NL-locale. `type="number"` toonde alleen het numpad zonder komma-toets — vervangen door `type="text" inputmode="decimal" pattern="..."` in `add-food-portion.js` en `edit-entry-sheet.js`. JS-parser handelde komma al af
 - Migrations: `20260503000000_user_roles_and_product_edit.sql` (rol-kolom, edit-trail trigger, extra products update-policy voor editors/admins, twee admin RPC's `list_users_for_admin` en `set_user_role`) en `20260503010000_fix_admin_rpc_alias.sql` (table-aliases in admin-checks om `42702 ambiguous column reference` te voorkomen — OUT-parameters van `list_users_for_admin` botsten met profile-kolommen)
 - Nieuw: `docs/general/OPERATIONS.md` — eerste opzet operationele handleiding (rol-uitleg, admin-bootstrap-SQL, audit-query, fallback-recepten)
-- SW cache v26 → v28 (v27 voor de J-A code; v28 om `edit-product-sheet.js` aan `STATIC_ASSETS` toe te voegen — zonder die regel werkte het portion-screen niet meer offline omdat de import dan miste in de cache)
+- Bugfix: gewicht-per-stuk (`products.unit_grams`) accepteert nu decimalen — bv. `75,5g` voor een ei. Schema-change van `int` naar `numeric(10,2)` (bestaande integer-waardes casten lossless); UI-pattern in `add-food-new.js` en `edit-product-sheet.js` naar `type="text" inputmode="decimal"` met komma-fallback in de parser. `kcal_per_100g` blijft int
+- SW cache v26 → v29 (v27 J-A code; v28 om `edit-product-sheet.js` aan `STATIC_ASSETS` toe te voegen — anders breekt portion-screen offline; v29 voor de unit_grams-decimaal-fix)
 
 ## 2026-05-02
 
