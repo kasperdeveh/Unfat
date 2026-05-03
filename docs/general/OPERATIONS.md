@@ -15,7 +15,7 @@ NEVO-rijen (`source='nevo'`) zijn voor iedereen read-only. Editor-delete-rechten
 
 ### Beperkingen van editor-rol
 
-De RLS-policy `products_update_user_by_editor` staat editors/admins toe álle kolommen van een `source='user'`-product te updaten. De client-wrapper `updateProduct()` in `src/js/db/products.js` stuurt allleen `name`, `kcal_per_100g`, `unit_grams` en `synonyms` mee — `created_by` en `source` worden bewust NIET aangeraakt. Toekomstige callers die wel `created_by` of `source` patchen worden door RLS niet expliciet tegengehouden. Als de hoeveelheid editors groeit of als er ander client-code komt dat producten muteert: overweeg een trigger toe te voegen die niet-admins blokkeert van het wijzigen van die kolommen.
+De RLS-policy `products_update_user_by_editor` staat editors/admins toe álle kolommen van een `source='user'`-product te updaten. De client-wrapper `updateProduct()` in `src/js/db/products.js` stuurt alleen `name`, `kcal_per_100g`, `unit_grams` en `synonyms` mee — `created_by` en `source` worden bewust NIET aangeraakt. Toekomstige callers die wel `created_by` of `source` patchen worden door RLS niet expliciet tegengehouden. Als de hoeveelheid editors groeit of als er ander client-code komt dat producten muteert: overweeg een trigger toe te voegen die niet-admins blokkeert van het wijzigen van die kolommen.
 
 ## Eerste admin maken (bootstrap)
 
