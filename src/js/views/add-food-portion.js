@@ -52,7 +52,7 @@ export async function render(container, params) {
         <h1>Hoeveelheid</h1>
         <small>${escapeHtml(product.name)}</small>
       </div>
-      ${canEdit ? '<button class="btn-icon-secondary" id="edit-btn" aria-label="Product bewerken" style="margin-left:auto;">✏️</button>' : ''}
+      ${canEdit ? '<button class="btn-icon" id="edit-btn" aria-label="Product bewerken" style="margin-left:auto;">✏️</button>' : ''}
     </div>
 
     <div class="hero hero-green">
@@ -91,14 +91,9 @@ export async function render(container, params) {
 
   if (canEdit) {
     document.getElementById('edit-btn').addEventListener('click', () => {
-      openEditProductSheet(product, async () => {
-        // Re-fetch product to refresh the hero with new values.
-        product = await getProduct(productId);
-        // Re-render via navigate to same URL is heavy; just update hero text.
-        document.querySelector('.hero-green > div:nth-child(2)').textContent = product.name;
-        document.querySelector('.hero-green > div:nth-child(3)').textContent =
-          `${product.kcal_per_100g} kcal per 100g${product.unit_grams ? ` · ${product.unit_grams}g per stuk` : ''}`;
-      });
+      // Full re-render keeps Gram/Stuks toggle, hero, and inputs all in sync
+      // when an editor changes unit_grams (null↔value) or any other field.
+      openEditProductSheet(product, async () => render(container, params));
     });
   }
 
