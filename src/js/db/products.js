@@ -52,3 +52,26 @@ export async function createProduct({ name, kcal_per_100g, unit_grams }) {
   if (error) throw error;
   return data;
 }
+
+// Update an existing product. RLS allows this for the creator OR for users
+// with role 'editor' or 'admin' (see migration 20260503000000). The trigger
+// products_set_edit_trail fills last_edited_by/last_edited_at server-side.
+export async function updateProduct(id, { name, kcal_per_100g, unit_grams, synonyms }) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const patch = { name, kcal_per_100g };
+  // Only include unit_grams/synonyms if provided so caller can omit them.
+  if (unit_grams !== undefined) patch.unit_grams = unit_grams;
+  if (synonyms !== undefined) patch.synonyms = synonyms;
+
+  const { data, error } = await supabase
+    .from('products')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
