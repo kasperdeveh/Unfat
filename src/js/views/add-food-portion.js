@@ -5,6 +5,7 @@ import { showToast } from '../ui.js';
 import { navigate } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
 import { getMyProfile } from '../db/profiles.js';
+import { getMyFavorites, toggleProductFavorite } from '../db/favorites.js';
 import { openEditProductSheet } from './components/edit-product-sheet.js';
 
 const MEAL_LABELS = {
@@ -37,6 +38,12 @@ export async function render(container, params) {
     && ['editor', 'admin'].includes(myProfile.role)
     && product.source === 'user';
 
+  let favs;
+  try { favs = await getMyFavorites(); }
+  catch { favs = { productIds: new Set(), dishIds: new Set() }; }
+
+  let isFav = favs.productIds.has(productId);
+
   const supportsUnits = !!product.unit_grams;
   let inputType = 'grams';   // 'grams' | 'units'
   let inputValue = supportsUnits ? 1 : 100;
@@ -52,7 +59,8 @@ export async function render(container, params) {
         <h1>Hoeveelheid</h1>
         <small>${escapeHtml(product.name)}</small>
       </div>
-      ${canEdit ? '<button class="btn-icon" id="edit-btn" aria-label="Product bewerken" style="margin-left:auto;">✏️</button>' : ''}
+      <button class="btn-icon btn-fav-header" id="fav-btn" aria-label="Favoriet" aria-pressed="${isFav}" style="margin-left:auto;">${isFav ? '★' : '☆'}</button>
+      ${canEdit ? '<button class="btn-icon" id="edit-btn" aria-label="Product bewerken">✏️</button>' : ''}
     </div>
 
     <div class="hero hero-green">
@@ -87,6 +95,22 @@ export async function render(container, params) {
     if (!isToday) qs.set('date', dateParam);
     const q = qs.toString();
     navigate(`#/add${q ? '?' + q : ''}`);
+  });
+
+  const favBtn = document.getElementById('fav-btn');
+  favBtn.addEventListener('click', async () => {
+    const wasOn = isFav;
+    isFav = !isFav;
+    favBtn.setAttribute('aria-pressed', String(isFav));
+    favBtn.textContent = isFav ? '★' : '☆';
+    try {
+      await toggleProductFavorite(productId, isFav);
+    } catch {
+      isFav = wasOn;
+      favBtn.setAttribute('aria-pressed', String(isFav));
+      favBtn.textContent = isFav ? '★' : '☆';
+      showToast('Kon favoriet niet opslaan');
+    }
   });
 
   if (canEdit) {
