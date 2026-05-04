@@ -1279,6 +1279,14 @@ button, input {
   padding: 2px 6px;
   border-radius: 4px;
   color: var(--text-muted);
+  border: 1px solid transparent;
+}
+/* dish-log: tappable portion-pill, with overridden state showing accent border. */
+.dish-component-row .dl-portion { cursor: pointer; }
+.dish-component-row .portion.dl-portion-edited {
+  background: rgba(0, 230, 118, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .dish-component-row .kcal { font-size: 11px; color: var(--text-muted); }
 .dish-component-row.disabled .name { text-decoration: line-through; opacity: 0.5; }

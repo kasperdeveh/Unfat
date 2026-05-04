@@ -5,6 +5,7 @@ import { todayIso } from '../calc.js';
 import { navigate } from '../router.js';
 import { showToast } from '../ui.js';
 import { escapeHtml } from '../utils/html.js';
+import { openDishComponentSheet } from './components/dish-component-sheet.js';
 
 const MEAL_LABELS = {
   breakfast: '🌅 Ontbijt',
@@ -58,17 +59,21 @@ export async function render(container, params) {
   const isElevated = ['editor', 'admin'].includes(profile.role);
   const canEdit = isOwner || isElevated;
 
+  // Per-row state. `amounts[i]` is the current grams that will be logged for
+  // ingredient i; `overridden[i]` flags it as manually edited (for visual cue).
+  // The multiplier-presets reset both: amounts ← base × multiplier, overridden ← false.
+  const baseAmounts = components.map(c => Number(c.amount_grams));
+  let amounts = baseAmounts.slice();
+  let overridden = components.map(() => false);
   let multiplier = 1.0;
   let selectedMeal = params.meal || dish.default_meal_type || guessMeal();
-  // Initial: all components active.
   let active = components.map(() => true);
 
-  function effectiveGrams(c) { return Number(c.amount_grams) * multiplier; }
-  function compKcal(c) {
-    return Math.round(effectiveGrams(c) * c.products.kcal_per_100g / 100);
+  function compKcal(i) {
+    return Math.round(amounts[i] * components[i].products.kcal_per_100g / 100);
   }
   function totalKcal() {
-    return components.reduce((sum, c, i) => active[i] ? sum + compKcal(c) : sum, 0);
+    return components.reduce((sum, _c, i) => active[i] ? sum + compKcal(i) : sum, 0);
   }
 
   function renderAll() {
@@ -99,12 +104,12 @@ export async function render(container, params) {
       <span class="field-label">Ingrediënten</span>
       <div id="dl-components">
         ${components.map((c, i) => `
-          <button class="dish-component-row ${active[i] ? '' : 'disabled'}" type="button" data-index="${i}">
-            <span style="width:18px;color:${active[i] ? 'var(--accent)' : 'var(--text-muted)'};">${active[i] ? '☑' : '☐'}</span>
-            <span class="name">${escapeHtml(c.products.name)}</span>
-            <span class="portion">${formatPortion(effectiveGrams(c), c.products)}</span>
-            <span class="kcal">${compKcal(c)} kcal</span>
-          </button>
+          <div class="dish-component-row ${active[i] ? '' : 'disabled'}" data-index="${i}">
+            <span class="dl-toggle" data-index="${i}" style="width:18px;color:${active[i] ? 'var(--accent)' : 'var(--text-muted)'};cursor:pointer;">${active[i] ? '☑' : '☐'}</span>
+            <span class="name dl-toggle" data-index="${i}" style="cursor:pointer;">${escapeHtml(c.products.name)}</span>
+            <span class="portion dl-portion ${overridden[i] ? 'dl-portion-edited' : ''}" data-index="${i}">${formatPortion(amounts[i], c.products)}${overridden[i] ? ' ✏' : ''}</span>
+            <span class="kcal">${compKcal(i)} kcal</span>
+          </div>
         `).join('')}
       </div>
 
@@ -141,15 +146,40 @@ export async function render(container, params) {
     container.querySelectorAll('#dl-mult button').forEach(btn => {
       btn.addEventListener('click', () => {
         multiplier = parseFloat(btn.getAttribute('data-mult'));
+        // Scale-all action: reset amounts to base × multiplier, clear overrides.
+        amounts = baseAmounts.map(a => a * multiplier);
+        overridden = components.map(() => false);
         renderAll();
       });
     });
 
-    container.querySelectorAll('#dl-components .dish-component-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const i = parseInt(row.getAttribute('data-index'), 10);
+    // Toggle active: tap on checkbox or name area.
+    container.querySelectorAll('#dl-components .dl-toggle').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const i = parseInt(el.getAttribute('data-index'), 10);
         active[i] = !active[i];
         renderAll();
+      });
+    });
+
+    // Edit per-ingredient amount: tap on portion-pill opens the same sheet
+    // dish-builder uses for re-edit.
+    container.querySelectorAll('#dl-components .dl-portion').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const i = parseInt(el.getAttribute('data-index'), 10);
+        const c = components[i];
+        openDishComponentSheet(
+          { initial: { product: c.products, amount_grams: amounts[i] } },
+          ({ amount_grams }) => {
+            amounts[i] = amount_grams;
+            overridden[i] = true;
+            renderAll();
+          }
+          // No onDelete: removing an ingredient from a log is the toggle-off,
+          // not a sheet action.
+        );
       });
     });
 
@@ -171,10 +201,10 @@ export async function render(container, params) {
       const rows = components
         .map((c, i) => ({ c, i }))
         .filter(({ i }) => active[i])
-        .map(({ c }) => ({
+        .map(({ c, i }) => ({
           product_id: c.products.id,
-          amount_grams: effectiveGrams(c),
-          kcal: compKcal(c),
+          amount_grams: amounts[i],
+          kcal: compKcal(i),
           meal_type: selectedMeal,
           date: dateParam,
           dish_id: dishId,
