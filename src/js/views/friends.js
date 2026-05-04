@@ -12,7 +12,7 @@ export async function render(container) {
   try {
     profile = await getMyProfile();
   } catch (err) {
-    container.innerHTML = `<p class="error">Kon niet laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error">Kon niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
   if (!profile) {
@@ -56,7 +56,7 @@ async function renderTab(container) {
         const results = await searchUsers(q);
         renderSearchResults(resultsDiv, results, () => render(container));
       } catch (err) {
-        resultsDiv.innerHTML = `<p class="error">${err.message}</p>`;
+        resultsDiv.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
       }
     }, 300);
   });

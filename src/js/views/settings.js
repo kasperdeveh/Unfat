@@ -22,7 +22,7 @@ export async function render(container) {
       supabase.auth.getSession(),
     ]);
   } catch (err) {
-    container.innerHTML = `<p class="error">Kon instellingen niet laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error">Kon instellingen niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
 
@@ -214,7 +214,7 @@ export async function render(container) {
         });
       });
     } catch (err) {
-      mount.innerHTML = `<p class="error">Kon gebruikers niet laden: ${err.message}</p>`;
+      mount.innerHTML = `<p class="error">Kon gebruikers niet laden: ${escapeHtml(err.message)}</p>`;
     }
   }
 

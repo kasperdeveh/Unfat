@@ -27,7 +27,7 @@ export async function render(container, params) {
   try {
     product = await getProduct(productId);
   } catch (err) {
-    container.innerHTML = `<p class="error">Kon product niet laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error">Kon product niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
 

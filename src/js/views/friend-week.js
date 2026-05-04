@@ -26,7 +26,7 @@ export async function render(container, params) {
   try {
     period = await getFriendPeriod(friendId, startIso, endIso);
   } catch (err) {
-    container.innerHTML = `<p class="error">Kon vriend niet laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error">Kon vriend niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
 

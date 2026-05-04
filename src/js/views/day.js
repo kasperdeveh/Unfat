@@ -45,7 +45,7 @@ export async function render(container, params) {
       listProfileHistory(),
     ]);
   } catch (err) {
-    container.innerHTML = `<p class="error">Kon dag-view niet laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error">Kon dag-view niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
 

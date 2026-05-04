@@ -8,6 +8,7 @@ import {
 import { renderWeekRows, computeWeekStats } from './components/week-view.js';
 import { renderMonthGrid, computeMonthStats } from './components/month-view.js';
 import { navigate } from '../router.js';
+import { escapeHtml } from '../utils/html.js';
 
 export async function render(container, params) {
   const view = params?.view === 'month' ? 'month' : 'week';
@@ -44,7 +45,7 @@ export async function render(container, params) {
       listEntriesForDateRange(isoDate(rangeStart), isoDate(rangeEnd)),
     ]);
   } catch (err) {
-    container.innerHTML = `<p class="error">Kon historie niet laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error">Kon historie niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
 
