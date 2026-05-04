@@ -4,6 +4,7 @@ import { getMyProfile, updateMyHideNevo } from '../db/profiles.js';
 import { navigate } from '../router.js';
 import { showToast } from '../ui.js';
 import { escapeHtml } from '../utils/html.js';
+import { normalize, rankProducts } from '../utils/product-search.js';
 
 const TOP_N_DEFAULT = 20;
 const TOP_N_SEARCH  = 50;
@@ -119,15 +120,7 @@ export async function render(container, params) {
       return;
     }
 
-    const scored = visibleProducts
-      .map(p => ({ p, score: scoreQuery(p, q) }))
-      .filter(x => x.score > 0)
-      .sort((a, b) =>
-        b.score - a.score ||
-        a.p.name.length - b.p.name.length ||
-        a.p.name.localeCompare(b.p.name, 'nl'))
-      .slice(0, TOP_N_SEARCH)
-      .map(x => x.p);
+    const scored = rankProducts(visibleProducts, q, TOP_N_SEARCH);
     if (scored.length === 0) {
       resultsEl.innerHTML = `<p class="text-muted" style="padding:12px 0;">Geen producten gevonden. Maak een nieuw product aan ↓</p>`;
       return;
@@ -152,57 +145,6 @@ export async function render(container, params) {
     if (dateParam) qs.set('date', dateParam);
     navigate(`#/add/portion?${qs}`);
   });
-}
-
-function normalize(s) {
-  return (s || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '');
-}
-
-function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-// Higher score = better match. 0 = no match.
-// Multi-token query: AND-match (every token must hit), total = sum of per-token scores.
-// Per-token tiers: exact > prefix+word-end > prefix+letter > word-boundary > substring; name beats synonym.
-function scoreQuery(product, q) {
-  const tokens = q.split(/\s+/).filter(Boolean);
-  if (tokens.length === 0) return 0;
-  let total = 0;
-  for (const token of tokens) {
-    const s = scoreToken(product, token);
-    if (s === 0) return 0;
-    total += s;
-  }
-  return total;
-}
-
-// Prefix+word-end ("Appel m schil") ranks above prefix+letter ("Appelcarre")
-// so that standalone-word matches beat compound-word matches.
-function scoreToken(product, q) {
-  const wordRe = new RegExp(`\\b${escapeRegex(q)}`);
-  const name = normalize(product.name);
-  if (name === q) return 1000;
-  if (name.startsWith(q)) {
-    return /\w/.test(name.charAt(q.length)) ? 750 : 850;
-  }
-  if (wordRe.test(name)) return 600;
-  let best = name.includes(q) ? 200 : 0;
-  if (Array.isArray(product.synonyms)) {
-    for (const syn of product.synonyms) {
-      const s = normalize(syn);
-      if (s === q) best = Math.max(best, 500);
-      else if (s.startsWith(q)) {
-        best = Math.max(best, /\w/.test(s.charAt(q.length)) ? 375 : 425);
-      }
-      else if (wordRe.test(s)) best = Math.max(best, 300);
-      else if (s.includes(q))  best = Math.max(best, 100);
-    }
-  }
-  return best;
 }
 
 function renderList(el, products, sectionLabel, totalCount, moreCount = 0) {
