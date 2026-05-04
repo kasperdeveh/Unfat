@@ -33,23 +33,6 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - **J-D**: volledig audit-log met voor/na waardes per edit (extra tabel + UI om in te zien). Pas relevant zodra het aantal editors of de hoeveelheid edits groeit.
 - **J-E**: RLS-hardening op `with check` voor de editor-update-policies (`dishes_update_by_editor` en `products_update_user_by_editor`). Vandaag valt Postgres terug op `using` als `with check`, waardoor een editor in theorie via directe API-call `created_by` kan wijzigen op een dish/product (en zo voorbij de delete-only-owner-policy komt). Toevoegen: `with check (created_by = (select created_by from <table> where id = <table>.id))` zodat ownership niet gewijzigd kan worden. Lage prio: vereist een directe API-call buiten de UI om te misbruiken.
 
-### L. Favorieten + "Vaak gegeten"
-**Status:** open, brainstorm volgt
-
-Snelle toegang tot producten en gerechten die je vaak eet. Vandaag toont het toevoegen-scherm "Recent" gebaseerd op de laatste entries, wat bij power-users alleen herhalingen oplevert. Twee complementaire mechanismen om af te wegen:
-
-- **Vaak gegeten (auto)**: gebaseerd op hits laatste 30 dagen, geen handmatige actie nodig
-- **Favoriete ster (handmatig)**: gebruiker pin't bewust een product/gerecht
-
-Open vragen voor brainstorm:
-
-- Combineren we beide secties of kiezen we één?
-- Werken favorieten ook op gerechten (vereist K)?
-- **Quick-add bottom sheet** op dashboard voor 1-klik invoer van favorieten/recent — onderdeel van dit sub-project of los?
-- Hoe verhoudt dit zich tot de Recent-aanpassing uit sessie 1 (waar Recent ingekort wordt)?
-
-Stappen: brainstorming → spec → plan → bouwen, eigen branch.
-
 ### H. Statistieken & inzichten
 **Status:** open
 
@@ -101,6 +84,7 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 
 | Datum | Item | Omschrijving |
 |-------|------|-------------|
+| 2026-05-04 | L. Favorieten | Handmatig pinnen van producten en gerechten via ster-toggle. Vierde filter-knop `★` op de toevoegen-pagina; ster ook in portion-screen + dish-builder edit-mode. Twee aparte tabellen `product_favorites` + `dish_favorites` met composite PK + cascade FK + RLS. Auto "Vaak gegeten" bewust uitgesteld |
 | 2026-05-04 | K. Gerechten | Bundel producten tot gedeelde recepten; loggen via portie-multiplier × per-ingrediënt-checkbox expandeert naar N entries. Unified zoekpagina met segmented filter Alles/Producten/Gerechten en GERECHT-badge |
 | 2026-04-26 | A. Foundation | Supabase, Auth via magic link, PWA, GitHub Pages deploy |
 | 2026-04-26 | B. Solo tracking MVP | dashboard, gedeelde producten, invoer, doelen |
