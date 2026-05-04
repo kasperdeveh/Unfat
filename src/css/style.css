@@ -1298,3 +1298,38 @@ button, input {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* Star button inside list rows on the add-food page. Tap = toggle pin
+   without navigating. Sized as a 44px square tap-target, so finger-friendly
+   on mobile while remaining visually small. */
+.btn-fav-row {
+  background: transparent;
+  border: 0;
+  padding: 0 6px;
+  width: 32px;
+  height: 44px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 44px;
+  font-family: inherit;
+  color: #444;
+  flex-shrink: 0;
+  transition: color 120ms ease, transform 120ms ease;
+}
+
+.btn-fav-row[aria-pressed="true"] {
+  color: #ffc107;
+}
+
+.btn-fav-row:active {
+  transform: scale(0.85);
+}
+
+/* Star button reused inside view-header (portion-screen + dish-builder). */
+.btn-icon.btn-fav-header {
+  color: #888;
+}
+
+.btn-icon.btn-fav-header[aria-pressed="true"] {
+  color: #ffc107;
+}
