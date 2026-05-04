@@ -71,7 +71,11 @@ export async function createDish({ name, default_meal_type, components }) {
     }));
     const { error: compErr } = await supabase.from('dish_components').insert(rows);
     if (compErr) {
-      await supabase.from('dishes').delete().eq('id', dish.id);
+      // Best-effort rollback: delete the orphaned dish row. If this also fails
+      // (network blip, RLS edge case after session refresh) we swallow it and
+      // surface the original component error — orphan dishes are harmless.
+      const { error: rollbackErr } = await supabase.from('dishes').delete().eq('id', dish.id);
+      if (rollbackErr) console.warn('createDish rollback failed', rollbackErr);
       throw compErr;
     }
   }
@@ -112,13 +116,3 @@ export async function deleteDish(id) {
   if (error) throw error;
 }
 
-// Lookup dishes by id-array (used by the add-food recents query).
-export async function getDishesByIds(ids) {
-  if (!ids || ids.length === 0) return [];
-  const { data, error } = await supabase
-    .from('dishes')
-    .select(DISH_FIELDS)
-    .in('id', ids);
-  if (error) throw error;
-  return data;
-}
