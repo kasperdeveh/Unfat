@@ -126,7 +126,13 @@ export async function render(container, params) {
   }
 
   function bindEvents() {
-    container.querySelector('#back-btn').addEventListener('click', () => navigate('#/add'));
+    container.querySelector('#back-btn').addEventListener('click', () => {
+      const qs = new URLSearchParams();
+      if (params.meal) qs.set('meal', params.meal);
+      if (!isToday) qs.set('date', dateParam);
+      const q = qs.toString();
+      navigate(`#/add${q ? '?' + q : ''}`);
+    });
     if (canEdit) {
       container.querySelector('#edit-btn').addEventListener('click', () =>
         navigate(`#/dish/edit?dish=${dishId}`));
