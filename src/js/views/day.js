@@ -18,24 +18,27 @@ const MEAL_LABELS = {
 };
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack'];
 
-export async function render(container, params) {
+export async function render(container, params, opts = {}) {
+  const { skipSkeleton = false } = opts;
   const dateIso = params?.date || todayIso();
   const date = parseIso(dateIso);
   const isToday = isSameDay(date, new Date());
 
-  container.innerHTML = `
-    <div class="day-skeleton" aria-hidden="true">
-      <div class="skeleton-block skeleton-day-nav"></div>
-      <div class="skeleton-block skeleton-hero"></div>
-      <div class="skeleton-block skeleton-meal-title"></div>
-      <div class="skeleton-block skeleton-meal-row"></div>
-      <div class="skeleton-block skeleton-meal-title"></div>
-      <div class="skeleton-block skeleton-meal-row"></div>
-      <div class="skeleton-block skeleton-meal-title"></div>
-      <div class="skeleton-block skeleton-meal-row"></div>
-      <div class="skeleton-block skeleton-meal-title"></div>
-      <div class="skeleton-block skeleton-meal-row"></div>
-    </div>`;
+  if (!skipSkeleton) {
+    container.innerHTML = `
+      <div class="day-skeleton" aria-hidden="true">
+        <div class="skeleton-block skeleton-day-nav"></div>
+        <div class="skeleton-block skeleton-hero"></div>
+        <div class="skeleton-block skeleton-meal-title"></div>
+        <div class="skeleton-block skeleton-meal-row"></div>
+        <div class="skeleton-block skeleton-meal-title"></div>
+        <div class="skeleton-block skeleton-meal-row"></div>
+        <div class="skeleton-block skeleton-meal-title"></div>
+        <div class="skeleton-block skeleton-meal-row"></div>
+        <div class="skeleton-block skeleton-meal-title"></div>
+        <div class="skeleton-block skeleton-meal-row"></div>
+      </div>`;
+  }
 
   let profile, entries, history;
   try {
