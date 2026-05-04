@@ -2,6 +2,7 @@ import { listProducts } from '../db/products.js';
 import { listDishes } from '../db/dishes.js';
 import { listRecentItemsForUser } from '../db/entries.js';
 import { getMyProfile, updateMyHideNevo } from '../db/profiles.js';
+import { getMyFavorites, toggleProductFavorite, toggleDishFavorite } from '../db/favorites.js';
 import { navigate } from '../router.js';
 import { showToast } from '../ui.js';
 import { escapeHtml } from '../utils/html.js';
@@ -12,9 +13,10 @@ const TOP_N_SEARCH  = 50;
 const RECENTS_VISIBLE = 5;
 
 const FILTER_OPTIONS = [
-  { key: 'all',      label: 'Alles' },
-  { key: 'products', label: 'Producten' },
-  { key: 'dishes',   label: 'Gerechten' },
+  { key: 'all',       label: 'Alles' },
+  { key: 'products',  label: 'Producten' },
+  { key: 'dishes',    label: 'Gerechten' },
+  { key: 'favorites', label: '★', ariaLabel: 'Favorieten' },
 ];
 
 const MEAL_LABEL_SHORT = { breakfast: '🌅', lunch: '🥗', dinner: '🍽', snack: '🍪' };
@@ -36,7 +38,7 @@ export async function render(container, params) {
 
     <div class="chiprow">
       <div class="filter-segmented" id="filter-seg">
-        ${FILTER_OPTIONS.map(o => `<button data-filter="${o.key}" type="button">${o.label}</button>`).join('')}
+        ${FILTER_OPTIONS.map(o => `<button data-filter="${o.key}" type="button"${o.ariaLabel ? ` aria-label="${o.ariaLabel}"` : ''}>${o.label}</button>`).join('')}
       </div>
       <button class="chip" id="nevo-chip" type="button" aria-pressed="false">NEVO producten verbergen</button>
     </div>
@@ -78,18 +80,21 @@ export async function render(container, params) {
   // Cleared on a fresh tab / next-day load (sessionStorage scope).
   let filter = sessionStorage.getItem('addFoodFilter') || 'all';
   let recentsExpanded = false;
+  let favorites = { productIds: new Set(), dishIds: new Set() };
 
   try {
-    const [products, dishes, recentItems, profile] = await Promise.all([
+    const [products, dishes, recentItems, profile, favs] = await Promise.all([
       listProducts(),
       listDishes(),
       listRecentItemsForUser(TOP_N_DEFAULT),
       getMyProfile(),
+      getMyFavorites(),
     ]);
     allProducts = products;
     allDishes = dishes;
     recents = recentItems;
     hideNevo = !!(profile && profile.hide_nevo);
+    favorites = favs;
   } catch (err) {
     document.getElementById('results').innerHTML =
       `<p class="error">Kon data niet laden: ${escapeHtml(err.message)}</p>`;
@@ -104,7 +109,7 @@ export async function render(container, params) {
   function syncChip() {
     chipEl.setAttribute('aria-pressed', String(hideNevo));
     chipEl.textContent = hideNevo ? 'NEVO producten tonen' : 'NEVO producten verbergen';
-    chipEl.disabled = filter === 'dishes';
+    chipEl.disabled = filter === 'dishes' || filter === 'favorites';
   }
 
   function syncFilter() {
@@ -138,7 +143,7 @@ export async function render(container, params) {
       renderResults(search.value);
       showToast('Kon voorkeur niet opslaan');
     } finally {
-      chipEl.disabled = filter === 'dishes';
+      chipEl.disabled = filter === 'dishes' || filter === 'favorites';
     }
   });
 
