@@ -17,6 +17,8 @@ const FILTER_OPTIONS = [
   { key: 'dishes',   label: 'Gerechten' },
 ];
 
+const MEAL_LABEL_SHORT = { breakfast: '🌅', lunch: '🥗', dinner: '🍽', snack: '🍪' };
+
 export async function render(container, params) {
   const meal = params.meal || '';
   const dateParam = params.date || '';
@@ -174,11 +176,14 @@ export async function render(container, params) {
     const { kind, items } = buildList(query);
 
     if (items.length === 0) {
-      const totalCount = (filter === 'dishes' ? allDishes.length : visibleProducts().length);
       if (!query.trim()) {
+        const noun = filter === 'dishes' ? 'gerechten' : (filter === 'products' ? 'producten' : 'items');
+        const totalCount = filter === 'dishes'
+          ? allDishes.length
+          : (filter === 'products' ? visibleProducts().length : allDishes.length + visibleProducts().length);
         resultsEl.innerHTML = `
           <p class="text-muted" style="padding:12px 0;">
-            Typ om te zoeken in ${totalCount} ${filter === 'dishes' ? 'gerechten' : 'producten'}
+            Typ om te zoeken in ${totalCount} ${noun}
           </p>`;
       } else {
         resultsEl.innerHTML = `<p class="text-muted" style="padding:12px 0;">Niets gevonden. Maak iets nieuws aan ↓</p>`;
@@ -256,5 +261,3 @@ export async function render(container, params) {
     }
   });
 }
-
-const MEAL_LABEL_SHORT = { breakfast: '🌅', lunch: '🥗', dinner: '🍽', snack: '🍪' };
