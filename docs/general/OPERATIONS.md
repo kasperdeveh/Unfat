@@ -15,7 +15,7 @@ NEVO-rijen (`source='nevo'`) zijn voor iedereen read-only. Editor-delete-rechten
 
 ### Beperkingen van editor-rol
 
-De RLS-policy `products_update_user_by_editor` staat editors/admins toe `source='user'`-producten te updaten. Sinds 2026-05-04 (J-E) heeft de policy een expliciete `with check` die `created_by` en `source` immutable maakt — een editor kan dus geen ownership kapen of een user-product flippen naar `source='nevo'` via een directe API-call. Voor `dishes_update_by_editor` geldt hetzelfde voor `created_by`. De client-wrapper `updateProduct()` in `src/js/db/products.js` stuurt nog steeds alleen `name`, `kcal_per_100g`, `unit_grams` en `synonyms` mee — defense-in-depth.
+De RLS-policy `products_update_user_by_editor` staat editors/admins toe `source='user'`-producten te updaten. Sinds 2026-05-04 (J-E) zijn `created_by` en `source` immutable — afgedwongen door BEFORE UPDATE triggers (`products_protect_immutable`, `dishes_protect_owner`) i.p.v. een policy `with check`-subquery. Reden voor de trigger-aanpak: een `with check (col = (select col from same_table where ...))` veroorzaakt "infinite recursion in policy" omdat Postgres de SELECT-policies opnieuw moet evalueren. Triggers hebben directe OLD/NEW-toegang en kennen die beperking niet. Een vergelijkbare trigger `profiles_protect_role` houdt de `role`-kolom alleen wijzigbaar via de `set_user_role` admin-RPC. De client-wrapper `updateProduct()` in `src/js/db/products.js` stuurt nog steeds alleen `name`, `kcal_per_100g`, `unit_grams` en `synonyms` mee — defense-in-depth.
 
 ## Eerste admin maken (bootstrap)
 
