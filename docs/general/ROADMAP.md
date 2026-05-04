@@ -98,7 +98,7 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 
 | Datum | Item | Omschrijving |
 |-------|------|-------------|
-| 2026-05-04 | K | Gerechten | Bundel producten tot gedeelde recepten; loggen via portie-multiplier × per-ingrediënt-checkbox expandeert naar N entries. Unified zoekpagina met segmented filter Alles/Producten/Gerechten en GERECHT-badge |
+| 2026-05-04 | K. Gerechten | Bundel producten tot gedeelde recepten; loggen via portie-multiplier × per-ingrediënt-checkbox expandeert naar N entries. Unified zoekpagina met segmented filter Alles/Producten/Gerechten en GERECHT-badge |
 | 2026-04-26 | A. Foundation | Supabase, Auth via magic link, PWA, GitHub Pages deploy |
 | 2026-04-26 | B. Solo tracking MVP | dashboard, gedeelde producten, invoer, doelen |
 | 2026-04-27 | C. Historie & terugwerkende invoer | date-aware day-view met ‹ › nav, Historie-tab met week/maand toggle + anchor-stable navigation, individuele entry-rijen met edit-sheet + swipe-undo, `profile_history` tabel voor historisch correcte target/max-snapshots |
