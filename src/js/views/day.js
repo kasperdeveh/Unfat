@@ -168,6 +168,17 @@ export async function render(container, params, opts = {}) {
     </div>
   `;
 
+  // Re-render after a mutation while preserving the user's scroll position.
+  // localStorage.scrollMode === 'skel' shows the skeleton placeholder during the
+  // re-fetch (variant A); anything else (default) keeps the old DOM in place
+  // until the new innerHTML is ready (variant B). Toggle lives in Settings.
+  async function reloadKeepScroll() {
+    const y = window.scrollY;
+    const skipSkeleton = localStorage.getItem('scrollMode') !== 'skel';
+    await render(container, params, { skipSkeleton });
+    requestAnimationFrame(() => window.scrollTo({ top: y }));
+  }
+
   // Render compare-widget for friends (only on today's view, only if friends exist).
   if (isToday) {
     const widgetMount = document.createElement('div');
@@ -228,7 +239,7 @@ export async function render(container, params, opts = {}) {
       const id = row.getAttribute('data-entry-id');
       const entry = entries.find(e => e.id === id);
       if (!entry) return;
-      openEditSheet(id, entry, () => render(container, params));
+      openEditSheet(id, entry, reloadKeepScroll);
     });
 
     row.addEventListener('touchstart', (e) => {
@@ -255,8 +266,8 @@ export async function render(container, params, opts = {}) {
         if (entry) {
           row.style.transform = 'translateX(-100%)';
           await deleteEntry(id);
-          showUndoToast(entry, () => render(container, params));
-          await render(container, params);
+          showUndoToast(entry, reloadKeepScroll);
+          await reloadKeepScroll();
         }
       } else {
         row.style.transform = '';
