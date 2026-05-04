@@ -165,6 +165,21 @@ export async function render(container, params) {
       if (filter === 'dishes')   items = items.filter(r => r.kind === 'dish');
       if (hideNevo) items = items.filter(r => r.kind !== 'product' || r.product.source !== 'nevo');
 
+      if (filter === 'favorites') {
+        const favProducts = allProducts
+          .filter(p => favorites.productIds.has(p.id))
+          .map(p => ({ kind: 'product', product: p }));
+        const favDishes = allDishes
+          .filter(d => favorites.dishIds.has(d.id))
+          .map(d => ({ kind: 'dish', dish: d }));
+        const merged = [...favProducts, ...favDishes].sort((a, b) => {
+          const an = a.kind === 'dish' ? a.dish.name : a.product.name;
+          const bn = b.kind === 'dish' ? b.dish.name : b.product.name;
+          return an.localeCompare(bn, 'nl', { sensitivity: 'base' });
+        });
+        return { kind: 'favorites', items: merged };
+      }
+
       if (filter === 'dishes') {
         const recentDishIds = new Set(items.map(r => r.dish.id));
         const remaining = allDishes
@@ -174,6 +189,18 @@ export async function render(container, params) {
       }
 
       return { kind: 'recents', items };
+    }
+
+    if (filter === 'favorites') {
+      const favProducts = allProducts.filter(p => favorites.productIds.has(p.id));
+      const favDishes = allDishes.filter(d => favorites.dishIds.has(d.id));
+      const products = rankProducts(favProducts, q, TOP_N_SEARCH);
+      const dishes = rankProducts(favDishes, q, TOP_N_SEARCH);
+      const merged = [
+        ...dishes.map(d => ({ kind: 'dish', dish: d })),
+        ...products.map(p => ({ kind: 'product', product: p })),
+      ];
+      return { kind: 'search', items: merged };
     }
 
     let products = [];
@@ -202,8 +229,16 @@ export async function render(container, params) {
     // Empty-search empty-state: 'all' / 'products' / 'dishes' (when no dishes at all).
     if ((kind === 'recents' && built.items.length === 0)
         || (kind === 'dishes-all' && built.recents.length === 0 && built.remaining.length === 0)
+        || (kind === 'favorites' && built.items.length === 0)
         || (kind === 'search' && built.items.length === 0)) {
       if (!query.trim()) {
+        if (filter === 'favorites') {
+          resultsEl.innerHTML = `
+            <p class="text-muted" style="padding:12px 0;">
+              Je hebt nog geen favorieten. Tap ☆ bij een product of gerecht om er één toe te voegen.
+            </p>`;
+          return;
+        }
         const noun = filter === 'dishes' ? 'gerechten' : (filter === 'products' ? 'producten' : 'items');
         const totalCount = filter === 'dishes'
           ? allDishes.length
