@@ -33,13 +33,16 @@ defineRoute('#/history',        () => import('./views/history.js'));
 defineRoute('#/add',            () => import('./views/add-food.js'));
 defineRoute('#/add/portion',    () => import('./views/add-food-portion.js'));
 defineRoute('#/add/new',        () => import('./views/add-food-new.js'));
+defineRoute('#/dish/new',       () => import('./views/dish-builder.js'));
+defineRoute('#/dish/edit',      () => import('./views/dish-builder.js'));
+defineRoute('#/dish/log',       () => import('./views/dish-log.js'));
 defineRoute('#/friends',        () => import('./views/friends.js'));
 defineRoute('#/friend-day',     () => import('./views/friend-day.js'));
 defineRoute('#/friend-week',    () => import('./views/friend-week.js'));
 defineRoute('#/friend-month',   () => import('./views/friend-month.js'));
 defineRoute('#/settings',       () => import('./views/settings.js'));
 
-const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/day', '#/history', '#/add', '#/add/portion', '#/add/new', '#/friends', '#/friend-day', '#/friend-week', '#/friend-month', '#/settings'];
+const KNOWN_ROUTES = ['#/login', '#/onboarding', '#/', '#/day', '#/history', '#/add', '#/add/portion', '#/add/new', '#/dish/new', '#/dish/edit', '#/dish/log', '#/friends', '#/friend-day', '#/friend-week', '#/friend-month', '#/settings'];
 
 // Determine where the user should be based on their session and profile state.
 // Returns the target hash, or null if the current route is fine.
