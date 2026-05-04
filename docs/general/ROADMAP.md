@@ -26,12 +26,11 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - **F-C**: "Zoek ook in Open Food Facts"-knop bij beperkte lokale resultaten, voor brand-producten zonder barcode (één call per knop-klik om binnen OFF-rate-limit te blijven; resultaat cachen in `products` bij keuze)
 
 ### J. Rollen & moderation — vervolg
-**Status:** J-A afgerond (2026-05-03), J-B/C/D/E open
+**Status:** J-A en J-E afgerond (2026-05-03 / 2026-05-04), J-B/C/D open
 
 - **J-B**: editor mag ook andermans user-product **verwijderen**. Vraagt soft-delete + entry-merge omdat `entries.product_id` een FK met `on delete restrict` heeft. Voor nu: editors kunnen joke-producten alleen hernoemen + corrigeren.
 - **J-C**: NEVO-rijen (`source='nevo'`) corrigeerbaar maken via een override-laag (extra tabel `product_overrides`), zodat een re-seed je correcties niet wegvaagt.
 - **J-D**: volledig audit-log met voor/na waardes per edit (extra tabel + UI om in te zien). Pas relevant zodra het aantal editors of de hoeveelheid edits groeit.
-- **J-E**: RLS-hardening op `with check` voor de editor-update-policies (`dishes_update_by_editor` en `products_update_user_by_editor`). Vandaag valt Postgres terug op `using` als `with check`, waardoor een editor in theorie via directe API-call `created_by` kan wijzigen op een dish/product (en zo voorbij de delete-only-owner-policy komt). Toevoegen: `with check (created_by = (select created_by from <table> where id = <table>.id))` zodat ownership niet gewijzigd kan worden. Lage prio: vereist een directe API-call buiten de UI om te misbruiken.
 
 ### H. Statistieken & inzichten
 **Status:** open
@@ -77,13 +76,12 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 - Loading-skeletons doortrekken naar `history`, `friends`, `friend-day/week/month` en `add-food` (vandaag alleen `day` gedaan als demo)
 - A11y-pass voor pre-launch: `aria-label` op icon-only knoppen (✓/✗/⋯/‹›), `role="progressbar"` op hero-bar, kleurcontrast WCAG AA, `viewport: user-scalable=no` weghalen (double-tap-zoom is al via CSS+JS opgelost)
 - Account-delete + data-export self-service in Settings (relevant bij publieke launch / >10 echte users; tot die tijd via Supabase Dashboard)
-- Recents-query overscan vergroten of slimmer paginating: `listRecentItemsForUser` haalt vandaag 150 raw entries en dedupeert client-side. Een power-user die elke dag 3 maaltijden × 5-10 ingrediënten logt blaast die 150 in ~3-7 dagen door, en oudere recents verdwijnen. Verhogen naar 300 of een tweede page ophalen als dedup < `limit` oplevert. Pas relevant bij regelmatig dish-loggen; geen regressie t.o.v. pre-K
-- `bulkCreateEntries` atomicity-comment toevoegen in `src/js/db/entries.js`: documenteren dat één PostgREST `insert([rows])`-call server-side transactioneel is (alle rows committen of geen) — voorkomt dat een toekomstige maintainer denkt dat partial failure mogelijk is
 
 ## Afgerond ✅
 
 | Datum | Item | Omschrijving |
 |-------|------|-------------|
+| 2026-05-04 | K-review follow-ups + security sweep | RLS-hardening met expliciete `with check` op drie update-policies. Belangrijkste vondst: `profiles_update_own` had geen check op `role`-kolom → een normale user kon zichzelf via directe API-call promoten naar admin. Plus J-E (editor-policies locken `created_by`). Recents-overscan 150→300, bulkCreateEntries atomicity-comment |
 | 2026-05-04 | L. Favorieten | Handmatig pinnen van producten en gerechten via ster-toggle. Vierde filter-knop `Favorieten` op de toevoegen-pagina; ster ook in lijst-rijen, portion-screen, dish-log en edit-entry-sheet. Twee aparte tabellen `product_favorites` + `dish_favorites` met composite PK + cascade FK + RLS. Auto "Vaak gegeten" bewust uitgesteld |
 | 2026-05-04 | K. Gerechten | Bundel producten tot gedeelde recepten; loggen via portie-multiplier × per-ingrediënt-checkbox expandeert naar N entries. Unified zoekpagina met segmented filter Alles/Producten/Gerechten en GERECHT-badge |
 | 2026-04-26 | A. Foundation | Supabase, Auth via magic link, PWA, GitHub Pages deploy |
