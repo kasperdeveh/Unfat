@@ -32,18 +32,6 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - **J-C**: NEVO-rijen (`source='nevo'`) corrigeerbaar maken via een override-laag (extra tabel `product_overrides`), zodat een re-seed je correcties niet wegvaagt.
 - **J-D**: volledig audit-log met voor/na waardes per edit (extra tabel + UI om in te zien). Pas relevant zodra het aantal editors of de hoeveelheid edits groeit.
 
-### K. Gerechten / maaltijden
-**Status:** open, brainstorm volgt
-
-Meerdere producten bundelen tot één gerecht (bv. "Spaghetti bolognese") zodat een gebruiker in één tap een hele maaltijd kan loggen i.p.v. ingrediënten apart. Open vragen voor brainstorm:
-
-- **Statisch vs. flexibel**: kan de gebruiker per keer afwijken (kleinere portie, ingrediënt weglaten zoals "zonder kaas")?
-- **UX voor aanmaken**: vanaf toevoegen-pagina, vanuit Settings, of "verzamel-mode" waarbij je losse entries achteraf bundelt?
-- **Datamodel**: 1 gerecht = 1 entry of 1 gerecht = N entries (één per ingrediënt)? Heeft impact op edit/delete-flow en op `entries.product_id` FK-structuur (NEVO + user products)
-- **Interactie met sub-project L**: kunnen gerechten favoriet gemaakt worden?
-
-Stappen: brainstorming → spec → plan → bouwen, eigen branch.
-
 ### L. Favorieten + "Vaak gegeten"
 **Status:** open, brainstorm volgt
 
@@ -108,14 +96,15 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 
 ## Afgerond ✅
 
-| Datum | Item |
-|-------|------|
-| 2026-04-26 | A. Foundation (Supabase, Auth via magic link, PWA, GitHub Pages deploy) |
-| 2026-04-26 | B. Solo tracking MVP (dashboard, gedeelde producten, invoer, doelen) |
-| 2026-04-27 | C. Historie & terugwerkende invoer (date-aware day-view met ‹ › nav, Historie-tab met week/maand toggle + anchor-stable navigation, individuele entry-rijen met edit-sheet + swipe-undo, `profile_history` tabel voor historisch correcte target/max-snapshots) |
-| 2026-04-28 | D-A. Vrienden basis (handle, verzoeken met auto-accept bij wederzijdse intentie, per-gebruiker deel-niveau, Vrienden-tab met zoek + secties, vergelijk-carousel op dashboard, read-only friend dag-view) |
-| 2026-04-29 | D-vervolg. Vrienden in week/maand-historie (friend day/week/month-views met ‹ › nav, gedeelde Dag/Week/Maand-header), één-klik kopiëren per-entry en per-maaltijd vanuit friend dag-view met date-picker bottom-sheet, `get_friend_period` RPC) |
-| 2026-04-30 | F-A. NEVO seed (~2300 NL-staples in shared products-tabel met `source`/`nevo_code`/`synonyms`-kolommen, gecureerde `unit_grams` voor stukbare items, ranking-aware zoeken met synoniem-match en accent-strip, NEVO-attributie in Settings, Supabase CLI workflow + 14-digit migration-naamgeving) |
-| 2026-05-01 | Update-prompt cache-invalidation fix: tap "Vernieuwen" leidt nu in één tap tot een schone reload op de nieuwe SW (root cause was stale bytes uit GitHub-Pages HTTP-cache tijdens SW-install — opgelost met `Request(..., { cache: 'reload' })`); door-gebruiker-bestuurde activatie via `SKIP_WAITING` postMessage + `controllerchange`-listener; subtiele app-versie onderaan Settings live uit `caches.keys()` |
-| 2026-05-03 | J-A. Rollen & moderation: producten editten (drie rollen `user`/`editor`/`admin` op `profiles`, editors/admins kunnen alle user-producten wijzigen via potlood-knop in portion-screen, admin-rolbeheer in Settings, light edit-trail via server-trigger, decimaal-input fix voor stuks op iOS Safari, RPC alias-fix) |
-| 2026-05-03 | M. Toevoegen-pagina UX-tweaks: NEVO-toggle chip met per-user persist (kolom `profiles.hide_nevo`), Recents collapsed op 5 met "Meer tonen"-knop, NEVO-badge in product-rijen alleen op de toevoegen-pagina |
+| Datum | Item | Omschrijving |
+|-------|------|-------------|
+| 2026-05-04 | K | Gerechten | Bundel producten tot gedeelde recepten; loggen via portie-multiplier × per-ingrediënt-checkbox expandeert naar N entries. Unified zoekpagina met segmented filter Alles/Producten/Gerechten en GERECHT-badge |
+| 2026-04-26 | A. Foundation | Supabase, Auth via magic link, PWA, GitHub Pages deploy |
+| 2026-04-26 | B. Solo tracking MVP | dashboard, gedeelde producten, invoer, doelen |
+| 2026-04-27 | C. Historie & terugwerkende invoer | date-aware day-view met ‹ › nav, Historie-tab met week/maand toggle + anchor-stable navigation, individuele entry-rijen met edit-sheet + swipe-undo, `profile_history` tabel voor historisch correcte target/max-snapshots |
+| 2026-04-28 | D-A. Vrienden basis | handle, verzoeken met auto-accept bij wederzijdse intentie, per-gebruiker deel-niveau, Vrienden-tab met zoek + secties, vergelijk-carousel op dashboard, read-only friend dag-view |
+| 2026-04-29 | D-vervolg. Vrienden in week/maand-historie | friend day/week/month-views met ‹ › nav, gedeelde Dag/Week/Maand-header, één-klik kopiëren per-entry en per-maaltijd vanuit friend dag-view met date-picker bottom-sheet, `get_friend_period` RPC |
+| 2026-04-30 | F-A. NEVO seed | ~2300 NL-staples in shared products-tabel met `source`/`nevo_code`/`synonyms`-kolommen, gecureerde `unit_grams` voor stukbare items, ranking-aware zoeken met synoniem-match en accent-strip, NEVO-attributie in Settings, Supabase CLI workflow + 14-digit migration-naamgeving |
+| 2026-05-01 | Update-prompt cache-invalidation fix | tap "Vernieuwen" leidt nu in één tap tot een schone reload op de nieuwe SW (root cause was stale bytes uit GitHub-Pages HTTP-cache tijdens SW-install — opgelost met `Request(..., { cache: 'reload' })`); door-gebruiker-bestuurde activatie via `SKIP_WAITING` postMessage + `controllerchange`-listener; subtiele app-versie onderaan Settings live uit `caches.keys()` |
+| 2026-05-03 | J-A. Rollen & moderation: producten editten | drie rollen `user`/`editor`/`admin` op `profiles`, editors/admins kunnen alle user-producten wijzigen via potlood-knop in portion-screen, admin-rolbeheer in Settings, light edit-trail via server-trigger, decimaal-input fix voor stuks op iOS Safari, RPC alias-fix |
+| 2026-05-03 | M. Toevoegen-pagina UX-tweaks | NEVO-toggle chip met per-user persist (kolom `profiles.hide_nevo`), Recents collapsed op 5 met "Meer tonen"-knop, NEVO-badge in product-rijen alleen op de toevoegen-pagina |

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-05-04
+
+- Sub-project K: gerechten — bundels van producten als gedeelde recepten. Op de toevoegen-pagina nu een segmented filter (Alles/Producten/Gerechten) naast de bestaande NEVO-chip; resultaten en "Laatst gegeten" tonen producten en gerechten gemengd met een GERECHT-badge. Twee dashed-knoppen onderaan: "+ Nieuw product" en "+ Nieuw gerecht"
+- Aanmaken: `#/dish/new` met naam, optionele suggestie-maaltijd en ingrediënten-lijst. + knop opent een sheet (zoek-flow + Gram/Stuks-portie hergebruikt). Bewerken op `#/dish/edit` met dezelfde view en een rode "Verwijderen"-knop (alleen voor de aanmaker)
+- Loggen: `#/dish/log` met portie-multiplier (½×/1×/1½×/2×) en per-ingrediënt-checkboxes; bij Toevoegen wordt het gerecht expanded naar N entries via één bulk-insert. Maaltijd valt terug op gerecht.default_meal_type, anders op tijd-van-dag
+- Datamodel: tabellen `dishes` en `dish_components` (gedeeld als products: select voor alle authenticated, edit voor eigenaar+editor+admin, delete alleen eigenaar). `entries.dish_id` (nullable, on delete set null) link entries aan hun gerecht-template; bij gerecht-delete blijven al gelogde entries staan
+- Edit-trail: `last_edited_by`/`last_edited_at` op `dishes` via trigger, en een tweede trigger op `dish_components` werkt de trail van de parent-dish bij wanneer ingrediënten wijzigen — net als bij products
+- Refactor: zoek-scoring (`normalize`, `rankProducts`) verhuisd naar `src/js/utils/product-search.js` zodat de gerecht-ingrediënten-picker dezelfde ranking gebruikt
+- Migrations: `20260504110039_dishes.sql` (schema, RLS, triggers) + `20260504111617_dishes_policy_split_and_index_fix.sql` (split `for all` policy in expliciete insert/update/delete; recents-index reshape naar `(user_id, created_at desc)`). SW cache v31 → v32
+
 ## 2026-05-03
 
 - Sub-project J-A: rol-systeem + producten editten. Drie rollen op `profiles` (`user`/`editor`/`admin`); editors en admins kunnen alle door-gebruikers-aangemaakte producten (`source='user'`) wijzigen via een potlood-knop in het portion-screen die een bottom sheet opent met `name`, `kcal_per_100g`, `unit_grams` en `synonyms`. NEVO-rijen blijven immutable. Light edit-trail: `last_edited_by`/`last_edited_at` op `products`, gevuld door een server-trigger zodat clients niet kunnen liegen of vergeten
