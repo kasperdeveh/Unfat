@@ -1192,3 +1192,101 @@ button, input {
   border-color: #3a3d43;
   color: #d8dade;
 }
+
+/* GERECHT badge in product+dish rows on the add-food page. */
+.badge-dish {
+  font-size: 10px;
+  background: rgba(0, 230, 118, 0.18);
+  color: var(--accent);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: 1px;
+  letter-spacing: 0.3px;
+}
+
+/* Filter segmented control (Alles | Producten | Gerechten) on add-food.
+   Variant of .segmented with smaller padding so it fits next to the NEVO chip. */
+.filter-segmented {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 0;
+}
+.filter-segmented button {
+  background: transparent;
+  border: none;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 999px;
+  font-family: inherit;
+}
+.filter-segmented button.active {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+/* Portion multiplier picker on dish-log (½ | 1 | 1½ | 2). Reuses .segmented. */
+.dish-portion-segmented {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-input);
+  padding: 3px;
+  margin-bottom: var(--space-3);
+}
+.dish-portion-segmented button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  font-weight: 600;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+}
+.dish-portion-segmented button.active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* Ingredient row in dish-builder + dish-log (with checkbox at the right side). */
+.dish-component-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+  color: var(--text);
+}
+.dish-component-row .name { flex: 1; }
+.dish-component-row .portion {
+  font-size: 11px;
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+.dish-component-row .kcal { font-size: 11px; color: var(--text-muted); }
+.dish-component-row.disabled .name { text-decoration: line-through; opacity: 0.5; }
+.dish-component-row.disabled .portion,
+.dish-component-row.disabled .kcal { opacity: 0.5; }
+
+/* Disabled NEVO-chip when filter=Gerechten. */
+.chip[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
