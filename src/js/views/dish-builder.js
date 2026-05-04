@@ -4,6 +4,7 @@ import { openDishComponentSheet } from './components/dish-component-sheet.js';
 import { navigate } from '../router.js';
 import { showToast } from '../ui.js';
 import { escapeHtml } from '../utils/html.js';
+import { getMyFavorites, toggleDishFavorite } from '../db/favorites.js';
 
 const MEAL_BUTTONS = [
   { key: '',          label: 'Geen' },
@@ -28,17 +29,19 @@ export async function render(container, params) {
   let initialComponents = [];
   let canEdit = true;
   let canDelete = true;
+  let isFavInitial = false;
 
   try {
     const profile = await getMyProfile();
     if (isEdit) {
-      const dish = await getDish(dishId);
+      const [dish, favs] = await Promise.all([getDish(dishId), getMyFavorites()]);
       initialName = dish.name;
       initialMeal = dish.default_meal_type || '';
       initialComponents = (dish.components || []).map(c => ({
         product: c.products,
         amount_grams: Number(c.amount_grams),
       }));
+      isFavInitial = favs.dishIds.has(dishId);
       const isOwner = dish.created_by === profile.id;
       const isElevated = ['editor', 'admin'].includes(profile.role);
       canEdit = isOwner || isElevated;
@@ -57,6 +60,7 @@ export async function render(container, params) {
     name: initialName,
     defaultMeal: initialMeal,
     components: initialComponents.slice(),
+    isFav: isFavInitial,
   };
 
   function totalKcal() {
@@ -85,6 +89,7 @@ export async function render(container, params) {
           <h1>${isEdit ? 'Gerecht bewerken' : 'Nieuw gerecht'}</h1>
           <small>Bundel producten tot één gerecht</small>
         </div>
+        ${isEdit ? `<button class="btn-icon btn-fav-header" id="db-fav" aria-label="Favoriet" aria-pressed="${state.isFav}" style="margin-left:auto;">${state.isFav ? '★' : '☆'}</button>` : ''}
       </div>
 
       <div class="field">
@@ -127,6 +132,24 @@ export async function render(container, params) {
 
   function bindEvents() {
     container.querySelector('#back-btn').addEventListener('click', () => navigate('#/add'));
+
+    if (isEdit) {
+      const favBtn = container.querySelector('#db-fav');
+      favBtn.addEventListener('click', async () => {
+        const wasOn = state.isFav;
+        state.isFav = !state.isFav;
+        favBtn.setAttribute('aria-pressed', String(state.isFav));
+        favBtn.textContent = state.isFav ? '★' : '☆';
+        try {
+          await toggleDishFavorite(dishId, state.isFav);
+        } catch {
+          state.isFav = wasOn;
+          favBtn.setAttribute('aria-pressed', String(state.isFav));
+          favBtn.textContent = state.isFav ? '★' : '☆';
+          showToast('Kon favoriet niet opslaan');
+        }
+      });
+    }
 
     container.querySelector('#db-name').addEventListener('input', (e) => {
       state.name = e.target.value;
