@@ -250,22 +250,26 @@ export async function render(container, params) {
     return `<ul class="list">${items.map(item => {
       if (item.kind === 'dish') {
         const d = item.dish;
+        const on = favorites.dishIds.has(d.id);
         return `
           <li class="meal-row" data-kind="dish" data-id="${d.id}">
             <div>
               <div>${escapeHtml(d.name)}<span class="badge-dish">GERECHT</span></div>
               <div class="items">${d.default_meal_type ? `Suggestie: ${MEAL_LABEL_SHORT[d.default_meal_type] || d.default_meal_type}` : 'Bundel van producten'}</div>
             </div>
+            <button class="btn-fav-row" data-fav-kind="dish" data-fav-id="${d.id}" aria-label="Favoriet" aria-pressed="${on}">${on ? '★' : '☆'}</button>
             <span>›</span>
           </li>`;
       } else {
         const p = item.product;
+        const on = favorites.productIds.has(p.id);
         return `
           <li class="meal-row" data-kind="product" data-id="${p.id}">
             <div>
               <div>${escapeHtml(p.name)}${p.source === 'nevo' ? '<span class="badge-nevo">NEVO</span>' : ''}</div>
               <div class="items">${p.kcal_per_100g} kcal/100g${p.unit_grams ? ` · ${p.unit_grams}g/stuk` : ''}</div>
             </div>
+            <button class="btn-fav-row" data-fav-kind="product" data-fav-id="${p.id}" aria-label="Favoriet" aria-pressed="${on}">${on ? '★' : '☆'}</button>
             <span>›</span>
           </li>`;
       }
@@ -275,12 +279,45 @@ export async function render(container, params) {
   search.addEventListener('input', () => renderResults(search.value));
   renderResults('');
 
-  resultsEl.addEventListener('click', (e) => {
+  resultsEl.addEventListener('click', async (e) => {
     if (e.target.closest('#more-recents-btn')) {
       recentsExpanded = true;
       renderResults(search.value);
       return;
     }
+
+    const favBtn = e.target.closest('.btn-fav-row');
+    if (favBtn) {
+      e.stopPropagation();
+      const kind = favBtn.getAttribute('data-fav-kind');
+      const id = favBtn.getAttribute('data-fav-id');
+      const wasOn = favBtn.getAttribute('aria-pressed') === 'true';
+      const willBe = !wasOn;
+      // Optimistic UI flip; revert on error.
+      favBtn.setAttribute('aria-pressed', String(willBe));
+      favBtn.textContent = willBe ? '★' : '☆';
+      if (willBe) {
+        (kind === 'dish' ? favorites.dishIds : favorites.productIds).add(id);
+      } else {
+        (kind === 'dish' ? favorites.dishIds : favorites.productIds).delete(id);
+      }
+      try {
+        if (kind === 'dish') await toggleDishFavorite(id, willBe);
+        else                 await toggleProductFavorite(id, willBe);
+      } catch {
+        // Revert
+        favBtn.setAttribute('aria-pressed', String(wasOn));
+        favBtn.textContent = wasOn ? '★' : '☆';
+        if (wasOn) {
+          (kind === 'dish' ? favorites.dishIds : favorites.productIds).add(id);
+        } else {
+          (kind === 'dish' ? favorites.dishIds : favorites.productIds).delete(id);
+        }
+        showToast('Kon favoriet niet opslaan');
+      }
+      return;
+    }
+
     const row = e.target.closest('.meal-row');
     if (!row) return;
     const kind = row.getAttribute('data-kind');
