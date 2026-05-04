@@ -4,9 +4,6 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 
 ## Sub-projecten
 
-### Pagina stabiel houden bij verwijderen van een entry (eerst volgende punt)
-Wanneer je een product verwijderd vanaf je dashboard dan scrollt de browser automatisch omhoog. Kan het zo worden dat hij de positie van de pagina onthoud?
-
 ### D. Vrienden — wensen (geparkeerd)
 **Status:** open / lage prioriteit
 
@@ -79,11 +76,13 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 - Loading-skeletons doortrekken naar `history`, `friends`, `friend-day/week/month` en `add-food` (vandaag alleen `day` gedaan als demo)
 - A11y-pass voor pre-launch: `aria-label` op icon-only knoppen (✓/✗/⋯/‹›), `role="progressbar"` op hero-bar, kleurcontrast WCAG AA, `viewport: user-scalable=no` weghalen (double-tap-zoom is al via CSS+JS opgelost)
 - Account-delete + data-export self-service in Settings (relevant bij publieke launch / >10 echte users; tot die tijd via Supabase Dashboard)
+- Day-view re-render zonder DB-fetch (surgical DOM-mutatie, "optie C" uit scroll-stabiliteit-traject van 2026-05-04). Vandaag wordt na elke mutatie de hele view opnieuw opgehaald + opgebouwd; de scroll blijft stabiel via `reloadKeepScroll`, maar er is wel een fetch + DOM-replace. Optie C zou per mutatie alleen de specifieke entry-rij + meal-sum + hero patchen, zonder DB-call. Levert ~100-300ms snelheidswinst op trage verbinding op, maar vraagt 2 code-paden (initial render + per-mutatie patch) die bij elke day-view-wijziging in sync moeten blijven. Pas relevant als de re-render-fetch voelbaar gaat tegenstaan
 
 ## Afgerond ✅
 
 | Datum | Item | Omschrijving |
 |-------|------|-------------|
+| 2026-05-04 | Stabiele scroll bij entry-mutatie | Swipe-delete, edit-sheet save/🗑 en undo-toast op day-view re-rendert zonder dat de browser naar boven springt. `reloadKeepScroll` capturet `window.scrollY`, geeft `render()` `skipSkeleton: true` mee (oude DOM blijft tijdens fetch staan, geen flits) en restoret scroll via `requestAnimationFrame`. Variant B gekozen na A/B-test op telefoon |
 | 2026-05-04 | Statische security-audit + fixes | Volledige audit op 20 SQL-migrations en ~30 client-side JS-files. DB-laag bevestigd robuust (geen kritieke findings). Twee client-side gaten gefixt: (1) 10× unescaped `${err.message}` in `innerHTML` voorzien van `escapeHtml`; (2) supabase-js van `esm.sh/@2` (geen pin, geen SRI) verplaatst naar self-hosted UMD bundle v2.105.3 in `src/js/vendor/`, geladen via classic `<script>`-tag — verwijdert runtime-3rd-party-CDN dependency |
 | 2026-05-04 | K-review follow-ups + security sweep | RLS-hardening met expliciete `with check` op drie update-policies. Belangrijkste vondst: `profiles_update_own` had geen check op `role`-kolom → een normale user kon zichzelf via directe API-call promoten naar admin. Plus J-E (editor-policies locken `created_by`). Recents-overscan 150→300, bulkCreateEntries atomicity-comment |
 | 2026-05-04 | L. Favorieten | Handmatig pinnen van producten en gerechten via ster-toggle. Vierde filter-knop `Favorieten` op de toevoegen-pagina; ster ook in lijst-rijen, portion-screen, dish-log en edit-entry-sheet. Twee aparte tabellen `product_favorites` + `dish_favorites` met composite PK + cascade FK + RLS. Auto "Vaak gegeten" bewust uitgesteld |

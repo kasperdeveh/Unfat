@@ -82,17 +82,6 @@ export async function render(container) {
 
     <hr style="margin:32px 0;border:0;border-top:1px solid #333;">
 
-    <h2 style="font-size:16px;margin:0 0 12px;">Scroll-modus (test)</h2>
-    <p class="text-muted" style="font-size:12px;margin-bottom:12px;">
-      Probeer beide en kies wat het beste voelt bij verwijderen of bewerken van een entry op het dashboard.
-    </p>
-    <div class="segmented" id="scroll-mode-seg">
-      <button type="button" data-mode="skel" class="seg-btn">Met skelet (A)</button>
-      <button type="button" data-mode="noskel" class="seg-btn">Zonder skelet (B)</button>
-    </div>
-
-    <hr style="margin:32px 0;border:0;border-top:1px solid #333;">
-
     <button class="btn-secondary btn" id="signout-btn">Uitloggen</button>
 
     <p class="text-muted" style="font-size:11px;text-align:center;margin-top:32px;">
@@ -185,19 +174,6 @@ export async function render(container) {
       } catch (err) {
         showToast('Fout: ' + err.message);
       }
-    });
-  });
-
-  // Scroll-modus toggle (tijdelijk — wordt opgeruimd na A/B-keuze)
-  const scrollMode = localStorage.getItem('scrollMode') === 'skel' ? 'skel' : 'noskel';
-  document.querySelectorAll('#scroll-mode-seg .seg-btn').forEach(btn => {
-    if (btn.dataset.mode === scrollMode) btn.classList.add('active');
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      localStorage.setItem('scrollMode', mode);
-      document.querySelectorAll('#scroll-mode-seg .seg-btn').forEach(b =>
-        b.classList.toggle('active', b === btn));
-      showToast(`Scroll-modus: ${mode === 'skel' ? 'A' : 'B'}`);
     });
   });
 

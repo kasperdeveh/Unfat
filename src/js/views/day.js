@@ -169,13 +169,12 @@ export async function render(container, params, opts = {}) {
   `;
 
   // Re-render after a mutation while preserving the user's scroll position.
-  // localStorage.scrollMode === 'skel' shows the skeleton placeholder during the
-  // re-fetch (variant A); anything else (default) keeps the old DOM in place
-  // until the new innerHTML is ready (variant B). Toggle lives in Settings.
+  // skipSkeleton keeps the old DOM in place until the fetch + new innerHTML
+  // is ready, avoiding a flash. requestAnimationFrame ensures the new DOM is
+  // painted before we restore scrollY.
   async function reloadKeepScroll() {
     const y = window.scrollY;
-    const skipSkeleton = localStorage.getItem('scrollMode') !== 'skel';
-    await render(container, params, { skipSkeleton });
+    await render(container, params, { skipSkeleton: true });
     requestAnimationFrame(() => window.scrollTo({ top: y }));
   }
 
