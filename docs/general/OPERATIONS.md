@@ -35,6 +35,18 @@ Bij elke nieuwe migration die kolommen toevoegt of policies wijzigt: doorloop de
 
 **Procedure bij nieuwe kolom:** lees de regel voor de tabel hierboven, beslis of de nieuwe kolom in "wijzigbaar" of "immutable" valt, en pas zo nodig een trigger of policy-update toe in dezelfde migration. Update deze tabel ook.
 
+## Database Advisor: bekende warnings (verwacht)
+
+Na de hardening-sweep van 2026-05-04 blijven 12 warnings staan in *Supabase Dashboard → Database → Advisor → Security*. Allemaal verwacht — geen actie nodig.
+
+| Warning | Aantal | Waarom verwacht |
+|---------|--------|-----------------|
+| `authenticated_security_definer_function_executable` op `check_handle_available`, `search_users`, `send_friend_request`, `respond_friend_request`, `unfriend`, `get_friend_day`, `get_friend_period`, `list_users_for_admin`, `set_user_role` | 9 | Per ontwerp callable door signed-in users — dit is hoe Friend-flow en admin-flow werken. SECURITY DEFINER nodig om RLS te bypassen voor cross-user lookups (handle-uniqueness, friend-day data) of admin-queries. Interne `auth.uid()`-checks bewaken misbruik. |
+| `anon_security_definer_function_executable` + `authenticated_security_definer_function_executable` op `rls_auto_enable` | 2 | Supabase-systeemfunctie, niet uit onze migrations. Niet aan te passen vanuit de app-code. |
+| `auth_leaked_password_protection` | 1 | HaveIBeenPwned-integratie; alleen beschikbaar op Supabase Pro. Activeren bij paid-plan-upgrade. |
+
+**Bij een Advisor-run:** vergelijk met deze lijst. Nieuwe warnings die hier niet in staan = nader onderzoeken. Als deze tabel groeit, voeg eventueel een datum toe wanneer een nieuwe verwachte warning is geaccepteerd.
+
 ## Eerste admin maken (bootstrap)
 
 In Supabase Dashboard → SQL Editor:
