@@ -1,6 +1,7 @@
 import { getDish } from '../db/dishes.js';
 import { bulkCreateEntries } from '../db/entries.js';
 import { getMyProfile } from '../db/profiles.js';
+import { getMyFavorites, toggleDishFavorite } from '../db/favorites.js';
 import { todayIso } from '../calc.js';
 import { navigate } from '../router.js';
 import { showToast } from '../ui.js';
@@ -54,6 +55,12 @@ export async function render(container, params) {
     return;
   }
 
+  let favs;
+  try { favs = await getMyFavorites(); }
+  catch { favs = { productIds: new Set(), dishIds: new Set() }; }
+
+  let isFav = favs.dishIds.has(dishId);
+
   const components = (dish.components || []);
   const isOwner = dish.created_by === profile.id;
   const isElevated = ['editor', 'admin'].includes(profile.role);
@@ -86,7 +93,8 @@ export async function render(container, params) {
           <h1>${escapeHtml(dish.name)}</h1>
           <small>Gerecht · ${components.length} ingrediënten</small>
         </div>
-        ${canEdit ? '<button class="btn-icon" id="edit-btn" aria-label="Gerecht bewerken" style="margin-left:auto;">✏️</button>' : ''}
+        <button class="btn-icon btn-fav-header" id="dl-fav" aria-label="Favoriet" aria-pressed="${isFav}" style="margin-left:auto;">${isFav ? '★' : '☆'}</button>
+        ${canEdit ? '<button class="btn-icon" id="edit-btn" aria-label="Gerecht bewerken">✏️</button>' : ''}
       </div>
 
       <div class="hero hero-green">
@@ -138,6 +146,23 @@ export async function render(container, params) {
       const q = qs.toString();
       navigate(`#/add${q ? '?' + q : ''}`);
     });
+
+    const favBtn = container.querySelector('#dl-fav');
+    favBtn.addEventListener('click', async () => {
+      const wasOn = isFav;
+      isFav = !isFav;
+      favBtn.setAttribute('aria-pressed', String(isFav));
+      favBtn.textContent = isFav ? '★' : '☆';
+      try {
+        await toggleDishFavorite(dishId, isFav);
+      } catch {
+        isFav = wasOn;
+        favBtn.setAttribute('aria-pressed', String(isFav));
+        favBtn.textContent = isFav ? '★' : '☆';
+        showToast('Kon favoriet niet opslaan');
+      }
+    });
+
     if (canEdit) {
       container.querySelector('#edit-btn').addEventListener('click', () =>
         navigate(`#/dish/edit?dish=${dishId}`));

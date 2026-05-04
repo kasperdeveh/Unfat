@@ -84,7 +84,7 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 
 | Datum | Item | Omschrijving |
 |-------|------|-------------|
-| 2026-05-04 | L. Favorieten | Handmatig pinnen van producten en gerechten via ster-toggle. Vierde filter-knop `★` op de toevoegen-pagina; ster ook in portion-screen + dish-builder edit-mode. Twee aparte tabellen `product_favorites` + `dish_favorites` met composite PK + cascade FK + RLS. Auto "Vaak gegeten" bewust uitgesteld |
+| 2026-05-04 | L. Favorieten | Handmatig pinnen van producten en gerechten via ster-toggle. Vierde filter-knop `Favorieten` op de toevoegen-pagina; ster ook in lijst-rijen, portion-screen, dish-log en edit-entry-sheet. Twee aparte tabellen `product_favorites` + `dish_favorites` met composite PK + cascade FK + RLS. Auto "Vaak gegeten" bewust uitgesteld |
 | 2026-05-04 | K. Gerechten | Bundel producten tot gedeelde recepten; loggen via portie-multiplier × per-ingrediënt-checkbox expandeert naar N entries. Unified zoekpagina met segmented filter Alles/Producten/Gerechten en GERECHT-badge |
 | 2026-04-26 | A. Foundation | Supabase, Auth via magic link, PWA, GitHub Pages deploy |
 | 2026-04-26 | B. Solo tracking MVP | dashboard, gedeelde producten, invoer, doelen |

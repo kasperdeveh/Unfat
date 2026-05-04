@@ -1,5 +1,6 @@
 import { getProduct } from '../../db/products.js';
 import { updateEntry, deleteEntry } from '../../db/entries.js';
+import { getMyFavorites, toggleProductFavorite } from '../../db/favorites.js';
 import { calcKcal, toGrams } from '../../calc.js';
 import { showToast } from '../../ui.js';
 import { escapeHtml } from '../../utils/html.js';
@@ -27,14 +28,24 @@ export async function openEditSheet(entryId, entry, onChange) {
     : entry.amount_grams;
   let selectedMeal = entry.meal_type;
 
+  let favs;
+  try { favs = await getMyFavorites(); }
+  catch { favs = { productIds: new Set(), dishIds: new Set() }; }
+  let isFav = favs.productIds.has(product.id);
+
   // Build sheet DOM
   const overlay = document.createElement('div');
   overlay.className = 'sheet-overlay';
   overlay.innerHTML = `
     <div class="sheet" role="dialog" aria-modal="true" aria-label="Entry bewerken">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">${escapeHtml(product.name)}</div>
-      <div class="sheet-subtitle">${product.kcal_per_100g} kcal/100g${product.unit_grams ? ` · ${product.unit_grams}g/stuk` : ''}</div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div class="sheet-title">${escapeHtml(product.name)}</div>
+          <div class="sheet-subtitle">${product.kcal_per_100g} kcal/100g${product.unit_grams ? ` · ${product.unit_grams}g/stuk` : ''}</div>
+        </div>
+        <button class="btn-icon btn-fav-header" id="sheet-fav" aria-label="Favoriet" aria-pressed="${isFav}">${isFav ? '★' : '☆'}</button>
+      </div>
 
       <div class="segmented" id="sheet-type" ${supportsUnits ? '' : 'hidden'}>
         <button data-type="grams" class="${inputType === 'grams' ? 'active' : ''}">Gram</button>
@@ -99,6 +110,23 @@ export async function openEditSheet(entryId, entry, onChange) {
     // Users on NL locale type "1,5" — parseFloat stops at the comma → 1.
     inputValue = parseFloat(e.target.value.replace(',', '.')) || 0;
     updatePreview();
+  });
+
+  // Favorite toggle
+  const favBtn = overlay.querySelector('#sheet-fav');
+  favBtn.addEventListener('click', async () => {
+    const wasOn = isFav;
+    isFav = !isFav;
+    favBtn.setAttribute('aria-pressed', String(isFav));
+    favBtn.textContent = isFav ? '★' : '☆';
+    try {
+      await toggleProductFavorite(product.id, isFav);
+    } catch {
+      isFav = wasOn;
+      favBtn.setAttribute('aria-pressed', String(isFav));
+      favBtn.textContent = isFav ? '★' : '☆';
+      showToast('Kon favoriet niet opslaan');
+    }
   });
 
   // Overlay tap → close

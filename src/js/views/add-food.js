@@ -16,7 +16,7 @@ const FILTER_OPTIONS = [
   { key: 'all',       label: 'Alles' },
   { key: 'products',  label: 'Producten' },
   { key: 'dishes',    label: 'Gerechten' },
-  { key: 'favorites', label: '★', ariaLabel: 'Favorieten' },
+  { key: 'favorites', label: 'Favorieten' },
 ];
 
 const MEAL_LABEL_SHORT = { breakfast: '🌅', lunch: '🥗', dinner: '🍽', snack: '🍪' };
@@ -38,7 +38,7 @@ export async function render(container, params) {
 
     <div class="chiprow">
       <div class="filter-segmented" id="filter-seg">
-        ${FILTER_OPTIONS.map(o => `<button data-filter="${o.key}" type="button"${o.ariaLabel ? ` aria-label="${o.ariaLabel}"` : ''}>${o.label}</button>`).join('')}
+        ${FILTER_OPTIONS.map(o => `<button data-filter="${o.key}" type="button">${o.label}</button>`).join('')}
       </div>
       <button class="chip" id="nevo-chip" type="button" aria-pressed="false">NEVO producten verbergen</button>
     </div>
@@ -247,6 +247,8 @@ export async function render(container, params) {
           <p class="text-muted" style="padding:12px 0;">
             Typ om te zoeken in ${totalCount} ${noun}
           </p>`;
+      } else if (filter === 'favorites') {
+        resultsEl.innerHTML = `<p class="text-muted" style="padding:12px 0;">Geen match in je favorieten.</p>`;
       } else {
         resultsEl.innerHTML = `<p class="text-muted" style="padding:12px 0;">Niets gevonden. Maak iets nieuws aan ↓</p>`;
       }
