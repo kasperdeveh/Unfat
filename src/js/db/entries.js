@@ -154,3 +154,11 @@ export async function listRecentItemsForUser(limit = 20) {
   }
   return result;
 }
+
+// Back-compat shim: the old add-food page still imports this name. Task 9
+// rewrites that page to use listRecentItemsForUser directly; until then this
+// keeps the module loading. Remove once add-food.js is updated.
+export async function listRecentProductsForUser(limit = 20) {
+  const items = await listRecentItemsForUser(limit);
+  return items.filter(i => i.kind === 'product').map(i => i.product);
+}
