@@ -73,7 +73,10 @@ export async function render(container, params) {
   let allDishes = [];
   let recents = [];   // [{kind:'product', product}|{kind:'dish', dish}]
   let hideNevo = false;
-  let filter = 'all';
+  // Filter persists for the browser session so toggling Producten/Gerechten
+  // and then drilling into a row + back doesn't reset the user's choice.
+  // Cleared on a fresh tab / next-day load (sessionStorage scope).
+  let filter = sessionStorage.getItem('addFoodFilter') || 'all';
   let recentsExpanded = false;
 
   try {
@@ -115,6 +118,7 @@ export async function render(container, params) {
     const btn = e.target.closest('button[data-filter]');
     if (!btn) return;
     filter = btn.getAttribute('data-filter');
+    sessionStorage.setItem('addFoodFilter', filter);
     syncFilter();
     renderResults(search.value);
   });
