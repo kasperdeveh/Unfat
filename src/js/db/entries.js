@@ -88,6 +88,10 @@ export async function listEntriesForDateRange(startIso, endIso) {
 // Insert multiple entries in one round-trip. Used by dish-log to expand
 // a dish into N entries. RLS still applies per row.
 // rows: [{ product_id, amount_grams, kcal, meal_type, date, dish_id }, ...]
+//
+// Atomicity: PostgREST wraps a single insert([rows]) call in one transaction
+// server-side, so either all rows commit or none — partial failure is not
+// possible. No client-side retry/cleanup needed.
 export async function bulkCreateEntries(rows) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated');
@@ -124,6 +128,8 @@ export async function listRecentItemsForUser(limit = 20) {
   if (!session) throw new Error('Not authenticated');
 
   // Pull a generous slice so dedup by (dish_id || product_id) yields enough.
+  // 300 covers ~10-20 days for a power user logging 3 meals × 5-10 ingredients
+  // per day. Bump further if recents start dropping off in real usage.
   const { data, error } = await supabase
     .from('entries')
     .select(`
@@ -135,7 +141,7 @@ export async function listRecentItemsForUser(limit = 20) {
     `)
     .eq('user_id', session.user.id)
     .order('created_at', { ascending: false })
-    .limit(150);
+    .limit(300);
   if (error) throw error;
 
   const seen = new Set();
