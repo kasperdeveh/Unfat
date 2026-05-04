@@ -3,7 +3,10 @@ import { supabase } from '../supabase.js';
 const DISH_FIELDS = 'id, name, default_meal_type, created_by, last_edited_by, last_edited_at';
 
 // List all dishes (shared, RLS allows all authenticated to select).
-// Returns dishes WITHOUT components — fetch components separately for one dish.
+// Each dish gets a flat `synonyms` array filled with its ingredient product
+// names so the existing rankProducts() scorer matches a query like "ui"
+// against any dish that contains an Ui-component. Components themselves are
+// stripped from the returned shape — call getDish(id) for full component data.
 export async function listDishes() {
   const PAGE = 1000;
   const all = [];
@@ -11,11 +14,17 @@ export async function listDishes() {
   while (true) {
     const { data, error } = await supabase
       .from('dishes')
-      .select(DISH_FIELDS)
+      .select(`${DISH_FIELDS}, components:dish_components (products (name))`)
       .order('name', { ascending: true })
       .range(from, from + PAGE - 1);
     if (error) throw error;
     if (!data || data.length === 0) break;
+    for (const d of data) {
+      d.synonyms = (d.components || [])
+        .map(c => c.products?.name)
+        .filter(Boolean);
+      delete d.components;
+    }
     all.push(...data);
     if (data.length < PAGE) break;
     from += PAGE;

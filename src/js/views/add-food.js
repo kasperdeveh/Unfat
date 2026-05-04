@@ -147,16 +147,27 @@ export async function render(container, params) {
   }
 
   // Builds an array of displayable items: [{kind, name, payload}, ...]
-  // Filter applies. For default-no-query view we show RECENTS instead of full lists.
+  // Filter applies. For default-no-query view we show RECENTS for products
+  // (list is too long) but on the Gerechten tab we surface ALL dishes
+  // alphabetically — recents on top, the rest below — so the tab is never
+  // a blank "type to search" page when the user has few dish-recents.
   function buildList(query) {
     const q = normalize(query.trim());
 
     if (!q) {
-      // Empty query: show recents, optionally filtered by kind/hide_nevo.
       let items = recents;
       if (filter === 'products') items = items.filter(r => r.kind === 'product');
       if (filter === 'dishes')   items = items.filter(r => r.kind === 'dish');
       if (hideNevo) items = items.filter(r => r.kind !== 'product' || r.product.source !== 'nevo');
+
+      if (filter === 'dishes') {
+        const recentDishIds = new Set(items.map(r => r.dish.id));
+        const remaining = allDishes
+          .filter(d => !recentDishIds.has(d.id))
+          .map(d => ({ kind: 'dish', dish: d }));
+        return { kind: 'dishes-all', recents: items, remaining };
+      }
+
       return { kind: 'recents', items };
     }
 
@@ -166,6 +177,9 @@ export async function render(container, params) {
       products = rankProducts(visibleProducts(), q, TOP_N_SEARCH);
     }
     if (filter !== 'products') {
+      // dishes carry a `synonyms` array of ingredient names (filled by
+      // listDishes), so a query like "ui" matches a dish that contains an
+      // Ui-component via the same scoring path as product synonyms.
       dishes = rankProducts(allDishes, q, TOP_N_SEARCH);
     }
 
@@ -177,9 +191,13 @@ export async function render(container, params) {
   }
 
   function renderResults(query) {
-    const { kind, items } = buildList(query);
+    const built = buildList(query);
+    const { kind } = built;
 
-    if (items.length === 0) {
+    // Empty-search empty-state: 'all' / 'products' / 'dishes' (when no dishes at all).
+    if ((kind === 'recents' && built.items.length === 0)
+        || (kind === 'dishes-all' && built.recents.length === 0 && built.remaining.length === 0)
+        || (kind === 'search' && built.items.length === 0)) {
       if (!query.trim()) {
         const noun = filter === 'dishes' ? 'gerechten' : (filter === 'products' ? 'producten' : 'items');
         const totalCount = filter === 'dishes'
@@ -196,20 +214,30 @@ export async function render(container, params) {
     }
 
     if (kind === 'recents') {
+      const items = built.items;
       const slice = recentsExpanded ? items : items.slice(0, RECENTS_VISIBLE);
       const hidden = items.length - slice.length;
       const moreBtn = hidden > 0
         ? `<button class="btn-more-recents" id="more-recents-btn" type="button">Meer tonen (${hidden})</button>`
         : '';
-      const totalCount = (filter === 'dishes')
-        ? allDishes.length
-        : (filter === 'products' ? visibleProducts().length : allDishes.length + visibleProducts().length);
+      const totalCount = (filter === 'products' ? visibleProducts().length : allDishes.length + visibleProducts().length);
       resultsEl.innerHTML =
         `<p class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 4px;">Laatst gegeten</p>` +
         renderItemList(slice) + moreBtn +
         `<p class="text-muted" style="font-size:11px;text-align:center;padding:12px 0;">Typ om te zoeken in ${totalCount} items</p>`;
+    } else if (kind === 'dishes-all') {
+      // Recents header + items (if any) + "Alle gerechten" header + rest.
+      const recentsBlock = built.recents.length > 0
+        ? `<p class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 4px;">Laatst gegeten</p>` +
+          renderItemList(built.recents)
+        : '';
+      const remainingBlock = built.remaining.length > 0
+        ? `<p class="text-muted" style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 4px;">Alle gerechten</p>` +
+          renderItemList(built.remaining)
+        : '';
+      resultsEl.innerHTML = recentsBlock + remainingBlock;
     } else {
-      resultsEl.innerHTML = renderItemList(items);
+      resultsEl.innerHTML = renderItemList(built.items);
     }
   }
 
