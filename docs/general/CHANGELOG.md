@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-05-05
+
+- **Cleanup: friend-day/week/month/header views verwijderd** — De vier view-bestanden (`friend-day.js`, `friend-week.js`, `friend-month.js`, `components/friend-header.js`) zijn verwijderd nu de `#/friend-*` routes zijn gedropt. Bijbehorende precache-entries in `sw.js` en de obsolete CSS-blocks (`.friend-view-toggle`, `.back-btn`, `.period-nav-btn`, `.period-bars`, `.period-bar*`) zijn ook geschoond. SW cache v38 → v39.
+
 ## 2026-05-04
 
 - **Day-view: stabiele scrollpositie bij entry-mutaties** — swipe-delete, edit-sheet save/🗑 en undo-toast op het dashboard re-rendert nu zonder dat de browser naar boven springt. Lokale `reloadKeepScroll`-wrapper capturet `window.scrollY` vóór de re-render, geeft `render()` een `skipSkeleton: true`-flag mee zodat de oude DOM blijft staan tijdens de fetch (geen skelet-flits), en zet via `requestAnimationFrame` de scrollpositie terug nadat de nieuwe DOM is gepaint. Variant gekozen na A/B-test op telefoon (variant A "met skelet" gaf voelbare flits, variant B "zonder skelet" voelt instant). SW cache v36 → v37 (test-toggle) → v38 (finalisatie)

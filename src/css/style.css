@@ -807,15 +807,7 @@ button, input {
 }
 .modal .btn { margin-top: 16px; }
 
-/* Back-button (used in friend-day) and read-only entries */
-.back-btn {
-  background: transparent;
-  border: none;
-  color: #5cb6ff;
-  font-size: 14px;
-  padding: 4px 0;
-  cursor: pointer;
-}
+/* Read-only entries */
 .entry-row-readonly {
   cursor: default;
   opacity: 0.95;
@@ -933,35 +925,6 @@ button, input {
   font-size: 12px;
 }
 
-/* === Friend-header (sub-project D-vervolg) === */
-.friend-view-toggle {
-  display: flex;
-  background: var(--surface, #1a1a1a);
-  border-radius: 8px;
-  padding: 4px;
-  gap: 4px;
-  margin: 8px 0 16px;
-}
-.friend-view-toggle button {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-muted, #888);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-.friend-view-toggle button.active {
-  background: var(--accent, #4ade80);
-  color: #000;
-  font-weight: 600;
-}
-
-/* === Friend-day ‹ › navigatie ===
-   Hergebruikt bestaande .day-nav + .day-nav-btn (zie boven). */
-
 /* === Kopieer-knoppen in friend-day === */
 .meal-copy-btn,
 .entry-copy-btn {
@@ -1047,68 +1010,6 @@ button, input {
   background: var(--accent, #4ade80);
   color: #000;
   font-weight: 600;
-}
-
-/* === Period bars (week/month) — gedeeld met eigen historie waar mogelijk ===
-   .period-nav bestaat al (zie boven, gebruikt door history.js); hergebruik.
-   .period-nav-btn is nieuw — friend-week/month gebruikt deze i.p.v. .period-arrow. */
-.period-nav-btn {
-  background: transparent;
-  border: none;
-  color: var(--text, #eaeaea);
-  font-size: 24px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-.period-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-.period-bars {
-  display: flex;
-  gap: 6px;
-  align-items: flex-end;
-  height: 200px;
-  padding: 12px 0;
-}
-.period-bars-month {
-  gap: 2px;
-  height: 180px;
-}
-.period-bar {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  height: 100%;
-  padding: 0;
-}
-.period-bar:disabled {
-  opacity: 0.2;
-  cursor: not-allowed;
-}
-.period-bar-fill {
-  width: 100%;
-  border-radius: 2px 2px 0 0;
-  background: var(--bar-color, #4ade80);
-  transition: height 200ms ease-out;
-}
-.period-bar.bar-green   { --bar-color: #4ade80; }
-.period-bar.bar-orange  { --bar-color: #fb923c; }
-.period-bar.bar-red     { --bar-color: #ef4444; }
-.period-bar.bar-grey    { --bar-color: #444; }
-.period-bar-label {
-  font-size: 11px;
-  color: var(--text-muted, #888);
-  margin-top: 4px;
-}
-.period-bar-month .period-bar-label {
-  font-size: 9px;
 }
 
 /* =====================================================================

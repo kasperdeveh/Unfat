@@ -1,7 +1,7 @@
 // Service worker for Unfat. Cache-first for static assets, network-first for Supabase.
 // Bump CACHE_NAME on every deploy that ships static asset changes to invalidate caches.
 
-const CACHE_NAME = 'unfat-v38';
+const CACHE_NAME = 'unfat-v39';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -30,9 +30,6 @@ const STATIC_ASSETS = [
   './js/views/add-food-portion.js',
   './js/views/add-food-new.js',
   './js/views/friends.js',
-  './js/views/friend-day.js',
-  './js/views/friend-week.js',
-  './js/views/friend-month.js',
   './js/views/settings.js',
   './js/views/components/edit-entry-sheet.js',
   './js/views/components/edit-product-sheet.js',
@@ -40,7 +37,6 @@ const STATIC_ASSETS = [
   './js/views/components/month-view.js',
   './js/views/components/handle-input.js',
   './js/views/components/compare-widget.js',
-  './js/views/components/friend-header.js',
   './js/views/components/copy-date-sheet.js',
   './js/db/dishes.js',
   './js/db/favorites.js',
