@@ -112,47 +112,55 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
     const frItems = friendByMeal[meal] || [];
     const frSum = friendPerMeal ? (friendPerMeal[meal] || 0) : 0;
 
+    const myCanCollapse = myItems.length > 0;
     const myBlock = `
-      <div class="compare-meal-block">
-        <div class="compare-meal-block-header">
+      <div class="compare-meal-block" data-collapsed="1">
+        <button type="button" class="compare-meal-block-header" data-toggle-collapse>
           <div class="compare-meal-block-who">
             <span class="person-swatch person-swatch-solid"></span>Ik
           </div>
-          <div class="compare-meal-block-sum">${mySum === 0 ? '' : mySum + ' kcal'}</div>
-        </div>
-        ${myItems.map(e => `
-          <div class="entry-row-wrap">
-            <div class="entry-row-bg"><span>🗑 Verwijderen</span></div>
-            <div class="entry-row" data-entry-id="${e.id}">
-              <div class="entry-info">
-                <div class="entry-name">${escapeHtml(e.products?.name || 'Onbekend')}</div>
-                <div class="entry-meta">${formatEntryMeta(e)}</div>
+          <div class="compare-meal-block-sum">${mySum === 0 ? '—' : mySum + ' kcal'}</div>
+          ${myCanCollapse ? '<span class="meal-block-chevron" aria-hidden="true">▾</span>' : ''}
+        </button>
+        <div class="compare-meal-block-entries">
+          ${myItems.map(e => `
+            <div class="entry-row-wrap">
+              <div class="entry-row-bg"><span>🗑 Verwijderen</span></div>
+              <div class="entry-row" data-entry-id="${e.id}">
+                <div class="entry-info">
+                  <div class="entry-name">${escapeHtml(e.products?.name || 'Onbekend')}</div>
+                  <div class="entry-meta">${formatEntryMeta(e)}</div>
+                </div>
+                <span class="entry-chevron">›</span>
               </div>
-              <span class="entry-chevron">›</span>
             </div>
-          </div>
-        `).join('')}
+          `).join('')}
+        </div>
       </div>
     `;
 
+    const frCanCollapse = (showFrEntries && frItems.length > 0);
     const frBlock = showFrMealDetail ? `
-      <div class="compare-meal-block">
-        <div class="compare-meal-block-header">
+      <div class="compare-meal-block" data-collapsed="1">
+        <button type="button" class="compare-meal-block-header" data-toggle-collapse>
           <div class="compare-meal-block-who">
             <span class="person-swatch person-swatch-striped"></span>${escapeHtml(friendHandle)}
           </div>
-          <div class="compare-meal-block-sum">${frSum === 0 ? '' : frSum + ' kcal'}</div>
-        </div>
-        ${showFrEntries ? frItems.map(e => `
-          <div class="entry-row entry-row-readonly" data-friend-entry-idx="${friendEntries.indexOf(e)}">
-            <div class="entry-info">
-              <div class="entry-name">${escapeHtml(e.product_name)}</div>
-              <div class="entry-meta">${Math.round(e.amount_grams)}g · ${e.kcal} kcal</div>
+          <div class="compare-meal-block-sum">${frSum === 0 ? '—' : frSum + ' kcal'}</div>
+          ${frCanCollapse ? '<span class="meal-block-chevron" aria-hidden="true">▾</span>' : ''}
+        </button>
+        <div class="compare-meal-block-entries">
+          ${showFrEntries ? frItems.map(e => `
+            <div class="entry-row entry-row-readonly" data-friend-entry-idx="${friendEntries.indexOf(e)}">
+              <div class="entry-info">
+                <div class="entry-name">${escapeHtml(e.product_name)}</div>
+                <div class="entry-meta">${Math.round(e.amount_grams)}g · ${e.kcal} kcal</div>
+              </div>
+              <button class="entry-copy-btn" data-friend-entry-idx="${friendEntries.indexOf(e)}">Kopieer</button>
             </div>
-            <button class="entry-copy-btn" data-friend-entry-idx="${friendEntries.indexOf(e)}">Kopieer</button>
-          </div>
-        `).join('') : ''}
-        ${showFrEntries && frItems.length > 0 ? `<button class="meal-copy-btn" data-meal="${meal}">Kopieer hele ${MEAL_LABELS[meal].split(' ')[1].toLowerCase()}</button>` : ''}
+          `).join('') : ''}
+          ${showFrEntries && frItems.length > 0 ? `<button class="meal-copy-btn" data-meal="${meal}">Kopieer hele ${MEAL_LABELS[meal].split(' ')[1].toLowerCase()}</button>` : ''}
+        </div>
       </div>
     ` : '';
 
@@ -215,6 +223,19 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
       }
       startX = null;
       dx = 0;
+    });
+  });
+
+  // Collapse-toggle on meal-block headers (only blocks with entries collapse)
+  content.querySelectorAll('[data-toggle-collapse]').forEach(header => {
+    header.addEventListener('click', (e) => {
+      const block = header.closest('.compare-meal-block');
+      if (!block.querySelector('.meal-block-chevron')) return; // empty block — no toggle
+      if (block.dataset.collapsed === '1') {
+        block.removeAttribute('data-collapsed');
+      } else {
+        block.setAttribute('data-collapsed', '1');
+      }
     });
   });
 

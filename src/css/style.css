@@ -1473,8 +1473,35 @@ button, input {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
   font-size: 12px;
   margin-bottom: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.compare-meal-block[data-collapsed="1"] .compare-meal-block-header {
+  margin-bottom: 0;
+}
+.compare-meal-block[data-collapsed="1"] .compare-meal-block-entries {
+  display: none;
+}
+.meal-block-chevron {
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  transition: transform 0.15s;
+}
+.compare-meal-block[data-collapsed="1"] .meal-block-chevron {
+  transform: rotate(-90deg);
+}
+.compare-meal-block-header:not([data-toggle-collapse]) {
+  cursor: default;
 }
 .compare-meal-block-who {
   display: flex;
