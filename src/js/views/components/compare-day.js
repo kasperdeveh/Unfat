@@ -115,12 +115,12 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
     const myCanCollapse = myItems.length > 0;
     const myBlock = `
       <div class="compare-meal-block" data-collapsed="1">
-        <button type="button" class="compare-meal-block-header" data-toggle-collapse>
+        <button type="button" class="compare-meal-block-header"${myCanCollapse ? ' data-toggle-collapse' : ''}>
           <div class="compare-meal-block-who">
             <span class="person-swatch person-swatch-solid"></span>Ik
           </div>
           <div class="compare-meal-block-sum">${mySum === 0 ? '—' : mySum + ' kcal'}</div>
-          ${myCanCollapse ? '<span class="meal-block-chevron" aria-hidden="true">▾</span>' : ''}
+          <span class="meal-block-chevron${myCanCollapse ? '' : ' meal-block-chevron-hidden'}" aria-hidden="true">▾</span>
         </button>
         <div class="compare-meal-block-entries">
           ${myItems.map(e => `
@@ -142,12 +142,12 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
     const frCanCollapse = (showFrEntries && frItems.length > 0);
     const frBlock = showFrMealDetail ? `
       <div class="compare-meal-block" data-collapsed="1">
-        <button type="button" class="compare-meal-block-header" data-toggle-collapse>
+        <button type="button" class="compare-meal-block-header"${frCanCollapse ? ' data-toggle-collapse' : ''}>
           <div class="compare-meal-block-who">
             <span class="person-swatch person-swatch-striped"></span>${escapeHtml(friendHandle)}
           </div>
           <div class="compare-meal-block-sum">${frSum === 0 ? '—' : frSum + ' kcal'}</div>
-          ${frCanCollapse ? '<span class="meal-block-chevron" aria-hidden="true">▾</span>' : ''}
+          <span class="meal-block-chevron${frCanCollapse ? '' : ' meal-block-chevron-hidden'}" aria-hidden="true">▾</span>
         </button>
         <div class="compare-meal-block-entries">
           ${showFrEntries ? frItems.map(e => `
@@ -226,11 +226,10 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
     });
   });
 
-  // Collapse-toggle on meal-block headers (only blocks with entries collapse)
+  // Collapse-toggle on meal-block headers (only blocks with entries get the attr)
   content.querySelectorAll('[data-toggle-collapse]').forEach(header => {
-    header.addEventListener('click', (e) => {
+    header.addEventListener('click', () => {
       const block = header.closest('.compare-meal-block');
-      if (!block.querySelector('.meal-block-chevron')) return; // empty block — no toggle
       if (block.dataset.collapsed === '1') {
         block.removeAttribute('data-collapsed');
       } else {

@@ -23,6 +23,8 @@
 - Verwijderd: "+ toevoegen"-knoppen in compare day-view (compare is read-only voor jouw kant)
 - **Inklapbare maaltijd-blokken** in compare day-view: alle blokken default ingeklapt (header met avatar + sum + chevron), tap header om uit te klappen. Per-meal kopieer-knop verschijnt binnen het uitgeklapte blok
 - Scroll-stabiliteit op compare-day mutaties (edit-save, swipe-delete, undo): geen reset naar boven meer
+- Polish: kcal-sums in compare-day-headers nu consistent uitgelijnd (chevron altijd in DOM, alleen onzichtbaar op lege blokken)
+- Polish: uitklap-pijltje in compare-day vergroot van 11px → 16px voor betere zichtbaarheid
 - Service worker cache bump → v40.
 
 ## 2026-05-04
