@@ -145,8 +145,8 @@ export async function render(container, params) {
   }
 
   // view === 'month' && friendId
-  // Compare month-view: wired in Task 6
-  content.innerHTML = `<p class="text-muted">Compare month-view komt in Task 6.</p>`;
+  const friendHandle = friendsForSelector.find(f => f.id === friendId)?.handle || 'Vriend';
+  await renderCompareMonth(content, profile, start, friendId, friendHandle, todayIsoStr);
 }
 
 // ---- Solo helpers (extracted from old history.js) ----
@@ -344,4 +344,32 @@ function wireComparePeriodNav(content, view, prevAnchor, nextAnchor, todayIsoStr
       navigate(`#/history?friend=${friendId}&view=${view}&anchor=${todayIsoStr}`);
     });
   }
+}
+
+async function renderCompareMonth(content, profile, start, friendId, friendHandle, todayIsoStr) {
+  const prevAnchor = addMonthsKeepDay(start, -1);
+  const nextAnchor = addMonthsKeepDay(start, 1);
+  const nextDisabled = isoDate(monthStart(nextAnchor)) > todayIsoStr;
+  const today = new Date();
+  const isCurrent = start.getFullYear() === today.getFullYear() && start.getMonth() === today.getMonth();
+  const sub = isCurrent
+    ? 'deze maand'
+    : `<button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
+  content.innerHTML = `
+    <div class="period-nav">
+      <button class="period-arrow" id="prev-period">‹</button>
+      <div class="period-title">
+        <div class="period-title-main">${formatMonthNl(start)}</div>
+        <div class="period-title-sub">${sub}</div>
+      </div>
+      <button class="period-arrow" id="next-period" ${nextDisabled ? 'disabled' : ''}>›</button>
+    </div>
+    <div id="compare-month-content"></div>
+  `;
+  wireComparePeriodNav(content, 'month', prevAnchor, nextAnchor, todayIsoStr, friendId);
+
+  const compareMonth = await import('./components/compare-month.js');
+  await compareMonth.render(content.querySelector('#compare-month-content'), {
+    friendId, friendHandle, monthStartDate: start, myProfile: profile,
+  });
 }
