@@ -639,6 +639,15 @@ button, input {
 .week-row-bar-fill.state-green  { background: linear-gradient(90deg,#00e676,#00b248); }
 .week-row-bar-fill.state-orange { background: linear-gradient(90deg,#ffa726,#fb8c00); }
 .week-row-bar-fill.state-red    { background: linear-gradient(90deg,#ef5350,#c62828); }
+.compare-week-bar-fill.state-green   { background: linear-gradient(90deg,#00e676,#00b248); }
+.compare-week-bar-fill.state-orange  { background: linear-gradient(90deg,#ffa726,#fb8c00); }
+.compare-week-bar-fill.state-red     { background: linear-gradient(90deg,#ef5350,#c62828); }
+.compare-month-cell-bar.state-green  { background: linear-gradient(180deg,#00e676,#00b248); }
+.compare-month-cell-bar.state-orange { background: linear-gradient(180deg,#ffa726,#fb8c00); }
+.compare-month-cell-bar.state-red    { background: linear-gradient(180deg,#ef5350,#c62828); }
+.compare-hero-bar-fill.state-green   { background: linear-gradient(90deg,#00e676,#00b248); }
+.compare-hero-bar-fill.state-orange  { background: linear-gradient(90deg,#ffa726,#fb8c00); }
+.compare-hero-bar-fill.state-red     { background: linear-gradient(90deg,#ef5350,#c62828); }
 .week-row-bar-fill.state-empty  { background: transparent; }
 .week-row-kcal { font-weight: 700; font-size: 14px; min-width: 50px; text-align: right; }
 .week-row-kcal.state-green  { color: #00e676; }

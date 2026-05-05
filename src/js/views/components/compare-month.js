@@ -1,5 +1,6 @@
 import { addDays, isoDate, monthStart, monthEnd } from '../../utils/dates.js';
 import { heroState } from '../../calc.js';
+import { frBarClass } from './compare-shared.js';
 import { listProfileHistory, getTargetForDate } from '../../db/profile_history.js';
 import { listEntriesForDateRange } from '../../db/entries.js';
 import { getFriendPeriod } from '../../db/friendships.js';
@@ -91,9 +92,7 @@ export async function render(content, { friendId, friendHandle, monthStartDate, 
     ].filter(Boolean).join(' ');
 
     const myFillCls = myState ? `state-${myState}` : '';
-    const frFillCls = frState
-      ? `bar-fr-${frState === 'green' ? 'ok' : frState === 'orange' ? 'warn' : 'bad'}`
-      : '';
+    const frFillCls = frBarClass(frState);
 
     cells.push(`
       <div class="${cls}" data-date="${iso}" data-in-month="${inMonth}">

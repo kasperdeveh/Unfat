@@ -1,5 +1,6 @@
 import { addDays, isoDate, shortWeekdayNl, weekEnd } from '../../utils/dates.js';
 import { heroState } from '../../calc.js';
+import { frBarClass } from './compare-shared.js';
 import { listProfileHistory, getTargetForDate } from '../../db/profile_history.js';
 import { listEntriesForDateRange } from '../../db/entries.js';
 import { getFriendPeriod } from '../../db/friendships.js';
@@ -62,18 +63,16 @@ export async function render(content, { friendId, friendHandle, weekStartDate, m
     const frTotal = fr?.total_kcal || 0;
     const frTarget = fr?.target || null;
     const frMax = fr?.max || null;
-    const frState = (frTarget != null && frMax != null && frTotal > 0)
-      ? heroState(frTotal, frTarget, frMax)
-      : (frTotal === 0 ? 'empty' : 'green');
+    const frState = frTotal === 0
+      ? null
+      : (frTarget != null && frMax != null) ? heroState(frTotal, frTarget, frMax) : 'green';
     const frPct = frTarget > 0 ? Math.min(100, Math.round(frTotal / frTarget * 100)) : 0;
 
     if (!isFuture && myTotal > 0) { myKcalSum += myTotal; myDays++; if (myTotal <= myT.target) myMet++; }
     if (!isFuture && frTotal > 0) { frKcalSum += frTotal; frDays++; if (frTarget && frTotal <= frTarget) frMet++; }
 
     const myFillCls = myState === 'empty' ? '' : `state-${myState}`;
-    const frFillCls = frState === 'empty'
-      ? ''
-      : `bar-fr-${frState === 'green' ? 'ok' : frState === 'orange' ? 'warn' : 'bad'}`;
+    const frFillCls = frBarClass(frState);
 
     rowsHtml.push(`
       <div class="compare-week-row${isFuture ? ' future' : ''}" data-date="${iso}">
