@@ -15,7 +15,8 @@ import { navigate } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
 import { showToast } from '../ui.js';
 
-export async function render(container, params) {
+export async function render(container, params, opts = {}) {
+  const { skipSkeleton = false } = opts;
   const view = params?.view === 'month' ? 'month' :
                params?.view === 'day'   ? 'day'   : 'week';
   const friendId = params?.friend || null;
@@ -35,7 +36,9 @@ export async function render(container, params) {
     anchor = today;
   }
 
-  container.innerHTML = `<p class="text-muted" style="padding:1rem 0;">Laden...</p>`;
+  if (!skipSkeleton) {
+    container.innerHTML = `<p class="text-muted" style="padding:1rem 0;">Laden...</p>`;
+  }
 
   // Load profile + friends list (for selector) in parallel.
   let profile, buckets, friendsForSelector;
@@ -127,7 +130,11 @@ export async function render(container, params) {
   if (view === 'day' && friendId) {
     const friendHandle = friendsForSelector.find(f => f.id === friendId)?.handle || 'Vriend';
     const compareDay = await import('./components/compare-day.js');
-    const reload = () => render(container, params);
+    const reload = async () => {
+      const y = window.scrollY;
+      await render(container, params, { skipSkeleton: true });
+      requestAnimationFrame(() => window.scrollTo({ top: y }));
+    };
     await compareDay.render(content, { friendId, friendHandle, dateIso, myProfile: profile, reloadFn: reload });
 
     // Wire ‹ › nav (re-render history with prev/next date)
