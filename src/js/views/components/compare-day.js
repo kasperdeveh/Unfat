@@ -3,7 +3,6 @@ import { listProfileHistory, getTargetForDate } from '../../db/profile_history.j
 import { getFriendDay } from '../../db/friendships.js';
 import { heroState, todayIso } from '../../calc.js';
 import { isoDate, parseIso, formatDayLongNl } from '../../utils/dates.js';
-import { navigate } from '../../router.js';
 import { showToast } from '../../ui.js';
 import { escapeHtml } from '../../utils/html.js';
 import { openEditSheet } from './edit-entry-sheet.js';
@@ -35,7 +34,6 @@ function formatEntryMeta(e) {
  */
 export async function render(content, { friendId, friendHandle, dateIso, myProfile, reloadFn }) {
   const date = parseIso(dateIso);
-  const isFuture = dateIso > todayIso();
 
   let myEntries, myHistory, friendData;
   try {
@@ -134,7 +132,6 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
             </div>
           </div>
         `).join('')}
-        ${!isFuture ? `<button class="entry-add-btn" data-add-meal="${meal}">+ toevoegen</button>` : ''}
       </div>
     `;
 
@@ -218,13 +215,6 @@ export async function render(content, { friendId, friendHandle, dateIso, myProfi
       }
       startX = null;
       dx = 0;
-    });
-  });
-
-  content.querySelectorAll('.entry-add-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const meal = btn.getAttribute('data-add-meal');
-      navigate(`#/add?meal=${meal}&date=${dateIso}`);
     });
   });
 
