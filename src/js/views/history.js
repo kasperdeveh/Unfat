@@ -6,6 +6,7 @@ import { supabase } from '../supabase.js';
 import {
   parseIso, isoDate, weekStart, weekEnd, monthStart, monthEnd,
   addDays, addMonthsKeepDay, isoWeekNumber, formatWeekRangeNl, formatMonthNl,
+  formatDayLongNl,
 } from '../utils/dates.js';
 import { renderWeekRows, computeWeekStats } from './components/week-view.js';
 import { renderMonthGrid, computeMonthStats } from './components/month-view.js';
@@ -123,8 +124,32 @@ export async function render(container, params) {
   }
 
   if (view === 'day' && friendId) {
-    // Compare dag-view: wired in Task 7
-    content.innerHTML = `<p class="text-muted">Compare day-view komt in Task 7.</p>`;
+    const friendHandle = friendsForSelector.find(f => f.id === friendId)?.handle || 'Vriend';
+    const compareDay = await import('./components/compare-day.js');
+    const reload = () => render(container, params);
+    await compareDay.render(content, { friendId, friendHandle, dateIso, myProfile: profile, reloadFn: reload });
+
+    // Wire ‹ › nav (re-render history with prev/next date)
+    const prevDate = isoDate(addDays(parseIso(dateIso), -1));
+    const nextDate = isoDate(addDays(parseIso(dateIso), 1));
+    const nextDisabled = nextDate > todayIsoStr;
+    const navHtml = `
+      <div class="day-nav" style="margin-top:14px;">
+        <button class="day-nav-btn" id="prev-day">‹</button>
+        <p class="page-subtitle" style="margin:0 1rem;">${formatDayLongNl(parseIso(dateIso))}</p>
+        <button class="day-nav-btn" id="next-day" ${nextDisabled ? 'disabled' : ''}>›</button>
+      </div>
+    `;
+    content.insertAdjacentHTML('afterbegin', navHtml);
+    content.querySelector('#prev-day').addEventListener('click', () => {
+      navigate(`#/history?friend=${friendId}&view=day&date=${prevDate}`);
+    });
+    const nextBtn = content.querySelector('#next-day');
+    if (nextBtn && !nextBtn.disabled) {
+      nextBtn.addEventListener('click', () => {
+        navigate(`#/history?friend=${friendId}&view=day&date=${nextDate}`);
+      });
+    }
     return;
   }
 
