@@ -1,92 +1,188 @@
 import { getMyProfile } from '../db/profiles.js';
 import { listProfileHistory } from '../db/profile_history.js';
 import { listEntriesForDateRange } from '../db/entries.js';
+import { listFriendBuckets } from '../db/friendships.js';
+import { supabase } from '../supabase.js';
 import {
   parseIso, isoDate, weekStart, weekEnd, monthStart, monthEnd,
   addDays, addMonthsKeepDay, isoWeekNumber, formatWeekRangeNl, formatMonthNl,
 } from '../utils/dates.js';
 import { renderWeekRows, computeWeekStats } from './components/week-view.js';
 import { renderMonthGrid, computeMonthStats } from './components/month-view.js';
+import { mount as mountPersonSelector } from './components/person-selector.js';
 import { navigate } from '../router.js';
 import { escapeHtml } from '../utils/html.js';
+import { showToast } from '../ui.js';
 
 export async function render(container, params) {
-  const view = params?.view === 'month' ? 'month' : 'week';
+  const view = params?.view === 'month' ? 'month' :
+               params?.view === 'day'   ? 'day'   : 'week';
+  const friendId = params?.friend || null;
   const today = new Date();
+  const todayIsoStr = isoDate(today);
 
-  // Anchor = a representative day. Survives toggles, moves with arrows so
-  // toggling Week ↔ Maand keeps you in the same neighbourhood. Defaults to
-  // today on first load. Legacy `start` param is converted to a sensible
-  // anchor for back-compat with old links.
+  // Anchor (week/month) or date (day) — same fallback chain as before, plus 'date' for day-view.
   let anchor;
   if (params?.anchor) {
     anchor = parseIso(params.anchor);
+  } else if (params?.date && view === 'day') {
+    anchor = parseIso(params.date);
   } else if (params?.start) {
     const s = parseIso(params.start);
-    // Pick mid-period so weekStart/monthStart of it stays inside.
     anchor = view === 'week' ? addDays(s, 3) : addDays(s, 14);
   } else {
     anchor = today;
   }
 
-  // Period start derived from anchor.
-  const start = view === 'month' ? monthStart(anchor) : weekStart(anchor);
-
   container.innerHTML = `<p class="text-muted" style="padding:1rem 0;">Laden...</p>`;
 
-  const rangeStart = view === 'month' ? monthStart(start) : weekStart(start);
-  const rangeEnd = view === 'month' ? monthEnd(start) : weekEnd(start);
-
-  let profile, history, entries;
+  // Load profile + friends list (for selector) in parallel.
+  let profile, buckets, friendsForSelector;
   try {
-    [profile, history, entries] = await Promise.all([
+    [profile, buckets] = await Promise.all([
       getMyProfile(),
-      listProfileHistory(),
-      listEntriesForDateRange(isoDate(rangeStart), isoDate(rangeEnd)),
+      listFriendBuckets(),
     ]);
+    const ids = buckets.accepted.map(r => r.friend_id);
+
+    // Each friend needs share_level for the selector's none-guard. Read in one round-trip.
+    if (ids.length > 0) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, handle, share_level')
+        .in('id', ids);
+      if (error) throw error;
+      friendsForSelector = (data || []).map(p => ({
+        id: p.id, handle: p.handle, share_level: p.share_level,
+      }));
+    } else {
+      friendsForSelector = [];
+    }
   } catch (err) {
     container.innerHTML = `<p class="error">Kon historie niet laden: ${escapeHtml(err.message)}</p>`;
     return;
   }
 
-  const fbTarget = profile.daily_target_kcal;
-  const fbMax = profile.daily_max_kcal;
-
-  const stats = view === 'month'
-    ? computeMonthStats(start, entries, history, fbTarget, fbMax)
-    : computeWeekStats(start, entries, history, fbTarget, fbMax);
-
-  // Period title + sub-label (with today-pill if not current period)
-  const todayIso = isoDate(today);
-  const startIso = isoDate(start);
-  let title, sub, isCurrent;
-  if (view === 'month') {
-    title = formatMonthNl(start);
-    isCurrent = start.getFullYear() === today.getFullYear() && start.getMonth() === today.getMonth();
-    sub = isCurrent
-      ? 'deze maand'
-      : `<button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
-  } else {
-    title = formatWeekRangeNl(start);
-    isCurrent = startIso === isoDate(weekStart(today));
-    const wnr = isoWeekNumber(start);
-    sub = isCurrent
-      ? `Week ${wnr} · deze week`
-      : `Week ${wnr} · <button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
-  }
-
-  // Arrow targets shift the anchor by one period. ISO-string compare for time-of-day robustness.
-  const prevAnchor = view === 'month' ? addMonthsKeepDay(anchor, -1) : addDays(anchor, -7);
-  const nextAnchor = view === 'month' ? addMonthsKeepDay(anchor, 1) : addDays(anchor, 7);
-  const nextStart = view === 'month' ? monthStart(nextAnchor) : weekStart(nextAnchor);
-  const nextDisabled = isoDate(nextStart) > todayIso;
+  // Build the page shell: selector + view-toggle + content slot
+  const dateIso = view === 'day' ? isoDate(anchor) : null;
+  const start = view === 'month' ? monthStart(anchor) : view === 'week' ? weekStart(anchor) : null;
 
   container.innerHTML = `
+    <h1 class="page-title">Historie</h1>
+    <div id="person-selector-mount"></div>
     <div class="history-toggle">
-      <button data-view="week" class="${view === 'week' ? 'active' : ''}">Week</button>
+      <button data-view="day"   class="${view === 'day'   ? 'active' : ''}">Dag</button>
+      <button data-view="week"  class="${view === 'week'  ? 'active' : ''}">Week</button>
       <button data-view="month" class="${view === 'month' ? 'active' : ''}">Maand</button>
     </div>
+    <div id="history-content"></div>
+  `;
 
+  // Mount selector
+  mountPersonSelector(container.querySelector('#person-selector-mount'), {
+    friends: friendsForSelector,
+    currentFriendId: friendId,
+    onSelect: (newFriendId) => {
+      const qp = new URLSearchParams();
+      qp.set('view', view);
+      if (view === 'day') qp.set('date', dateIso);
+      else qp.set('anchor', isoDate(start));
+      if (newFriendId) qp.set('friend', newFriendId);
+      navigate('#/history?' + qp.toString());
+    },
+    onShareNoneTap: (f) => {
+      showToast(`${f.handle} deelt geen voortgang`);
+    },
+  });
+
+  // Wire view-toggle (anchor preservation)
+  container.querySelectorAll('.history-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newView = btn.getAttribute('data-view');
+      if (newView === view) return;
+      const qp = new URLSearchParams();
+      qp.set('view', newView);
+      if (newView === 'day') {
+        qp.set('date', view === 'day' ? dateIso : isoDate(anchor));
+      } else {
+        qp.set('anchor', view === 'day' ? dateIso : isoDate(anchor));
+      }
+      if (friendId) qp.set('friend', friendId);
+      navigate('#/history?' + qp.toString());
+    });
+  });
+
+  // Render content based on (view, friendId)
+  const content = container.querySelector('#history-content');
+
+  if (view === 'day' && !friendId) {
+    // Solo dag-view: delegate to day.js (full edit-/add-flow).
+    const dayMod = await import('./day.js');
+    await dayMod.render(content, { date: dateIso });
+    return;
+  }
+
+  if (view === 'day' && friendId) {
+    // Compare dag-view: wired in Task 7
+    content.innerHTML = `<p class="text-muted">Compare day-view komt in Task 7.</p>`;
+    return;
+  }
+
+  if (view === 'week' && !friendId) {
+    await renderSoloWeek(content, profile, start);
+    return;
+  }
+
+  if (view === 'week' && friendId) {
+    // Compare week-view: wired in Task 5
+    content.innerHTML = `<p class="text-muted">Compare week-view komt in Task 5.</p>`;
+    return;
+  }
+
+  if (view === 'month' && !friendId) {
+    await renderSoloMonth(content, profile, start);
+    return;
+  }
+
+  // view === 'month' && friendId
+  // Compare month-view: wired in Task 6
+  content.innerHTML = `<p class="text-muted">Compare month-view komt in Task 6.</p>`;
+}
+
+// ---- Solo helpers (extracted from old history.js) ----
+
+async function renderSoloWeek(content, profile, start) {
+  const today = new Date();
+  const todayIsoStr = isoDate(today);
+  const rangeStart = weekStart(start);
+  const rangeEnd = weekEnd(start);
+
+  let history, entries;
+  try {
+    [history, entries] = await Promise.all([
+      listProfileHistory(),
+      listEntriesForDateRange(isoDate(rangeStart), isoDate(rangeEnd)),
+    ]);
+  } catch (err) {
+    content.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
+    return;
+  }
+
+  const fbTarget = profile.daily_target_kcal;
+  const fbMax = profile.daily_max_kcal;
+  const stats = computeWeekStats(start, entries, history, fbTarget, fbMax);
+  const title = formatWeekRangeNl(start);
+  const isCurrent = isoDate(start) === isoDate(weekStart(today));
+  const wnr = isoWeekNumber(start);
+  const sub = isCurrent
+    ? `Week ${wnr} · deze week`
+    : `Week ${wnr} · <button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
+
+  const prevAnchor = addDays(start, -7);
+  const nextAnchor = addDays(start, 7);
+  const nextDisabled = isoDate(weekStart(nextAnchor)) > todayIsoStr;
+
+  content.innerHTML = `
     <div class="period-nav">
       <button class="period-arrow" id="prev-period">‹</button>
       <div class="period-title">
@@ -95,7 +191,6 @@ export async function render(container, params) {
       </div>
       <button class="period-arrow" id="next-period" ${nextDisabled ? 'disabled' : ''}>›</button>
     </div>
-
     <div class="period-stats">
       <div class="period-stat">
         <div class="period-stat-label">Gemiddeld per dag</div>
@@ -106,48 +201,100 @@ export async function render(container, params) {
         <div class="period-stat-value">${stats.daysMet} / ${stats.daysWithEntries}</div>
       </div>
     </div>
-
-    ${view === 'week'
-      ? `<div class="week-list">${renderWeekRows(start, entries, history, fbTarget, fbMax)}</div>`
-      : renderMonthGrid(start, entries, history, fbTarget, fbMax)
-    }
+    <div class="week-list">${renderWeekRows(start, entries, history, fbTarget, fbMax)}</div>
   `;
 
-  // Toggle handlers — anchor stays the same, only view changes.
-  container.querySelectorAll('.history-toggle button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const newView = btn.getAttribute('data-view');
-      if (newView === view) return;
-      navigate(`#/history?view=${newView}&anchor=${isoDate(anchor)}`);
+  wirePeriodNav(content, 'week', prevAnchor, nextAnchor, todayIsoStr);
+
+  // Week-row tap → solo dag-view in /history
+  content.querySelectorAll('.week-row').forEach(el => {
+    if (el.classList.contains('outside') || el.classList.contains('future')) return;
+    el.addEventListener('click', () => {
+      const iso = el.getAttribute('data-date');
+      navigate(`#/history?view=day&date=${iso}`);
     });
   });
+}
 
-  // Period arrows — shift anchor, view stays.
-  container.querySelector('#prev-period').addEventListener('click', () => {
+async function renderSoloMonth(content, profile, start) {
+  const today = new Date();
+  const todayIsoStr = isoDate(today);
+  const rangeStart = monthStart(start);
+  const rangeEnd = monthEnd(start);
+
+  let history, entries;
+  try {
+    [history, entries] = await Promise.all([
+      listProfileHistory(),
+      listEntriesForDateRange(isoDate(rangeStart), isoDate(rangeEnd)),
+    ]);
+  } catch (err) {
+    content.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
+    return;
+  }
+
+  const fbTarget = profile.daily_target_kcal;
+  const fbMax = profile.daily_max_kcal;
+  const stats = computeMonthStats(start, entries, history, fbTarget, fbMax);
+  const title = formatMonthNl(start);
+  const isCurrent = start.getFullYear() === today.getFullYear() && start.getMonth() === today.getMonth();
+  const sub = isCurrent
+    ? 'deze maand'
+    : `<button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
+
+  const prevAnchor = addMonthsKeepDay(start, -1);
+  const nextAnchor = addMonthsKeepDay(start, 1);
+  const nextDisabled = isoDate(monthStart(nextAnchor)) > todayIsoStr;
+
+  content.innerHTML = `
+    <div class="period-nav">
+      <button class="period-arrow" id="prev-period">‹</button>
+      <div class="period-title">
+        <div class="period-title-main">${title}</div>
+        <div class="period-title-sub">${sub}</div>
+      </div>
+      <button class="period-arrow" id="next-period" ${nextDisabled ? 'disabled' : ''}>›</button>
+    </div>
+    <div class="period-stats">
+      <div class="period-stat">
+        <div class="period-stat-label">Gemiddeld per dag</div>
+        <div class="period-stat-value">${stats.avgKcal === 0 ? '—' : stats.avgKcal + ' kcal'}</div>
+      </div>
+      <div class="period-stat">
+        <div class="period-stat-label">Doel gehaald</div>
+        <div class="period-stat-value">${stats.daysMet} / ${stats.daysWithEntries}</div>
+      </div>
+    </div>
+    ${renderMonthGrid(start, entries, history, fbTarget, fbMax)}
+  `;
+
+  wirePeriodNav(content, 'month', prevAnchor, nextAnchor, todayIsoStr);
+
+  // Day-cell tap → solo dag-view in /history
+  content.querySelectorAll('.month-cell').forEach(el => {
+    if (el.classList.contains('outside') || el.classList.contains('future')) return;
+    el.addEventListener('click', () => {
+      const iso = el.getAttribute('data-date');
+      navigate(`#/history?view=day&date=${iso}`);
+    });
+  });
+}
+
+function wirePeriodNav(content, view, prevAnchor, nextAnchor, todayIsoStr) {
+  content.querySelector('#prev-period').addEventListener('click', () => {
     navigate(`#/history?view=${view}&anchor=${isoDate(prevAnchor)}`);
   });
-  const nextBtn = container.querySelector('#next-period');
+  const nextBtn = content.querySelector('#next-period');
   if (nextBtn && !nextBtn.disabled) {
     nextBtn.addEventListener('click', () => {
       navigate(`#/history?view=${view}&anchor=${isoDate(nextAnchor)}`);
     });
   }
-
-  // Today pill — anchor = today, view stays.
-  const todayBtn = container.querySelector('#today-pill');
+  const todayBtn = content.querySelector('#today-pill');
   if (todayBtn) {
     todayBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      navigate(`#/history?view=${view}&anchor=${todayIso}`);
+      navigate(`#/history?view=${view}&anchor=${todayIsoStr}`);
     });
   }
-
-  // Day-cell tap → day-view
-  container.querySelectorAll('.week-row, .month-cell').forEach(el => {
-    if (el.classList.contains('outside') || el.classList.contains('future')) return;
-    el.addEventListener('click', () => {
-      const iso = el.getAttribute('data-date');
-      navigate(`#/day?date=${iso}`);
-    });
-  });
 }
