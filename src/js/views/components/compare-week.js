@@ -2,7 +2,6 @@ import { addDays, isoDate, shortWeekdayNl, weekEnd } from '../../utils/dates.js'
 import { heroState } from '../../calc.js';
 import { listProfileHistory, getTargetForDate } from '../../db/profile_history.js';
 import { listEntriesForDateRange } from '../../db/entries.js';
-import { getMyProfile } from '../../db/profiles.js';
 import { getFriendPeriod } from '../../db/friendships.js';
 import { navigate } from '../../router.js';
 import { escapeHtml } from '../../utils/html.js';
@@ -15,15 +14,15 @@ import { escapeHtml } from '../../utils/html.js';
  * @param {string} opts.friendId
  * @param {string} opts.friendHandle
  * @param {Date} opts.weekStartDate
+ * @param {object} opts.myProfile — own profile (passed from history orchestrator to avoid a refetch)
  */
-export async function render(content, { friendId, friendHandle, weekStartDate }) {
+export async function render(content, { friendId, friendHandle, weekStartDate, myProfile }) {
   const startIso = isoDate(weekStartDate);
   const endIso = isoDate(weekEnd(weekStartDate));
 
-  let myProfile, myEntries, myHistory, friendData;
+  let myEntries, myHistory, friendData;
   try {
-    [myProfile, myEntries, myHistory, friendData] = await Promise.all([
-      getMyProfile(),
+    [myEntries, myHistory, friendData] = await Promise.all([
       listEntriesForDateRange(startIso, endIso),
       listProfileHistory(),
       getFriendPeriod(friendId, startIso, endIso),

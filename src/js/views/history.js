@@ -323,7 +323,7 @@ async function renderCompareWeek(content, profile, start, friendId, friendHandle
 
   const compareWeek = await import('./components/compare-week.js');
   await compareWeek.render(content.querySelector('#compare-week-content'), {
-    friendId, friendHandle, weekStartDate: start,
+    friendId, friendHandle, weekStartDate: start, myProfile: profile,
   });
 }
 
