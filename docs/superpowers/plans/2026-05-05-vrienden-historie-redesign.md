@@ -121,7 +121,7 @@ Voeg deze CSS-block toe aan het einde van het bestand. Geen bestaande regels aan
   cursor: pointer;
   user-select: none;
 }
-.person-pill .av {
+.person-pill-av {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -258,21 +258,21 @@ Voeg deze CSS-block toe aan het einde van het bestand. Geen bestaande regels aan
 .compare-month-cell.outside { opacity: 0.25; cursor: default; }
 .compare-month-cell.future { opacity: 0.4; cursor: default; }
 .compare-month-cell.today { outline: 1px solid var(--text-muted); }
-.compare-month-cell .num {
+.compare-month-cell-num {
   position: absolute;
   top: 3px;
   left: 5px;
   font-size: 10px;
   color: var(--text-muted);
 }
-.compare-month-cell .bars {
+.compare-month-cell-bars {
   display: flex;
   align-items: flex-end;
   gap: 2px;
   height: 65%;
   width: 70%;
 }
-.compare-month-cell .bar {
+.compare-month-cell-bar {
   flex: 1;
   border-radius: 2px 2px 0 0;
   min-height: 5px;
@@ -362,7 +362,7 @@ export function mount(container, { friends, currentFriendId, onSelect, onShareNo
   container.className = 'person-selector';
   container.innerHTML = `
     <button type="button" class="person-pill person-pill-active person-pill-locked" data-locked="1" aria-label="Ik (altijd in beeld)">
-      <span class="av">Ik</span>Ik${ikSwatch}
+      <span class="person-pill-av">Ik</span>Ik${ikSwatch}
     </button>
     ${friends.map(f => `
       <button type="button"
@@ -370,7 +370,7 @@ export function mount(container, { friends, currentFriendId, onSelect, onShareNo
               data-friend-id="${escapeHtml(f.id)}"
               data-share-level="${escapeHtml(f.share_level || 'none')}"
               aria-label="${escapeHtml(f.handle)} ${friendActive(f.id) ? '(actief)' : ''}">
-        <span class="av">${escapeHtml(f.handle.slice(0, 1).toUpperCase())}</span>${escapeHtml(f.handle)}${friendActive(f.id) ? friendSwatch : ''}
+        <span class="person-pill-av">${escapeHtml(f.handle.slice(0, 1).toUpperCase())}</span>${escapeHtml(f.handle)}${friendActive(f.id) ? friendSwatch : ''}
       </button>
     `).join('')}
   `;
@@ -1168,11 +1168,11 @@ export async function render(content, { friendId, friendHandle, monthStartDate }
 
     cells.push(`
       <div class="${cls}" data-date="${iso}" data-in-month="${inMonth}">
-        <span class="num">${d.getDate()}</span>
+        <span class="compare-month-cell-num">${d.getDate()}</span>
         ${inMonth && !isFuture ? `
-          <div class="bars">
-            <div class="bar ${myFillCls}" style="height:${Math.max(myState ? 10 : 0, myPct * 0.7)}%"></div>
-            <div class="bar ${frFillCls}" style="height:${Math.max(frState ? 10 : 0, frPct * 0.7)}%"></div>
+          <div class="compare-month-cell-bars">
+            <div class="compare-month-cell-bar ${myFillCls}" style="height:${Math.max(myState ? 10 : 0, myPct * 0.7)}%"></div>
+            <div class="compare-month-cell-bar ${frFillCls}" style="height:${Math.max(frState ? 10 : 0, frPct * 0.7)}%"></div>
           </div>
         ` : ''}
       </div>
