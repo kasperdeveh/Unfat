@@ -134,8 +134,8 @@ export async function render(container, params) {
   }
 
   if (view === 'week' && friendId) {
-    // Compare week-view: wired in Task 5
-    content.innerHTML = `<p class="text-muted">Compare week-view komt in Task 5.</p>`;
+    const friendHandle = friendsForSelector.find(f => f.id === friendId)?.handle || 'Vriend';
+    await renderCompareWeek(content, profile, start, friendId, friendHandle, todayIsoStr);
     return;
   }
 
@@ -295,6 +295,53 @@ function wirePeriodNav(content, view, prevAnchor, nextAnchor, todayIsoStr) {
     todayBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       navigate(`#/history?view=${view}&anchor=${todayIsoStr}`);
+    });
+  }
+}
+
+async function renderCompareWeek(content, profile, start, friendId, friendHandle, todayIsoStr) {
+  const prevAnchor = addDays(start, -7);
+  const nextAnchor = addDays(start, 7);
+  const nextDisabled = isoDate(weekStart(nextAnchor)) > todayIsoStr;
+  const isCurrent = isoDate(start) === isoDate(weekStart(new Date()));
+  const wnr = isoWeekNumber(start);
+  const sub = isCurrent
+    ? `Week ${wnr} · deze week`
+    : `Week ${wnr} · <button class="today-pill" id="today-pill"><span class="today-pill-icon">⌖</span> vandaag</button>`;
+  content.innerHTML = `
+    <div class="period-nav">
+      <button class="period-arrow" id="prev-period">‹</button>
+      <div class="period-title">
+        <div class="period-title-main">${formatWeekRangeNl(start)}</div>
+        <div class="period-title-sub">${sub}</div>
+      </div>
+      <button class="period-arrow" id="next-period" ${nextDisabled ? 'disabled' : ''}>›</button>
+    </div>
+    <div id="compare-week-content"></div>
+  `;
+  wireComparePeriodNav(content, 'week', prevAnchor, nextAnchor, todayIsoStr, friendId);
+
+  const compareWeek = await import('./components/compare-week.js');
+  await compareWeek.render(content.querySelector('#compare-week-content'), {
+    friendId, friendHandle, weekStartDate: start,
+  });
+}
+
+function wireComparePeriodNav(content, view, prevAnchor, nextAnchor, todayIsoStr, friendId) {
+  content.querySelector('#prev-period').addEventListener('click', () => {
+    navigate(`#/history?friend=${friendId}&view=${view}&anchor=${isoDate(prevAnchor)}`);
+  });
+  const nextBtn = content.querySelector('#next-period');
+  if (nextBtn && !nextBtn.disabled) {
+    nextBtn.addEventListener('click', () => {
+      navigate(`#/history?friend=${friendId}&view=${view}&anchor=${isoDate(nextAnchor)}`);
+    });
+  }
+  const todayBtn = content.querySelector('#today-pill');
+  if (todayBtn) {
+    todayBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigate(`#/history?friend=${friendId}&view=${view}&anchor=${todayIsoStr}`);
     });
   }
 }
