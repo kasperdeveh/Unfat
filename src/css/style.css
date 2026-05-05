@@ -1275,7 +1275,7 @@ button, input {
   gap: 8px;
   overflow-x: auto;
   margin: 0 0 14px;
-  padding: 4px 0;
+  padding: 4px 4px;
   scrollbar-width: none;
 }
 .person-selector::-webkit-scrollbar { display: none; }
