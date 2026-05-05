@@ -24,7 +24,7 @@
 - **Inklapbare maaltijd-blokken** in compare day-view: alle blokken default ingeklapt (header met avatar + sum + chevron), tap header om uit te klappen. Per-meal kopieer-knop verschijnt binnen het uitgeklapte blok
 - Scroll-stabiliteit op compare-day mutaties (edit-save, swipe-delete, undo): geen reset naar boven meer
 - Polish: kcal-sums in compare-day-headers nu consistent uitgelijnd. Eerste poging via "chevron altijd reserved" werkte niet omdat `justify-content: space-between` met 3 items het middelste centreert; tweede iteratie gebruikt `margin-left: auto` op de sum waarna alle sums op dezelfde X eindigen ongeacht de lengte van het handle
-- Polish: uitklap-pijltje in compare-day vergroot van 11px → 16px voor betere zichtbaarheid
+- Polish: uitklap-pijltje in compare-day vergroot van 11px → 32px en namen/sums van 12px → 15px (matched section header) — vult de header beter nu de sums rechts uitgelijnd staan
 - Service worker cache bump → v40.
 
 ## 2026-05-04
