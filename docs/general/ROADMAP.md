@@ -18,6 +18,7 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 - Badge-systeem (eerste week binnen doel, X dagen op rij, etc.)
 - Push notificaties via PWA (herinneringen, motiverende teksten)
 - Motiverende teksten in de UI bij milestones
+- Bij start van dit sub-project: overweeg `frontend-design` Claude-plugin (`/plugin install frontend-design@claude-plugins-official`) — pusht richting opvallende typografie/kleur/animatie, past bij badge-/achievement-schermen waar visuele beleving juist het doel is
 
 ### F. Producten zoeken & barcode-scanning
 **Status:** F-A afgerond, F-B en F-C open
