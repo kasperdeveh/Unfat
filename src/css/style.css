@@ -1334,3 +1334,247 @@ button, input {
 .btn-icon.btn-fav-header[aria-pressed="true"] {
   color: #ffc107;
 }
+
+/* =========================================================================
+   N. Vrienden & historie redesign — gedeelde stijlen
+   ========================================================================= */
+
+/* Streep-patroon utility — diagonaal 45° voor vriend-bars per state */
+.bar-fr-ok {
+  background-image: repeating-linear-gradient(
+    45deg, #4caf50 0px, #4caf50 2px,
+    #1a3f1c 2px, #1a3f1c 4px
+  );
+}
+.bar-fr-warn {
+  background-image: repeating-linear-gradient(
+    45deg, #ff9800 0px, #ff9800 2px,
+    #4d2d00 2px, #4d2d00 4px
+  );
+}
+.bar-fr-bad {
+  background-image: repeating-linear-gradient(
+    45deg, #f44336 0px, #f44336 2px,
+    #4a1410 2px, #4a1410 4px
+  );
+}
+
+/* Persoon-selector pill rij */
+.person-selector {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 0 0 14px;
+  padding: 4px 0;
+  scrollbar-width: none;
+}
+.person-selector::-webkit-scrollbar { display: none; }
+
+.person-pill {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  padding: 4px 12px 4px 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.person-pill .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #fff;
+}
+.person-pill-active {
+  outline: 2px solid #ff9800;
+  color: var(--text);
+}
+.person-pill-locked {
+  cursor: default;
+}
+.person-swatch {
+  width: 6px;
+  height: 16px;
+  border-radius: 2px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+.person-swatch-solid {
+  background: #ff9800;
+}
+.person-swatch-striped {
+  background-image: repeating-linear-gradient(
+    45deg, #ff9800 0px, #ff9800 2px,
+    #663d00 2px, #663d00 4px
+  );
+}
+
+/* Compare-hero — 2 kolommen totalen + dual progress-bars */
+.compare-hero {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.compare-hero-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.compare-hero-col-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.compare-hero-col-num {
+  font-size: 22px;
+  font-weight: 700;
+}
+.compare-hero-col-num small {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+.compare-hero-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.compare-hero-bar {
+  height: 8px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.compare-hero-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* Compare week-row — 2 horizontale bars per dag */
+.compare-week-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 64px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--surface-border);
+}
+.compare-week-row.future { opacity: 0.35; }
+.compare-week-row .day-label {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.compare-week-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.compare-week-bar {
+  height: 7px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.compare-week-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+.compare-week-kcal {
+  text-align: right;
+  font-size: 10px;
+  color: var(--text);
+  line-height: 1.4;
+}
+.compare-week-kcal small {
+  display: block;
+  color: var(--text-muted);
+}
+
+/* Compare month-cell — mini verticale dual-bars */
+.compare-month-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 3px;
+  cursor: pointer;
+}
+.compare-month-cell.outside { opacity: 0.25; cursor: default; }
+.compare-month-cell.future { opacity: 0.4; cursor: default; }
+.compare-month-cell.today { outline: 1px solid var(--text-muted); }
+.compare-month-cell .num {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.compare-month-cell .bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 65%;
+  width: 70%;
+}
+.compare-month-cell .bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  min-height: 5px;
+}
+
+/* Compare day — per-maaltijd 2 blokken vertikaal gestackt */
+.compare-meal {
+  margin-bottom: 24px;
+}
+.compare-meal-header {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.compare-meal-block {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.compare-meal-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.compare-meal-block-who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+.compare-meal-block-who .person-swatch {
+  margin-left: 0;
+}
+.compare-meal-block-sum {
+  font-weight: 600;
+}
