@@ -64,7 +64,7 @@ export async function mountCompareWidget(container, friends, dateIso) {
   container.querySelectorAll('.compare-card').forEach(card => {
     card.addEventListener('click', () => {
       const id = card.dataset.friendId;
-      navigate(`#/friend-day?id=${id}&date=${dateIso}`);
+      navigate(`#/history?friend=${id}&view=day&date=${dateIso}`);
     });
   });
 }

@@ -3,6 +3,7 @@ import { getMyProfile, updateMyHandle } from '../db/profiles.js';
 import { mountHandleInput } from './components/handle-input.js';
 import { showToast, setNavBadge } from '../ui.js';
 import { navigate } from '../router.js';
+import { todayIso } from '../calc.js';
 import { escapeHtml } from '../utils/html.js';
 
 export async function render(container) {
@@ -214,7 +215,7 @@ function renderFriends(div, rows, handleMap, refresh) {
     row.addEventListener('click', (e) => {
       if (e.target.closest('.remove-btn')) return;
       const userId = row.dataset.userId;
-      navigate(`#/friend-day?id=${userId}`);
+      navigate(`#/history?friend=${userId}&view=day&date=${todayIso()}`);
     });
   });
   div.querySelectorAll('.remove-btn').forEach(btn => {
