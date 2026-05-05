@@ -2,6 +2,19 @@
 
 ## 2026-05-05
 
+### N. Vrienden & historie redesign
+- **Eén gedeelde Historie-pagina** (`#/history`) vervangt de aparte `#/friend-day/week/month`-routes. Persoon-selector bovenaan: "Ik" altijd actief; één vriend opt-in voor vergelijken.
+- **Dag-view** toegevoegd op de Historie-tab (gedeeld met dashboard `day.js` — edit/add/swipe-delete werken identiek).
+- **Vergelijken on one page** in alle drie de views:
+  - Dag: hero 2-koloms + per-maaltijd jouw blok boven, vriend-blok onder (read-only met kopieer-knoppen)
+  - Week: 7 rijen met 2 horizontale bars per dag (vol = ik, diagonaal gestreept = vriend)
+  - Maand: kalender-grid met 2 mini verticale bars per cel; tap-cel = inzoom op die dag
+- **Bar-conventie**: kleur = doel-staat (groen/oranje/rood), patroon = persoon. Pill-active toont mini-bar-swatch (vol of gestreept) als visuele legenda.
+- Verwijderd: `friend-day.js`, `friend-week.js`, `friend-month.js`, `friend-header.js` + bijbehorende CSS-classes (`.friend-view-toggle`, `.period-bar*`).
+- Bottom-nav: Historie-tab is nu actief op `#/history`, ook met `friend`-param.
+- Geen DB-wijzigingen — bestaande RPCs `get_friend_day` / `get_friend_period` hergebruikt.
+- Service worker cache bump → v39.
+
 - **Cleanup: friend-day/week/month/header views verwijderd** — De vier view-bestanden (`friend-day.js`, `friend-week.js`, `friend-month.js`, `components/friend-header.js`) zijn verwijderd nu de `#/friend-*` routes zijn gedropt. Bijbehorende precache-entries in `sw.js` en de obsolete CSS-blocks (`.friend-view-toggle`, `.back-btn`, `.period-nav-btn`, `.period-bars`, `.period-bar*`) zijn ook geschoond. SW cache v38 → v39.
 
 ## 2026-05-04
