@@ -19,7 +19,7 @@ const MEAL_LABELS = {
 const MEAL_ORDER = ['breakfast', 'lunch', 'dinner', 'snack'];
 
 export async function render(container, params, opts = {}) {
-  const { skipSkeleton = false } = opts;
+  const { skipSkeleton = false, historyMode = false } = opts;
   const dateIso = params?.date || todayIso();
   const date = parseIso(dateIso);
   const isToday = isSameDay(date, new Date());
@@ -211,18 +211,17 @@ export async function render(container, params, opts = {}) {
     });
   });
 
+  const buildDayUrl = (d) => historyMode
+    ? `#/history?view=day&date=${isoDate(d)}`
+    : (isSameDay(d, new Date()) ? '#/' : `#/day?date=${isoDate(d)}`);
+
   const prevBtn = container.querySelector('#prev-day');
   if (prevBtn && !prevBtn.disabled) {
-    prevBtn.addEventListener('click', () => {
-      navigate(`#/day?date=${isoDate(prev)}`);
-    });
+    prevBtn.addEventListener('click', () => navigate(buildDayUrl(prev)));
   }
   const nextBtn = container.querySelector('#next-day');
   if (nextBtn && !nextBtn.disabled) {
-    nextBtn.addEventListener('click', () => {
-      const nextRoute = isSameDay(next, new Date()) ? '#/' : `#/day?date=${isoDate(next)}`;
-      navigate(nextRoute);
-    });
+    nextBtn.addEventListener('click', () => navigate(buildDayUrl(next)));
   }
 
   // Tap = edit-sheet, swipe-left = delete with undo.

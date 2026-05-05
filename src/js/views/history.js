@@ -117,9 +117,10 @@ export async function render(container, params) {
   const content = container.querySelector('#history-content');
 
   if (view === 'day' && !friendId) {
-    // Solo dag-view: delegate to day.js (full edit-/add-flow).
+    // Solo dag-view: delegate to day.js (full edit-/add-flow). historyMode keeps
+    // the ‹ › nav inside #/history instead of routing back to #/day.
     const dayMod = await import('./day.js');
-    await dayMod.render(content, { date: dateIso });
+    await dayMod.render(content, { date: dateIso }, { historyMode: true });
     return;
   }
 
