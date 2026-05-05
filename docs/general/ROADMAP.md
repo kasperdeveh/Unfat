@@ -8,7 +8,8 @@ Het project is opgedeeld in onafhankelijke sub-projecten. Per sub-project doorlo
 **Status:** open / lage prioriteit
 
 - **Per-dag kopiëren** vanuit friend dag-view (workaround = 4× per-maaltijd)
-- **Vergelijk-widget verfijning**: één geselecteerde "vergelijk-vriend" via Settings-dropdown of per-vriend-ster-toggle
+- **Welke vrienden zichtbaar op dashboard (N4)** — kies welke vrienden de compare-widget toont; alle, sommige of één. Voorlopige richting: per-vriend ster-toggle in de Vrienden-tab, of een "vergelijk-set" via Settings. Aparte ronde na de N1+N2-redesign.
+- **Per-vriend deel-niveau override (N3)** — globale `share_level` blijft de default, met per-vriend overrides ("met X minder delen dan met de rest, of juist meer"). Vereist schemawijziging (extra tabel `friend_share_overrides` of kolom op `friendships`) + UI-aanpassing in Vrienden-tab. Aparte ronde na de N1+N2-redesign.
 - **Competitie-element**: "wie blijft deze week vaakst binnen z'n doel"
 - **Notificeren van vriend** bij kopieer-actie
 
