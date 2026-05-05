@@ -75,6 +75,7 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 - Hosting migreren naar Cloudflare Pages / Netlify / Vercel (alle drie gratis met private repo support, edge caching wereldwijd) — relevant zodra de repo private moet worden of als de Pages-build te traag wordt
 - Supabase MCP / directe SQL-uitvoering vanuit Claude — zodat schema-checks en data-verificatie ter plekke kunnen, terwijl alle wijzigingen nog steeds als `.sql`-migrations in `supabase/migrations/` worden weggeschreven (single source of truth blijft de migration-folder)
 - UI-polish ronde — diverse styling/UX-zaken die niet mooi zijn op de PWA-versie (concrete punten verzamelen tijdens dagelijks gebruik)
+- CSS kleur-token refactor: state-kleuren (groen `#4caf50`, oranje `#ff9800`, rood `#e53935`/`#f44336`) staan hardcoded op meerdere plekken in `style.css`. Introduceer `--accent-ok/warn/bad` variabelen en verwijder duplicate/near-duplicate hex-codes. Pakt mooi mee in een algemene theme-pass
 - Loading-skeletons doortrekken naar `history`, `friends`, `friend-day/week/month` en `add-food` (vandaag alleen `day` gedaan als demo)
 - A11y-pass voor pre-launch: `aria-label` op icon-only knoppen (✓/✗/⋯/‹›), `role="progressbar"` op hero-bar, kleurcontrast WCAG AA, `viewport: user-scalable=no` weghalen (double-tap-zoom is al via CSS+JS opgelost)
 - Account-delete + data-export self-service in Settings (relevant bij publieke launch / >10 echte users; tot die tijd via Supabase Dashboard)
