@@ -17,6 +17,14 @@
 
 - **Cleanup: friend-day/week/month/header views verwijderd** — De vier view-bestanden (`friend-day.js`, `friend-week.js`, `friend-month.js`, `components/friend-header.js`) zijn verwijderd nu de `#/friend-*` routes zijn gedropt. Bijbehorende precache-entries in `sw.js` en de obsolete CSS-blocks (`.friend-view-toggle`, `.back-btn`, `.period-nav-btn`, `.period-bars`, `.period-bar*`) zijn ook geschoond. SW cache v38 → v39.
 
+### N. follow-ups na hands-on test
+- Fix: solo `Dag`-view in Historie blijft op `#/history` bij ‹ ›-nav (was per ongeluk naar `#/day` springend)
+- Fix: persoon-selector "Ik"-pill kreeg active-outline net buiten beeld op smal scherm — selector heeft nu horizontale padding
+- Verwijderd: "+ toevoegen"-knoppen in compare day-view (compare is read-only voor jouw kant)
+- **Inklapbare maaltijd-blokken** in compare day-view: alle blokken default ingeklapt (header met avatar + sum + chevron), tap header om uit te klappen. Per-meal kopieer-knop verschijnt binnen het uitgeklapte blok
+- Scroll-stabiliteit op compare-day mutaties (edit-save, swipe-delete, undo): geen reset naar boven meer
+- Service worker cache bump → v40.
+
 ## 2026-05-04
 
 - **Day-view: stabiele scrollpositie bij entry-mutaties** — swipe-delete, edit-sheet save/🗑 en undo-toast op het dashboard re-rendert nu zonder dat de browser naar boven springt. Lokale `reloadKeepScroll`-wrapper capturet `window.scrollY` vóór de re-render, geeft `render()` een `skipSkeleton: true`-flag mee zodat de oude DOM blijft staan tijdens de fetch (geen skelet-flits), en zet via `requestAnimationFrame` de scrollpositie terug nadat de nieuwe DOM is gepaint. Variant gekozen na A/B-test op telefoon (variant A "met skelet" gaf voelbare flits, variant B "zonder skelet" voelt instant). SW cache v36 → v37 (test-toggle) → v38 (finalisatie)

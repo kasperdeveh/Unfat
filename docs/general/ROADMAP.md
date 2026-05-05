@@ -77,7 +77,6 @@ Calorietracker = mobile, en mobile = soms zonder bereik (trein, metro, sportscho
 - UI-polish ronde — diverse styling/UX-zaken die niet mooi zijn op de PWA-versie (concrete punten verzamelen tijdens dagelijks gebruik)
 - CSS kleur-token refactor: state-kleuren (groen `#4caf50`, oranje `#ff9800`, rood `#e53935`/`#f44336`) staan hardcoded op meerdere plekken in `style.css`. Introduceer `--accent-ok/warn/bad` variabelen en verwijder duplicate/near-duplicate hex-codes. Pakt mooi mee in een algemene theme-pass
 - Vrienden & historie redesign — polish-tail (na N. afgerond):
-  - **Scroll-stabiliteit op compare day-view**: edit-sheet save / swipe-delete in `compare-day.js` re-rendert de hele Historie-pagina via `reloadFn = () => render(container, params)`. Daardoor verliezen we de scroll-positie (`day.js` heeft daar al `reloadKeepScroll` voor). Doortrekken naar `compare-day` — bijv. via een orchestrator-niveau scroll-preserving reload-variant
   - **Extract `entry-list-block` component**: swipe-handler + `showUndoToast` zit nu duplicaat in `day.js` én `compare-day.js`. Pas extracten **na** Phase 8 (verwijderen oude friend-views) zodat het natuurlijk landt
   - **`MEAL_LABELS` / `MEAL_ORDER` naar `utils/meals.js`**: gedupliceerd in dish-, day-, compare-day-views
   - **Visuele swipe-cue check op compare day-view**: `entry-row-wrap` zit nu genest binnen `compare-meal-block` met eigen padding/border. Mogelijk subtiele clipping van de rode "🗑 Verwijderen"-balk; smoke test op telefoon, evt CSS-override `.compare-meal-block .entry-row-wrap { margin-bottom: 4px; }`
