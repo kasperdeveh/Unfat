@@ -1472,7 +1472,6 @@ button, input {
 .compare-meal-block-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
   background: none;
   border: 0;
@@ -1517,5 +1516,6 @@ button, input {
   margin-left: 0;
 }
 .compare-meal-block-sum {
+  margin-left: auto;
   font-weight: 600;
 }
