@@ -45,9 +45,7 @@ export function setNavBadge(key, count) {
 export function renderBottomNav() {
   const nav = document.getElementById('bottom-nav');
   const path = getPath();
-  // `#/friend-day|week|month` are friend sub-pages of the Vrienden tab.
-  const isFriendDay = path === '#/friend-day' || path === '#/friend-week' || path === '#/friend-month';
-  const showNav = path === '#/' || path === '#/day' || isFriendDay ||
+  const showNav = path === '#/' || path === '#/day' ||
     NAV_TABS.filter(t => t.hash !== '#/').some(t => path === t.hash || path.startsWith(t.hash + '/'));
 
   if (!showNav) {
@@ -61,7 +59,6 @@ export function renderBottomNav() {
   for (const tab of NAV_TABS) {
     let isActive;
     if (tab.hash === '#/') isActive = (path === '#/' || path === '#/day');
-    else if (tab.hash === '#/friends') isActive = (path === '#/friends' || path.startsWith('#/friends/') || isFriendDay);
     else isActive = (path === tab.hash || path.startsWith(tab.hash + '/'));
 
     const btn = document.createElement('button');
