@@ -1479,6 +1479,7 @@ button, input {
   color: inherit;
   font: inherit;
   font-size: 17px;
+  line-height: 1;
   margin-bottom: 8px;
   cursor: pointer;
   text-align: left;
@@ -1494,7 +1495,7 @@ button, input {
   margin-left: 8px;
   color: var(--text-muted);
   font-size: 32px;
-  line-height: 1;
+  line-height: 0;
   flex-shrink: 0;
   transition: transform 0.15s;
 }

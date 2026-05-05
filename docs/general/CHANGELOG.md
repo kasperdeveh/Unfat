@@ -25,6 +25,7 @@
 - Scroll-stabiliteit op compare-day mutaties (edit-save, swipe-delete, undo): geen reset naar boven meer
 - Polish: kcal-sums in compare-day-headers nu consistent uitgelijnd. Eerste poging via "chevron altijd reserved" werkte niet omdat `justify-content: space-between` met 3 items het middelste centreert; tweede iteratie gebruikt `margin-left: auto` op de sum waarna alle sums op dezelfde X eindigen ongeacht de lengte van het handle
 - Polish: uitklap-pijltje in compare-day vergroot van 11px → 32px en namen/sums van 12px → 17px — vult de header beter nu de sums rechts uitgelijnd staan
+- Fix: blok-hoogte trok te hoog door 32px chevron + 1.4 line-height op de header. `line-height: 0` op de chevron (char rendert nog op 32px maar telt niet voor row-height) plus `line-height: 1` op de header geeft de oude compacte rij-hoogte terug
 - Service worker cache bump → v40.
 
 ## 2026-05-04
